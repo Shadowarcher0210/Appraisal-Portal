@@ -15,11 +15,11 @@
 //     setOpenMenuIndex(openMenuIndex === index ? null : index);
 //   };
 //   const userDetails = async () => {
-//     const userId = localStorage.getItem('userId');
-//     console.log("Retrieved userId:", userId);
-//     if (userId) {
+//     const employeeId = localStorage.getItem('employeeId');
+//     console.log("Retrieved employeeId:", employeeId);
+//     if (employeeId) {
 //         try {
-//             const response = await axios.get(`http://localhost:3003/all/details/${userId}`);
+//             const response = await axios.get(`http://localhost:3003/all/details/${employeeId}`);
 //             setUserData(response.data);
 //             console.log("userdata", response.data); 
 //         } catch (error) {
@@ -130,10 +130,10 @@ const Profile = () => {
   const employeeName = localStorage.getItem('empName');
 
   const userDetails = async () => {
-    const userId = localStorage.getItem('userId');
-    if (userId) {
+    const employeeId = localStorage.getItem('employeeId');
+    if (employeeId) {
       try {
-        const response = await axios.get(`http://localhost:3003/all/details/${userId}`);
+        const response = await axios.get(`http://localhost:3003/all/details/${employeeId}`);
         setUserData(response.data);
       } catch (error) {
         console.error('Error fetching user details:', error);
@@ -148,11 +148,11 @@ const Profile = () => {
   }, []);
 
   const fetchAppraisalDetails = async () => {
-    const userId = localStorage.getItem('userId');
-    console.log("Retrieved userId:", userId);
-    if (userId) {
+    const employeeId = localStorage.getItem('employeeId');
+    console.log("Retrieved employeeId:", employeeId);
+    if (employeeId) {
         try {
-            const response = await axios.get(`http://localhost:3003/form/display/${userId}`);
+            const response = await axios.get(`http://localhost:3003/form/display/${employeeId}`);
             setAppraisalData(response.data);
             console.log("userdata", response.data); 
         } catch (error) {

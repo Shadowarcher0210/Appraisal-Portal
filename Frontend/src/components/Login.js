@@ -19,10 +19,11 @@ const Login = () => {
       console.log('Token:', token);
       console.log('User Info:', user);
 
-      localStorage.setItem('userId', user._id.toString());
+      localStorage.setItem('employeeId', user.employeeId);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('empName',user.empName)
-      navigate('/employee-dashboard'); 
+      localStorage.setItem('designation',user.designation)
+      navigate('/employee-dashboard');  
     } 
     catch (error) {
       setErrorMessage('Invalid email or password. Please try again.');

@@ -10,10 +10,13 @@ import Profile from './components/Profile.js';
 import ForgotPassword from './components/ForgotPassword.js';
 import ResetPassword from './components/ResetPassword.js';
 import Dashboard from './components/employee/empDashboard.js';
-import EmpView from './components/employee/empView.js';
 import EmpViewPage from './components/employee/empViewPage.js';
 
 import EmpForm from './components/employee/empForm.js';
+import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
+import Introduction from './components/Tabs/Intro2.js';
+import Goals from './components/Tabs/Goals.js';
+
 const App = () => {
   const location = useLocation();
 
@@ -38,10 +41,13 @@ const App = () => {
           <Route path='/resetPassword/:id/:token' element={<ResetPassword />} /> 
           <Route path="/viewallappraisals" element={<Viewallappraisals />} />
           <Route path="/form" element={<EmpForm />} />
+          <Route path="/selfform" element={<SelfAppraisal/>} />
+          <Route path="/intro" element={<Introduction/>} />
+
+          <Route path="/goals2" element={<Goals/>} />
 
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
-          <Route path="/view" element={<EmpView />} />
           <Route path="/empview" element={<EmpViewPage />} />
 
           <Route path="/employee-dashboard" element={<Dashboard />} />

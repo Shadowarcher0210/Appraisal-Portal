@@ -7,20 +7,19 @@ import axios from 'axios'
 const Header = () => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [userInitial, setUserInitial] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'dashboard');
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+    const answer = localStorage.getItem('submitNotification');
 
   const navigate = useNavigate();
 
   const notificationRef = useRef(null);
   const userRef = useRef(null);
   const employeeName = localStorage.getItem('empName');
-
+  const designation = localStorage.getItem('designation')
   const handleClickOutside = (event) => {
     if (notificationRef.current && !notificationRef.current.contains(event.target)) {
       setShowNotificationDropdown(false);
@@ -41,26 +40,8 @@ const Header = () => {
     localStorage.setItem('activeTab', tabName);
     navigate(path);
   };
-useEffect(()=>{
-  const userDetails = async () => {
-    const userId = localStorage.getItem('userId');
-    console.log("Retrieved userId:", userId);
-    if (userId) {
-        try {
-            const response = await axios.get(`http://localhost:3003/all/details/${userId}`);
-            setUserData(response.data);
-            console.log("userdata", response.data); 
-            setUserInitial(employeeName.charAt(0).toUpperCase())
-        } catch (error) {
-            console.error('Error fetching user details:', error);
-        }
-    } else {
-        console.log('User ID not found in local storage.');
-    }
-  };
-  userDetails()
-   },[])
-
+  
+ 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
 
@@ -70,11 +51,11 @@ useEffect(()=>{
   }, []);
 
   const fetchAppraisalNotification = async () => {
-    const userId = localStorage.getItem('userId');
+    const employeeId = localStorage.getItem('employeeId');
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
 
-    if (!userId) {
-      console.warn('No userId found in localStorage');
+    if (!employeeId) {
+      console.warn('No employeeId found in localStorage');
       return;
     }
 
@@ -82,13 +63,15 @@ useEffect(()=>{
     setError(null);
 
     try {
-      console.log('Fetching notification for:', { userId, startDate });
-      const response = await axios.get(`http://localhost:3003/form/expiry/${userId}/${startDate}`);
+      console.log('Fetching notification for:', { employeeId, startDate });
+      const response = await axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`);
       
-      console.log('API Response:', response.data);
+      console.log('API Response for expiry:', response);
       
-      if (response.data.message) {
+      if (response.data) {
         setAppraisalNotification(response.data.message);
+        // setAppraisalNotification(ans);
+
       } else {
         console.warn('No message in response:', response.data);
       }
@@ -101,9 +84,14 @@ useEffect(()=>{
   };
   useEffect(() => {
       if (showNotificationDropdown) {
+
         fetchAppraisalNotification();
       }
     }, [showNotificationDropdown]);
+
+   
+    const empInitial = employeeName.charAt(0).toUpperCase()
+
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow-md z-50 p-2.5 flex justify-between items-center h-[50px]">
     
@@ -176,7 +164,7 @@ useEffect(()=>{
 
             </button>
           {showNotificationDropdown && (
-            <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border-gray-500 mt-3 rounded-md max-h-[700px] overflow-y-auto">
+            <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border border-gray-200 mt-3 rounded-md">
               <h2 className="text-xl font-semibold mb-2 text-gray-800">Notifications</h2>
               <hr className='border-b-2 border-gray-200'/><br/>
               
@@ -187,7 +175,6 @@ useEffect(()=>{
                 </div>
               )}
 
-           
               {error && (
                 <div>
                 <div className="bg-red-50 p-4 rounded-md mb-4 border-l-4 border-red-400">
@@ -202,16 +189,29 @@ useEffect(()=>{
               )}
 
             
-              {!isLoading && !error && appraisalNotification && (
-                <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-400">
-                  <p className="text-sm text-gray-800">{appraisalNotification}</p>
+              {!isLoading && !error  && (
+                <div className="bg-green-100 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                  <p className="text-md text-gray-800">
+                               {answer}
+
+                  </p>
                   
-                  <p className="text-xs text-gray-500 mt-1">Appraisal Status</p>
+                  {/* <p className="text-xs text-gray-500 mt-1">Appraisal Status</p> */}
+                </div>
+              )}
+            {appraisalNotification  && (
+                <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-500 text-amber-950 font-normal">
+                  <p className="text-md ">
+                    {appraisalNotification} 
+
+                  </p>
+                  
+                  {/* <p className="text-xs text-gray-500 mt-1">Appraisal Status</p> */}
                 </div>
               )}
 
            
-              {!isLoading && !error && !appraisalNotification && (
+              {isLoading && !error  && !appraisalNotification && (
                 <div className="text-center ">
                   <p className="text-gray-600 mb-6">No notifications available</p>
 
@@ -237,25 +237,21 @@ useEffect(()=>{
        <button
             className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-400"
             onClick={() => setShowUserDropdown(prev => !prev)}
-          >    {userInitial}
+          >    {empInitial}
           </button>
           {showUserDropdown && (
             <div className="absolute top-full right-0 rounded-md bg-white border border-gray-300 shadow-md z-10 w-[250px] mt-4">
               <div className='flex p-3'>
           <div className="w-8 mr-4 space-y-2  h-8 rounded-full bg-gray-300  relative flex items-center justify-center">
-            {userData ? (
                  <button
                  className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white font-medium rounded-full "
-               >    {userInitial}
+               >    {empInitial}
                </button>
-              // <img src={userInitial} alt="Profile" className="w-8 h-8 object-contain" />
-            ) : (
-              <span className="text-4xl text-gray-500">{userInitial}</span>
-            )}
+           
             </div>
             <div>
-            <label className='mt-2'>{userData.user.empName}</label>
-            <p className='text-sm'>{userData.user.designation}</p>
+            <label className='mt-2'>{employeeName}</label>
+            <p className='text-sm'>{designation}</p>
             </div>
               </div>
               <hr></hr>
@@ -263,9 +259,9 @@ useEffect(()=>{
                 <li className="p-4 text-base flex items-center cursor-pointer hover:bg-gray-200" onClick={handleMyProfie}>
                   <i className="fas fa-user mr-3.5"></i> My Profile
                 </li>
-                <li className="p-4 text-base flex items-center cursor-pointer hover:bg-gray-200">
+                {/* <li className="p-4 text-base flex items-center cursor-pointer hover:bg-gray-200">
                   <i className="fas fa-lock mr-3.5"></i> Update Password
-                </li>
+                </li> */}
                 <li className="p-2  m-1 mb-2 text-base text-center cursor-pointer hover:bg-blue-500 text-white bg-blue-400 rounded-md mt-2">
                   <button className='border-1 text-center rounded-sm' onClick={handleLogout}>Logout</button>
                 </li>

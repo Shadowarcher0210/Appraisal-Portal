@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const formAnswerSchema = new mongoose.Schema(
     {
-        userId: {
+        employeeId: {
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User', 
             required: true

@@ -9,7 +9,7 @@ const authenticateUser = (req, res, next) => {
 
     try {
         const decoded = JWT.verify(token, process.env.JWT_SECRET);
-        req.userId = decoded.id; 
+        req.employeeId = decoded.id; 
         next();
     } catch (error) {
         res.status(401).send({ error: 'Token is not valid' });

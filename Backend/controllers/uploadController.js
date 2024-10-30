@@ -19,20 +19,20 @@ const uploadAppraisalLetter = async (req, res) => {
             return res.status(400).send({ error: 'File upload failed: ' + err.message });
         }
 
-        const userId = req.userId;
-        console.log("userid",userId)
-        if (!userId) {
+        const employeeId = req.employeeId;
+        console.log("employeeId",employeeId)
+        if (!employeeId) {
             return res.status(400).send({ error: 'User ID is required' });
         }
 
         try {
-            const user = await User.findById(userId, 'empName');
+            const user = await User.findById(employeeId, 'empName');
             if (!user) {
                 return res.status(404).send({ error: 'User not found' });
             }
 
             const appraisalUpdate = await Appraisal.updateOne(
-                { userId },  // Find the appraisal record by userId
+                { employeeId },  // Find the appraisal record by employeeId
                 { appraisalLetter: req.file ? req.file.path : null }  
             );
 
