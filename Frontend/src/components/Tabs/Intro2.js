@@ -3,18 +3,10 @@ import { instructionsList } from '../employee/appraisalQuestions';
 const Introduction = ({ 
   handlePreviousForm, 
   handleContinue, 
-  // instructionsList = [
-  //   "Complete your self-assessment honestly and thoroughly",
-  //   "Rate your performance across different competencies",
-  //   "Provide specific examples and comments for each rating",
-  //   "Review all entries before final submission",
-  //   "Submit within the designated timeline"
-  // ], 
   impInstructions = [
-    "Is it mandatory to provide ratings and comments for all competencies and goals in the appraisal forms? A1. Yes, it is mandatory to provide ratings and comments for all competencies in the Competency Form and for goals in the Goal Sheet form. These ratings help you define your achievements and assist your manager in entering the necessary ratings and comments during the appraisal process."
-,
-"Should I review all forms before filling them out? A2. Yes, it is a good practice to go through all the forms to understand what data needs to be filled in. This will ensure you have all the necessary information ready.",
-    "Can I complete the appraisal forms in multiple sittings? A3. Yes, you can complete the appraisal forms in multiple sittings by clicking on the Save & Exit button. However, it may be beneficial to collect all relevant details before you start filling out the forms to streamline the process.",
+    "Is it mandatory to provide ratings and comments for all competencies and goals in the appraisal forms? \n A1. Yes, it is mandatory to provide ratings and comments for all competencies in the Competency Form and for goals in the Goal Sheet form. These ratings help you define your achievements and assist your manager in entering the necessary ratings and comments during the appraisal process.",
+    "Should I review all forms before filling them out? <br/> A2. Yes, it is a good practice to go through all the forms to understand what data needs to be filled in. This will ensure you have all the necessary information ready.",
+    "Can I complete the appraisal forms in multiple sittings? \n A3. Yes, you can complete the appraisal forms in multiple sittings by clicking on the Save & Exit button. However, it may be beneficial to collect all relevant details before you start filling out the forms to streamline the process."
   ]
 }) => {
   return (

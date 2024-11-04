@@ -12,8 +12,9 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-    const answer = localStorage.getItem('submitNotification');
-
+    // const answer = localStorage.getItem('submitNotification');
+    //  console.log("ans", answer);
+     
   const navigate = useNavigate();
 
   const notificationRef = useRef(null);
@@ -58,20 +59,17 @@ const Header = () => {
       console.warn('No employeeId found in localStorage');
       return;
     }
-
     setIsLoading(true);
     setError(null);
-
     try {
       console.log('Fetching notification for:', { employeeId, startDate });
-      const response = await axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`);
-      
-      console.log('API Response for expiry:', response);
-      
-      if (response.data) {
-        setAppraisalNotification(response.data.message);
-        // setAppraisalNotification(ans);
+      const response = await axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`); 
+      console.log('API Response for response:', response.data);
+      console.log('API Response for expiry:', response.data.data.message);
 
+      if (response.data) {
+        setAppraisalNotification(response.data.data.message);
+        // setAppraisalNotification(ans);
       } else {
         console.warn('No message in response:', response.data);
       }
@@ -84,7 +82,6 @@ const Header = () => {
   };
   useEffect(() => {
       if (showNotificationDropdown) {
-
         fetchAppraisalNotification();
       }
     }, [showNotificationDropdown]);
@@ -188,22 +185,20 @@ const Header = () => {
                 
               )}
 
-            
+{/*             
               {!isLoading && !error  && (
                 <div className="bg-green-100 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
                   <p className="text-md text-gray-800">
-                               {answer}
-
+                   {answer}
                   </p>
                   
-                  {/* <p className="text-xs text-gray-500 mt-1">Appraisal Status</p> */}
+                  <p className="text-xs text-gray-500 mt-1">Appraisal Status</p>
                 </div>
-              )}
-            {appraisalNotification  && (
+              )} */}
+            {!isLoading && !error && appraisalNotification  && (
                 <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-500 text-amber-950 font-normal">
                   <p className="text-md ">
                     {appraisalNotification} 
-
                   </p>
                   
                   {/* <p className="text-xs text-gray-500 mt-1">Appraisal Status</p> */}

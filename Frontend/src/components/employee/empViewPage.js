@@ -1,277 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios'
-// import { History, User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
-// import tick from '../../assets/tick.svg'
 
-// const EmpViewPage = () => {
-//   const [showHelpPopup, setShowHelpPopup] = useState(false);
-//   const [userData, setUserData] = useState(null);
-//   const [formData, setFormData] = useState(null);
-  
-//   const employeeName = localStorage.getItem('empName');
-//   const designation = localStorage.getItem('designation')
-//   const employeeId = localStorage.getItem('employeeId');
-//   const currentYear = new Date().getFullYear() + 1;
-//   const nextYear = currentYear + 1;
-
-//   // Static questions and answers
-//   const questionsAndAnswers = [
-//     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-//     { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-//     { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-//     { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-//     { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-//     { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-//     { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-//     { question: 'Time Management', answer: 'I complete my tasks on time. '},
-//     { question: 'Results', answer: ' I identify goals that are aligned with the organization’s strategic direction and achieve results accordingly.' },
-//     { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-//     { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-//     { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.' },
-//     { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-//     { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-//   ];
-//   const toggleHelpPopup = () => {
-//     setShowHelpPopup(!showHelpPopup);
-//   };
-
-//    useEffect(()=>{
-//     const appraisalDetails = async () => {
-//       if (employeeId) {
-//           try {
-//               const response = await axios.get(`http://localhost:3003/form/performance/${employeeId}`);
-//               setFormData(response.data);
-//               console.log("formdata", response.data); 
-//           } catch (error) {
-//               console.error('Error fetching user details:', error);
-//           }
-//       } else {
-//           console.log('User ID not found in local storage.');
-//       }
-//     };
-//     appraisalDetails()
-//      },[])
-  
-//      const competencies = [
-//       { name: 'Technical Expertise', level: 'Advanced', target: 'Expert' },
-//       { name: 'Project Management', level: 'Intermediate', target: 'Advanced' },
-//       { name: 'Team Leadership', level: 'Advanced', target: 'Expert' },
-//       { name: 'Problem Solving', level: 'Advanced', target: 'Expert' },
-//     ];
-  
-//     const goals = [
-//       { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-//       { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-//       { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-//     ];
-
-//   return (
-//           <div className="min-h-screen bg-gray-50 p-2 w-full ">
-
-      
-//       {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
-//       <div className="p-2 pr-2">
-
-//    {/* Header Section */}
-//    <div className="bg-white border border-gray-100  rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
-//           <div className="flex justify-between items-center">
-//             <h1 className="text-2xl font-bold text-gray-800">Appraisal Details</h1>
-//             {formData ? (
-
-//             <div className="flex items-center gap-2">
-//               <span className="text-sm bg-blue-50 text-blue-600 px-3 py-2 font-medium rounded">
-//               {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
-//               </span>
-             
-//             </div>
-//             ):(<div/>)}
-//           </div>
-//         </div>
-//          </div>
-
-
-// <div className="mb-6">
-// {formData ? (
-
-//   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 w-full mx-4 pr-3 ">
-//     {/* Employee Name Card */}
-//     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-//       <div className="p-3 bg-blue-50 rounded-lg shrink-0">
-//         <User className="text-blue-600" size={24} />
-//       </div>
-//       <div>
-//         <p className="text-sm text-gray-400 mb-1">Employee Name</p>
-//         <p className="font-medium text-gray-900">{employeeName}</p>
-//       </div>
-//     </div>
-
-//     {/* Designation Card */}
-//     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-//       <div className="p-3 bg-purple-50 rounded-lg shrink-0">
-//         <Briefcase className="text-purple-600" size={24} />
-//       </div>
-//       <div>
-//         <p className="text-sm text-gray-400 mb-1">Designation</p>
-//         <p className="font-medium text-gray-900">{designation}</p>
-//       </div>
-//     </div>
-
-//     {/* Manager Name Card */}
-//     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-//       <div className="p-3 bg-green-50 rounded-lg shrink-0">
-//         <User className="text-green-600" size={24} />
-//       </div>
-//       <div>
-//         <p className="text-sm text-gray-400 mb-1">Manager Name</p>
-//         <p className="font-medium text-gray-900">{formData[0].managerName}</p>
-//       </div>
-//     </div>
-
-//     {/* Evaluation Status Card */}
-//     <div className="flex items-start gap-4 p-4 rounded-md shadow-md mr-5 bg-white">
-//       <div className="p-3 bg-orange-50 rounded-lg shrink-0">
-//         <TrendingUp className="text-orange-600" size={24} />
-//       </div>
-//       <div>
-//         <p className="text-sm text-gray-400 mb-1">Evaluation Status</p>
-//         <p className="font-medium text-gray-900">In Progress</p>
-//       </div>
-//     </div>
-//   </div>):(<div/>)}
-// </div>
-
-//  {/* Main Content - Vertical Layout */}
-//  <div className="space-y-4 mx-4 rounded-lg shadow-sm">
-//           {/* Self Appraisal Section */}
-// <div className="bg-white rounded-lg border border-gray-100  shadow-sm p-4">
-//   <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-//     <Award size={20} className="text-blue-600" />
-//     Self Appraisal & Competencies
-//   </h2>
-//   <div className="space-y-4">
-//     {questionsAndAnswers.map((item, index) => {
-//       const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-
-//       return (
-//         <div key={index} className="border-b border-gray-100 pb-4">
-//           <p className="text-sm font-medium text-gray-700 mb-1">{item.question}</p>
-//           {previousAnswer && (
-
-//           <div className=" rounded  my-2 flex flex-row ">
-//             <span className="text-sm bg-blue-50 text-blue-600 px-2 py-1 mr-5 rounded">{item.answer}</span>
-//               <div className="flex items-center gap-2 mb-1 bg-gray-50 p-1 ">
-//                 <img src={tick} size={14} className="text-gray-400"/>
-//                 <span className="text-sm  text-gray-600 px-2 py-1 rounded">{previousAnswer}</span>
-//               </div>
-//             </div>
-
-//           )}
-//         </div>
-//       );
-//     })}
-//   </div>
-// </div>
-
-
-// {/* <div className="bg-highlight rounded-md  ">
-//   <p className="font-semibold text-headerbg text-lg mb-4">Self-Appraisal Responses</p>
-//   <div className="overflow-hidden border mr-20 border-gray-300 rounded-lg">
-//     <table className="table-auto w-full">
-//       <tbody>
-    
-// {questionsAndAnswers.map((item, index) => {
-// const answer = formData ? formData[0].pageData[index]?.answer : null; 
-//   return (
-//     <tr key={index}>
-//       <td className="p-2 border-b border-gray-300">
-//         <p className="font-normal p-2">{item.question}</p>
-//       </td>
-//       <td className="border-b border-gray-300">
-//         <p className="ml-8 font-normal">{item.answer}</p>
-//       </td>
-//       {answer ? (
-//       <td className="border-b border-gray-300">
-//         <p className="ml-8 font-normal">  {answer}
-//         </p>
-//       </td> ):(    <td className="border-b border-gray-300">
-//           <p className="ml-8 font-normal">No answer available</p>
-//         </td>)}
-//     </tr>
-//   );
-// })}
-
-
-//       </tbody>
-//     </table>
-         
-//   </div> */}
-
-//   {/* Competencies Section */}
-//   {/* <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mt-3">
-//             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-//               <Target size={20} className="text-purple-600" />
-//               Competencies
-//             </h2>
-//             <div className="space-y-3">
-//               {competencies.map((comp, index) => (
-//                 <div key={index} className="bg-gray-100 rounded p-3">
-//                   <p className="text-sm font-medium text-gray-700">{comp.name}</p>
-//                   <div className="flex items-center gap-2 mt-1">
-//                     <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded">
-//                       Current: {comp.level}
-//                     </span>
-//                     <ChevronRight size={16} className="text-gray-400" />
-//                     <span className="text-xs bg-green-50 text-green-600 px-2 py-1 rounded">
-//                       Target: {comp.target}
-//                     </span>
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div> */}
-
-//    {/* Goals Section */}
-//    <div className="bg-white border border-gray-100  mb-8 rounded-lg shadow-sm p-4 mt-3">
-//             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-//               <Target size={20} className="text-green-600" />
-//                Goals for  {currentYear} - {nextYear}
-
-//             </h2>
-//             <div className="space-y-3">
-//               {goals.map((goal, index) => (
-//                 <div key={index} className="bg-gray-100 rounded p-3">
-//                   <div className="flex justify-between items-start">
-//                     <p className="text-sm font-medium text-gray-700">{goal.title}</p>
-//                     <span className="text-xs bg-orange-50 text-orange-600 px-2 py-1 rounded">
-//                       {goal.deadline}
-//                     </span>
-//                   </div>
-//                   <p className="text-sm text-gray-600 mt-1">{goal.description}</p>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-// </div>
-
-//       {/* Questions and Answers Section */}
-
-//       {/* <div className="ml-4 mr-4 mt-4 mb-4 border shadow-lg p-6 rounded-lg bg-white">
-//         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Self-Appraisal Responses</h2>
-//         {questionsAndAnswers.map((item, index) => (
-//           <div key={index} className="border-b pb-4 mb-4">
-//             <p className="text-lg font-medium text-blue-600">{item.question}</p>
-//             <p className="text-gray-700">{item.answer}</p>
-//           </div>
-//         ))}
-//       </div> */}
-//     </div>
-//   );
-// };
-
-// export default EmpViewPage;
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { History, User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation } from 'react-router-dom';
 
@@ -279,9 +9,7 @@ const EmpViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
-  
-  const employeeName = localStorage.getItem('empName');
-  const designation = localStorage.getItem('designation')
+
   const employeeId = localStorage.getItem('employeeId');
   const currentYear = new Date().getFullYear() + 1;
   const nextYear = currentYear + 1;
@@ -400,7 +128,7 @@ const {timePeriod}=location.state || {}
       </div>
       <div>
         <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-        <p className="font-medium text-gray-900">In Progress</p>
+        <p className="font-medium text-gray-900">-</p>
       </div>
     </div>
   </div>):(<div/>)}
@@ -455,7 +183,7 @@ const {timePeriod}=location.state || {}
                   <span className="text-gray-600">{notes}</span>
                 </td>
                  ):( <td className="p-2 text-sm text-gray-700">
-                       <span className="text-gray-600">No answer available</span>
+                       <span className="text-gray-600">-</span>
                       </td>
                  )}                            
                 <td className="p-2 text-sm text-gray-700 w-40">
@@ -495,11 +223,13 @@ const {timePeriod}=location.state || {}
 
    {/* Goals Section */}
    <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
+         {formData ?(
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Target size={20} className="text-green-600" />
-               Goals for  {currentYear} - {nextYear}
-
-            </h2>
+               Goals for  
+               {` ${new Date(formData[0].timePeriod[0]).getFullYear()+1} - ${new Date(formData[0].timePeriod[1]).getFullYear()+1}`}
+               <br/>
+            </h2>):(<div/>)}
             <div className="space-y-3 pr-4">
               {goals.map((goal, index) => (
                 <div key={index} className="bg-gray-100 rounded p-3">

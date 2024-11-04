@@ -329,17 +329,18 @@ const loginUser = async (req, res) => {
           });
       }
 
-      // Successful login, return user details (excluding password)
-      return res.status(200).json({
-          success: true,
-          message: 'Login successful',
-          user: {
-              employeeId: user.employeeId,
-              empName: user.empName,
-              email: user.email,
-              profile: user.profile,
-          },
-      });
+      const token = JWT.sign({id:user._id}, process.env.JWT_SECRET,{
+        expiresIn : "2d",
+     })
+     user.password = undefined;
+     res.status(200).send({
+         success:true,
+         message:'Login Successfully',
+         token,
+         user,
+     })
+
+      console.log("user",user)
   } catch (error) {
       console.error('Error during login:', error);
       return res.status(500).json({
