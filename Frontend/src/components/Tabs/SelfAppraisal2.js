@@ -71,12 +71,13 @@ const SelfAppraisal = ({
     if (weight >= 40) return 'bg-yellow-100 text-yellow-800';
     return 'bg-red-100 text-red-800';
   };
-
   const getAttainmentText = (weight) => {
-    if (weight >= 80) return 'Exceptional';
-    if (weight >= 60) return 'Meets Expectations';
-    if (weight >= 40) return 'Needs Improvement';
-    return 'Unsatisfactory';
+    if (weight == 100) return '100%';
+    if (weight >= 80) return '80%';
+    if (weight >= 60) return '60%';
+    if (weight >= 40) return '40%';
+    if (weight >= 20) return '20%';
+    return '0 %';
   };
 
   useEffect(() => {
@@ -173,10 +174,10 @@ const SelfAppraisal = ({
                 <td className="p-3 rounded-tl-lg font-medium w-1/3">Assessment Areas</td>
                 <td className="p-3 text-center">Strongly Disagree</td>
                 <td className="p-3 text-center">Somewhat Disagree</td>
-                <td className="p-3 text-center w-28">Agree</td>
+                <td className="p-3 text-center w-32">Agree</td>
                 <td className="p-3 text-center">Somewhat Agree</td>
                 <td className="p-3 text-center">Strongly Agree</td>
-                <td className="p-3 text-center w-1/4">Notes & Comments</td>
+                <td className="p-3 text-center w-52">Notes & Comments</td>
                 <td className="p-3 rounded-tr-lg text-center">Attainment</td>
               </tr>
             </thead>
@@ -205,7 +206,7 @@ const SelfAppraisal = ({
                       placeholder="Add your comments..."
                     />
                   </td>
-                  <td className="border-l  border-r ">
+                  <td className="border-l  border-r text-center ">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium  ${getAttainmentColor(currentWeights[index])}`}>
                       {getAttainmentText(currentWeights[index])}
                     </span>
