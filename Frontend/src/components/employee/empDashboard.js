@@ -13,13 +13,13 @@ const Dashboard = () => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const navigate = useNavigate();
-  const appraisalStartDate = new Date(`${currentYear - 1}-03-01`).toLocaleDateString();
-  const appraisalEndDate = new Date(`${currentYear}-03-31`).toLocaleDateString();
+  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
+  const appraisalEndDate = new Date(`${currentYear + 1}-04-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
 
-  const goalSettingStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString();
-  const goalSettingEndDate = new Date(`${currentYear}-05-01`).toLocaleDateString();
+  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
+  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
   const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
   const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
@@ -83,58 +83,15 @@ const Dashboard = () => {
     setOpenMenuIndex(openMenuIndex === index ? null : index);
   };
 
-  // const handleButtonClick = async (appraisal) => {
-  //   const { timePeriod, status } = appraisal;
-    
-  //   if (status === "Submitted") {
-  //     const employeeId = localStorage.getItem('employeeId');
-  //     try {
-  //       const response = await axios.put(
-  //         `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-  //         { status: 'Submitted' }
-  //       );
 
-  //       if (response.status === 200) {
-  //         console.log('Application loaded Successfully:', response.data);
-  //         fetchAppraisalDetails();
-  //       } else {
-  //         console.error('Failed to Load Status:', response.statusText);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error to Load Status:', error);
-  //     }
-      
-  //     navigate('/empview', { state: { timePeriod } });
-
-  //   } else {
-  //     const employeeId = localStorage.getItem('employeeId');
-  //     try {
-  //       const response = await axios.put(
-  //        ` http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-  //         { status: 'In Progress' }
-  //       );
-
-  //       if (response.status === 200) {
-  //         console.log('Status updated Successfully:', response.data);
-  //         fetchAppraisalDetails();
-  //       } else {
-  //         console.error('Failed to update status:', response.statusText);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating status:', error);
-  //     }
-  //     navigate('/form', { state: { timePeriod } });
-  //   }
-  // };
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
-    const employeeId = localStorage.getItem('employeeId');
+    const employeeId = localStorage.getItem('employeeId')?.trim();
     const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-    const navigatePath = status === "Submitted" ?` /empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/form";
+    const navigatePath = status === "Submitted" ?`/empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/form";
   
     try {
-      const response = await axios.put(
-`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+      const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         { status: newStatus }
       );
   

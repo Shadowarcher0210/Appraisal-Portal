@@ -88,6 +88,13 @@ const appraisalSchema = new mongoose.Schema({
         type:'string',
         required:true
     },
+    department:{
+        type: 'string',
+        required:true
+    },
+    empScore:{
+        type: 'string',
+    },
     band:{
         type:'string',
         required:true

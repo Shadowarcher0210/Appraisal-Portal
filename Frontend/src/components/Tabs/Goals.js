@@ -1,6 +1,6 @@
 import {React,useState, useEffect} from 'react';
 import axios from 'axios'
-import {  User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import {  User, Briefcase, TrendingUp } from 'lucide-react';
 
 const Goals = ({
   goalsResponse,
@@ -79,7 +79,7 @@ const Goals = ({
       </div>
       <div>
         <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-        <p className="font-medium text-gray-900">In Progress</p>
+        <p className="font-medium text-gray-900">-</p>
       </div>
     </div>
   </div>):(<div/>)}

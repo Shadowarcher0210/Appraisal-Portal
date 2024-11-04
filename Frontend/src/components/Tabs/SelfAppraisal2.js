@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import {  User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import {  User, Briefcase, TrendingUp} from 'lucide-react';
 import tick from '../../assets/tick.svg'
+import { useLocation } from "react-router-dom";
 
 const SelfAppraisal = ({
-  selfAppraisalPage,
   weights = [],
   notes = [],
   updateWeight,
   saveNotes,
   handlePreviousForm,
-  handleContinue,
-  employeeDetails = {
-    name: "John Doe",
-    designation: "Software Engineer",
-    band: "B2",
-    assessmentYear: "2024",
-    managerName: "Jane Smith"
-  }
+  handleSubmit,
+  handleSave,
+
 }) => {
   const generalQuestions = [
     "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
@@ -47,10 +42,7 @@ const SelfAppraisal = ({
   const currentNotes = notes.length ? notes : initializedNotes;
 
   const [formData, setFormData] = useState(null);
-
   const employeeId = localStorage.getItem('employeeId');
-  const employeeName = localStorage.getItem('empName');
-  const designation = localStorage.getItem('designation')
 
   const getAttainmentColor = (weight) => {
     if (weight >= 80) return 'bg-orange-100 text-orange-800';
@@ -65,6 +57,7 @@ const SelfAppraisal = ({
     if (weight >= 40) return 'Needs Improvement';
     return 'Unsatisfactory';
   };
+
  useEffect(()=>{
     const appraisalDetails = async () => {
       if (employeeId) {
@@ -81,6 +74,19 @@ const SelfAppraisal = ({
     };
     appraisalDetails()
      },[])
+
+  
+
+  const isFormComplete = () => currentWeights.every(weight => weight > 0);
+
+  const handleFormSubmit = () => {
+    if (isFormComplete()) {
+      console.log("filled");
+      handleSubmit();
+      } else {
+        alert("Please complete all fields before submitting.");
+      }
+  };
 
   return (
     <div className="mb-10  flex flex-col overflow-y-auto  scrollbar-thin">
@@ -130,7 +136,7 @@ const SelfAppraisal = ({
         <TrendingUp className="text-orange-600" size={24} />
       </div>
       <div>
-        <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
+        <p className="text-sm text-gray-400 mb-1"> Evaluation Status</p>
         <p className="font-medium text-gray-900">In Progress</p>
       </div>
     </div>
@@ -146,7 +152,7 @@ const SelfAppraisal = ({
                 <td className="p-3 rounded-tl-lg font-medium w-1/3">Assessment Areas</td>
                 <td className="p-3 text-center">Strongly Disagree</td>
                 <td className="p-3 text-center">Somewhat Disagree</td>
-                <td className="p-3 text-center">Agree</td>
+                <td className="p-3 text-center w-28">Agree</td>
                 <td className="p-3 text-center">Somewhat Agree</td>
                 <td className="p-3 text-center">Strongly Agree</td>
                 <td className="p-3 text-center w-1/4">Notes & Comments</td>
@@ -228,43 +234,32 @@ const SelfAppraisal = ({
         </div>
       </div>
 
-      {/* <div className="sticky bottom-0 bg-white py-4 flex justify-between space-x-4 border-t px-6">
-        <button
+    <div className="fixed bottom-0 left-0 right-0 bg-white flex justify-between space-x-4 border-t px-6 py-4">
+      <button
           className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
           onClick={handlePreviousForm}
         >
-          Back
-        </button>
+       Back
+     </button>
+     <div className="flex space-x-4">
         <button
-          className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
-          onClick={handleContinue}
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2"
+          onClick= {handleSave}
         >
-          Continue
-        </button>
-      </div> */}
-<div className="fixed bottom-0 left-0 right-0 bg-white flex justify-between space-x-4 border-t px-6 py-4">
-<button
-    className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
-    onClick={handlePreviousForm}
-  >
-    Back
-  </button>
-  <div className="flex space-x-4">
-    <button
-      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2"
-      onClick={() => {      }}
-    >
       
-      <span>Save & Exit</span>
-    </button>
-    <button
-      className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
-      onClick={handleContinue}
-    >
-      Continue
-    </button>
-  </div>
-</div>
+        <span>Save & Exit</span>
+         </button>
+         <button
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              isFormComplete() ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-orange-300 text-white cursor-not-allowed'
+            }`}
+            onClick={handleFormSubmit}
+            disabled={!isFormComplete()}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
