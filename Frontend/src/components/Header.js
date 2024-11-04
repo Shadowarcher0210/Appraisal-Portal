@@ -12,15 +12,12 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-    // const answer = localStorage.getItem('submitNotification');
-    //  console.log("ans", answer);
-     
   const navigate = useNavigate();
-
   const notificationRef = useRef(null);
   const userRef = useRef(null);
   const employeeName = localStorage.getItem('empName');
   const designation = localStorage.getItem('designation')
+  const empType = localStorage.getItem('empType'); 
   const handleClickOutside = (event) => {
     if (notificationRef.current && !notificationRef.current.contains(event.target)) {
       setShowNotificationDropdown(false);
@@ -29,10 +26,10 @@ const Header = () => {
       setShowUserDropdown(false);
     }
   };
-  const handleMyProfie = () =>{
+  const handleMyProfie = () => {
     navigate('/profile')
   }
-  const handleLogout=()=>{
+  const handleLogout = () => {
     localStorage.clear();
     navigate('/')
   }
@@ -41,8 +38,8 @@ const Header = () => {
     localStorage.setItem('activeTab', tabName);
     navigate(path);
   };
-  
- 
+
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
 
@@ -63,7 +60,7 @@ const Header = () => {
     setError(null);
     try {
       console.log('Fetching notification for:', { employeeId, startDate });
-      const response = await axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`); 
+      const response = await axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`);
       console.log('API Response for response:', response.data);
       console.log('API Response for expiry:', response.data.data.message);
 
@@ -81,57 +78,75 @@ const Header = () => {
     }
   };
   useEffect(() => {
-      if (showNotificationDropdown) {
-        fetchAppraisalNotification();
-      }
-    }, [showNotificationDropdown]);
+    if (showNotificationDropdown) {
+      fetchAppraisalNotification();
+    }
+  }, [showNotificationDropdown]);
 
-   
-    const empInitial = employeeName.charAt(0).toUpperCase()
+
+  const empInitial = employeeName.charAt(0).toUpperCase()
 
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow-md z-50 p-2.5 flex justify-between items-center h-[50px]">
-    
+
       <div className="logo">
         <img src={logo} alt="Logo" className="h-8 w-auto" />
       </div>
-    <div className="fixed ml-36 left-0  flex space-x-8 ">
+     
+      <div className="fixed ml-36 left-0  flex space-x-8 ">
+      {empType === 'Employee'&& (
+        <>
         <div
-    className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
-    onClick={() => handleTabClick('dashboard', '/employee-dashboard')}
+          className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('dashboard', '/employee-dashboard')}
         >
           Dashboard
         </div>
         <div
-    className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
-    onClick={() => handleTabClick('performance', '/performance')}
+          className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('performance', '/performance')}
         >
           Performance
         </div>
+        </>
+)}
+      {empType === 'Manager'&& (
+        <>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('dashboard', '/manager-dashboard')}
+        >
+          Dashboard
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('myPerformance', '/manager-my-performance')}
+        >
+         My Performance
+        </div>
+        <div
+            className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+            onClick={() => handleTabClick('performance', '/manager-performance')}
+          >
+          Performance
+          </div>
+        </>
+)}
+        
+        {empType === 'HR' && (
+          <div
+            className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+            onClick={() => handleTabClick('myPerformance', '/my-performance')}
+          >
+            My Performance
+          </div>
+        )}
+
       </div>
       <div className="header-right flex items-center ml-5">
-        {/* <div className="search-bar flex items-center relative mr-10 border-none ">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="searchbox pl-10 p-2.5 w-[400px] rounded-full   bg-slate-100"
-          />
-          <span className="search-icon absolute left-2.5">
-            🔍
-          </span>
-        </div> */}
 
-        {/* <div className="relative mr-4" ref={notificationRef}>
-          <button
-            className="text-lg flex items-center justify-center w-8 h-8 hover:bg-gray-200 hover:text-white rounded-full"
-            onClick={() => setShowNotificationDropdown(prev => !prev)}
-          >
-            <i className="fas fa-bell text-gray-600"></i>
-          </button>
-         
-        </div> */}
-      
-      <div className="relative mr-4" ref={notificationRef}>
+
+        <div className="relative mr-4" ref={notificationRef}>
           <button
             className="text-lg flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300"
             onClick={() => setShowNotificationDropdown((prev) => !prev)}
@@ -159,13 +174,13 @@ const Header = () => {
             </div>
 
 
-            </button>
+          </button>
           {showNotificationDropdown && (
             <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border border-gray-200 mt-3 rounded-md">
               <h2 className="text-xl font-semibold mb-2 text-gray-800">Notifications</h2>
-              <hr className='border-b-2 border-gray-200'/><br/>
-              
-         
+              <hr className='border-b-2 border-gray-200' /><br />
+
+
               {isLoading && (
                 <div className="text-center py-4">
                   <p className="text-gray-600">Loading notifications...</p>
@@ -174,62 +189,47 @@ const Header = () => {
 
               {error && (
                 <div>
-                <div className="bg-red-50 p-4 rounded-md mb-4 border-l-4 border-red-400">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
-                <div className="flex items-center justify-center h-full">
-                  <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
-                </div>
+                  <div className="bg-red-50 p-4 rounded-md mb-4 border-l-4 border-red-400">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                  <div className="flex items-center justify-center h-full">
+                    <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+                  </div>
 
                 </div>
-                
+
               )}
 
-{/*             
-              {!isLoading && !error  && (
-                <div className="bg-green-100 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
-                  <p className="text-md text-gray-800">
-                   {answer}
-                  </p>
-                  
-                  <p className="text-xs text-gray-500 mt-1">Appraisal Status</p>
-                </div>
-              )} */}
-            {!isLoading && !error && appraisalNotification  && (
+
+              {!isLoading && !error && appraisalNotification && (
                 <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-500 text-amber-950 font-normal">
                   <p className="text-md ">
-                    {appraisalNotification} 
+                    {appraisalNotification}
                   </p>
-                  
+
                   {/* <p className="text-xs text-gray-500 mt-1">Appraisal Status</p> */}
                 </div>
               )}
 
-           
-              {isLoading && !error  && !appraisalNotification && (
+
+              {isLoading && !error && !appraisalNotification && (
                 <div className="text-center ">
                   <p className="text-gray-600 mb-6">No notifications available</p>
 
                   <div className="flex items-center justify-center h-full">
-                  <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+                    <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+                  </div>
                 </div>
-               </div>
               )}
 
-        
-              {/* <h3 className="text-lg font-semibold my-4 text-gray-800">Team Members</h3>
-              <div className="flex flex-wrap gap-2">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">JD</div>
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">AS</div>
-                <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white font-semibold">TK</div>
-                <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">MR</div>
-              </div> */}
+
+
             </div>
           )}
         </div>
-          
+
         <div className="relative" ref={userRef}>
-       <button
+          <button
             className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-400"
             onClick={() => setShowUserDropdown(prev => !prev)}
           >    {empInitial}
@@ -237,17 +237,17 @@ const Header = () => {
           {showUserDropdown && (
             <div className="absolute top-full right-0 rounded-md bg-white border border-gray-300 shadow-md z-10 w-[250px] mt-4">
               <div className='flex p-3'>
-          <div className="w-8 mr-4 space-y-2  h-8 rounded-full bg-gray-300  relative flex items-center justify-center">
-                 <button
-                 className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white font-medium rounded-full "
-               >    {empInitial}
-               </button>
-           
-            </div>
-            <div>
-            <label className='mt-2'>{employeeName}</label>
-            <p className='text-sm'>{designation}</p>
-            </div>
+                <div className="w-8 mr-4 space-y-2  h-8 rounded-full bg-gray-300  relative flex items-center justify-center">
+                  <button
+                    className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white font-medium rounded-full "
+                  >    {empInitial}
+                  </button>
+
+                </div>
+                <div>
+                  <label className='mt-2'>{employeeName}</label>
+                  <p className='text-sm'>{designation}</p>
+                </div>
               </div>
               <hr></hr>
               <ul className="list-none p-0 m-0">

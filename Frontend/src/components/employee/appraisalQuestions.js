@@ -1,6 +1,3 @@
-//  appraisalData.js
-
-
 const data = {
     instructionsList: [
       "You fill your appraisal and submit to your manager.",

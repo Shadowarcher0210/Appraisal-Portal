@@ -23,7 +23,17 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('empName',user.empName)
       localStorage.setItem('designation',user.designation)
-      navigate('/employee-dashboard');  
+      localStorage.setItem('empType',user.empType)
+      if(user.empType === 'Employee'){
+        navigate('/employee-dashboard'); 
+      }
+      else if (user.empType === 'Manager'){
+navigate('/manager-dashboard')
+      }
+      else if (user.empType === 'HR'){
+        navigate('/hr-dashboard')
+      }
+       
     } 
     catch (error) {
       setErrorMessage('Invalid email or password. Please try again.');
