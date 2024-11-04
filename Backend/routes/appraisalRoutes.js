@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification} = require('../controllers/appraisalController');
+const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification} = require('../controllers/appraisalController');
 const {authenticateUser} = require('../middleware/authenticateUser')
 
 const router = express.Router()
@@ -11,5 +11,6 @@ router.get('/display/:employeeId', getAppraisals);
 router.get('/displayAnswers/:employeeId/:startDate/:endDate', getAppraisalAnswers);
 router.get('/performance/:employeeId', getEmployeeAppraisal)
 router.get('/expiry/:employeeId/:startDate',sendExpiringAppraisalNotification );
+router.get('/getNotification/:employeeId/:startDate',getApplicationNotification );
 
 module.exports = router;

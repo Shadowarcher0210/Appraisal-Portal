@@ -271,31 +271,29 @@ const createAppraisalForm = async (req, res) => {
     try {
         const { employeeId, timePeriod } = req.body;
 
-        // Validate required fields
+      
         if (!employeeId || !timePeriod) {
             return res.status(400).json({ message: 'All required fields must be provided.' });
         }
 
-        // Fetch employee details based on employeeId
-        const employee = await Employee.findOne({ employeeId: employeeId }); // Assuming Employee is your model for employees
-
-        // Check if the employee exists
+       
+        const employee = await Employee.findOne({ employeeId: employeeId }); 
+     
         if (!employee) {
             return res.status(404).json({ message: 'Employee not found.' });
         }
 
-        // Check if an appraisal already exists for this employee in the same time period
+      
         const existingAppraisal = await Appraisal.findOne({
             employeeId: employeeId,
             timePeriod: timePeriod,
         });
 
-        // If appraisal exists, return a message
+       
         if (existingAppraisal) {
             return res.status(400).json({ message: 'An appraisal already exists for this employee in the specified time period.' });
         }
 
-        // Create new appraisal form
         const newAppraisal = new Appraisal({
             employeeId,
             empName: employee.empName,
@@ -309,7 +307,6 @@ const createAppraisalForm = async (req, res) => {
             pageData: [],
         });
 
-        // Save the appraisal form
         const savedAppraisal = await newAppraisal.save();
         res.status(201).json({ message: 'Appraisal form created successfully', data: savedAppraisal });
 
@@ -319,106 +316,12 @@ const createAppraisalForm = async (req, res) => {
     }
 };
 
-    
-// const sendExpiringAppraisalNotification = async (req, res) => {
-//     const { employeeId,startDate } = req.params;
-    
-//     try {
-//         // Validate and parse start date
-//         const startDateTime = new Date(startDate);
-        
-//         if (isNaN(startDateTime.getTime())) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid date format. Please use YYYY-MM-DD format'
-//             });
-//         }
-        
-//         const endDateTime = new Date(startDateTime);
-//         endDateTime.setFullYear(endDateTime.getFullYear() + 1);
-        
-//         startDateTime.setHours(0, 0, 0, 0);
-//         endDateTime.setHours(0, 0, 0, 0);
-        
-//         const query = {
-//             employeeId: employeeId,
-//             $and: [
-//                 { 'timePeriod.0': {
-//                     $gte: startDateTime,
-//                     $lte: new Date(startDateTime.getTime() + 24 * 60 * 60 * 1000) // Include the entire day
-//                 }},
-//                 { 'timePeriod.1': {
-//                     $gte: endDateTime,
-//                     $lte: new Date(endDateTime.getTime() + 24 * 60 * 60 * 1000) // Include the entire day
-//                 }}
-//             ]
-//         };
-        
-//         console.log('Checking appraisal for employeeId:', employeeId, 'with start date:', startDate);
-//         console.log('Query:', JSON.stringify(query));
-        
-//         const appraisal = await Appraisal.findOne(query).select({
-//             timePeriod: 1,
-//             employeeId: 1,
-//             status: 1,
-//             empScore: 1,
-//             managerName: 1
-//         });
-        
-//         console.log('Found appraisal:', JSON.stringify(appraisal));
-        
-//         if (!appraisal) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: `No appraisal found for this user starting from ${startDate}`
-//             });
-//         }
-        
-//         const today = new Date();
-//         today.setHours(0, 0, 0, 0);
-        
-//         // Get the end date from the timePeriod array (second element)
-//         const appraisalEndDate = new Date(appraisal.timePeriod[1]);
-//         const formattedEndDate = appraisalEndDate.toISOString().split('T')[0];
-        
-//         const timeDifference = appraisalEndDate - today;
-//         const daysRemaining = Math.ceil(timeDifference / (1000 * 3600 * 24));
-        
-//         let message = null;
-//         if (daysRemaining <= 0) {
-//             message = `Your appraisal has expired. End date was: ${formattedEndDate}`;
-//         } else if (daysRemaining <= 10) {
-//             message = `Your appraisal expires within ${daysRemaining} days. End date: ${formattedEndDate}`;
-//         }
-        
-//         return res.status(200).json({
-//             message: message,
-//         });
-        
-//     } catch (error) {
-//         console.error('Error checking appraisal expiration:', error);
-        
-//         if (error.name === 'CastError') {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid user ID format'
-//             });
-//         }
-        
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Error checking appraisal expiration',
-//             error: error.message
-//         });
-//     }
-// };
+
 const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
     
     try {
-        
         const startDateTime = new Date(startDate);
-        
         if (isNaN(startDateTime.getTime())) {
             return res.status(400).json({
                 success: false,
@@ -426,32 +329,14 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             });
         }
 
-       
-        const endDateTime = new Date(startDateTime);
-        endDateTime.setDate(endDateTime.getDate() + 7);
-        
-      
-        startDateTime.setHours(0, 0, 0, 0);
-        endDateTime.setHours(0, 0, 0, 0);
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-       
-        const notificationDate = new Date(endDateTime);
-        notificationDate.setDate(notificationDate.getDate() - 7);
-        
         const query = {
             employeeId: employeeId,
-            timePeriod: {
-                $exists: true,
-                $size: 2
-            }
+            timePeriod: { $exists: true, $size: 2 }
         };
-        
-        console.log('Checking appraisal for employeeId:', employeeId, 'with start date:', startDate);
-        console.log('Query:', JSON.stringify(query));
-        
+
         const appraisal = await Appraisal.findOne(query).select({
             timePeriod: 1,
             employeeId: 1,
@@ -460,36 +345,35 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             managerName: 1
         });
 
-        console.log('Found appraisal:', JSON.stringify(appraisal));
-        
         if (!appraisal) {
             return res.status(404).json({
                 success: false,
-                message: `No appraisal found for this user`
+                message: 'No appraisal found for this employee'
             });
         }
-        
-        const formattedEndDate = endDateTime.toISOString().split('T')[0];
-        const formattedNotificationDate = notificationDate.toISOString().split('T')[0];
-        
-        let message = null;
-        
-        if (today >= endDateTime) {
-            message = `Your appraisal has expired. End date was: ${formattedEndDate}`;
-        } else if (today >= notificationDate) {
-            const daysRemaining = Math.ceil((endDateTime - today) / (1000 * 60 * 60 * 24));
-            message = `Your appraisal will expire in ${daysRemaining} days. End date: ${formattedEndDate}`;
-        } else {
-            message = `Your appraisal is active. End date: ${formattedEndDate}`;
-        }
-        
+
+        const endDate = new Date(appraisal.timePeriod[1]);
+
+       
+        const oneWeekBefore = new Date(endDate);
+        oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
+
+       
+        const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+
+        let message;
+        let notificationStatus;
+
+        if (today >= oneWeekBefore) {
+            message = `Your appraisal will expire in ${daysRemaining} days. End Date: ${endDate.toISOString().split('T')[0]} `;
+            notificationStatus = 'WARNING';
+        } 
+
         return res.status(200).json({
             success: true,
             data: {
                 employeeId,
-                startDate: startDate,
-                endDate: formattedEndDate,
-                notificationDate: formattedNotificationDate,
+                status: notificationStatus,
                 message
             }
         });
@@ -511,4 +395,67 @@ const sendExpiringAppraisalNotification = async (req, res) => {
         });
     }
 };
-module.exports = {saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
+
+const getApplicationNotification = async (req, res) => {
+    try {
+        const { employeeId, startDate } = req.params;
+      
+        const startDateTime = new Date(startDate);
+        if (isNaN(startDateTime.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid date format. Please use YYYY-MM-DD format'
+            });
+        }
+
+      
+        const appraisal = await Appraisal.findOne({
+            employeeId,
+            timePeriod: {
+                $elemMatch: {
+                    $gte: startDateTime
+                }
+            }
+        });
+
+        if (!appraisal) {
+            return res.status(404).json({
+                success: false,
+                message: 'No appraisals found for this user for the specified period.'
+            });
+        }
+
+       
+        const endDate = new Date(appraisal.timePeriod[1]);
+
+      
+        const formattedStartDate = startDateTime.toISOString().split('T')[0];
+        const formattedEndDate = endDate.toISOString().split('T')[0];
+
+        if (appraisal.status === 'Submitted') {
+            return res.status(200).json({
+                success: true,
+                message: `Your appraisal for the period ${formattedStartDate} to ${formattedEndDate} has been submitted successfully.`,
+                employeeId,
+            });
+        }
+
+        return res.status(200).json({
+            success: false,
+            currentStatus: appraisal.status,
+            period: {
+                startDate: formattedStartDate,
+                endDate: formattedEndDate
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching application notification:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetch application notification.'
+        });
+    }
+};
+
+
+module.exports = {getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
