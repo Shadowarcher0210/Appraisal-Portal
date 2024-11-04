@@ -180,7 +180,7 @@ const Header = () => {
                     <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
                   </div>
                 </div>
-              )}
+              ) }
             </div>
           )}
         </div>

@@ -16,6 +16,9 @@ import EmpForm from './components/employee/empForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
 import Goals from './components/Tabs/Goals.js';
+import M_Dashboard from './components/manager/M_Dashboard.js';
+import M_Performance from './components/manager/M_Performance.js';
+import M_myPerformance from './components/manager/M_myPerformance.js';
 
 const App = () => {
   const location = useLocation();
@@ -51,8 +54,13 @@ const App = () => {
           <Route path="/empview" element={<EmpViewPage />} />
 
           <Route path="/employee-dashboard" element={<Dashboard />} />
-          
           <Route path="/employee-performance" element={<empPerformance />} />
+          {/* Manager */}
+          <Route path="/manager-dashboard" element={<M_Dashboard/>} />
+          <Route path='/manager-performance' element={<M_Performance/>}/>
+          <Route path='/manager-my-performance' element={<M_myPerformance/>}/>
+          
+          
      
         </Routes>
       </div>

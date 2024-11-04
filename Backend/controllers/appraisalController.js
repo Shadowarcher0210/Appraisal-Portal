@@ -7,51 +7,6 @@ const bodyParser = require('body-parser');
 const app = express()
 app.use(bodyParser.json())
 
-// const saveAppraisalDetails = async (req, res) => {
-//     const { employeeId, startDate, endDate } = req.params;
-//     const { pageData } = req.body;
-
-//     try {
-//         if (!employeeId) {
-//             return res.status(400).send({ error: 'User ID is required' });
-//         }
-
-//         const isValidDate = (date) => !isNaN(new Date(date).getTime());
-//         if (!isValidDate(startDate) || !isValidDate(endDate)) {
-//             return res.status(400).send({ error: 'Invalid date format.' });
-//         }
-
-//         const user = await Employee.findOne({ employeeId: employeeId }, { empName: 1 });
-//         if (!user) {
-//             return res.status(404).send({ error: 'User not found' });
-//         }
-
-//         const timePeriod = [new Date(startDate), new Date(endDate)];
-//         const updatedAppraisal = await Appraisal.findOneAndUpdate(
-//             {
-//                 employeeId: employeeId,
-//                 timePeriod: { $all: timePeriod },
-//             },
-//             { pageData, status: 'Submitted' },
-//             { new: true }
-//         );
-
-//         if (!updatedAppraisal) {
-//             return res.status(404).json({ message: 'Appraisal form not found.' });
-//         }
-
-//         res.status(201).send({
-//             message: 'Appraisal form saved successfully!',
-//             data: updatedAppraisal,
-//         });
-//     } catch (error) {
-//         console.log('Error saving appraisal form', error);
-//         res.status(500).send({
-//             success: false,
-//             error: error.message
-//         });
-//     }
-// };
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { pageData } = req.body;
