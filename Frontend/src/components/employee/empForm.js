@@ -88,7 +88,7 @@ const saveNotes = (indexOrArray, value) => {
     updatedAnswers[index].answer = value;
     setGoalAnswers(updatedAnswers);
   };
-  
+
 
   const handleContinue = () => {
     if (activeTab === 1 && selfAppraisalPage === 0) {
@@ -142,13 +142,13 @@ const saveNotes = (indexOrArray, value) => {
     if (selfAppraisalPage > 0) {
       setSelfAppraisalPage(selfAppraisalPage - 1);
     } else if (activeTab > 0) {
-			 
+
       setActiveTab(activeTab - 1);
     } else if (activeTab === 0) {
       navigate("/employee-dashboard");
     }
   };
-  
+
 
 
 
@@ -289,17 +289,17 @@ const saveNotes = (indexOrArray, value) => {
         },
         body: JSON.stringify({ pageData })
       })
-		
+
 
       if (response.ok) {
         console.log('response', response);
-        
+
         const data = await response.json();
-										   
+
       } else {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
-			  
+
       }
       const emailresponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
         method: 'POST',
@@ -312,16 +312,16 @@ const saveNotes = (indexOrArray, value) => {
       });
       const emailData = await emailresponse.json();
       console.log(emailData.message);
-  
+
     } catch (error) {
       console.error('Error updating status:', error);
-  
+
     }
     finally {
       setIsModalOpen(true);
     }
   }
-const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
   const closeThankYouModal = () => {
     setIsThankYouModalOpen(false);
     navigate("/employee-dashboard");
@@ -329,9 +329,9 @@ const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="flex h-auto max-w-full  mt-4">
- <div className="border p-4 w-full rounded shadow-lg ">
+      <div className="border p-4 w-full rounded shadow-lg ">
 
-{activeTab === 0 && (
+        {activeTab === 0 && (
           <Intro2
             handlePreviousForm={handlePreviousForm}
             handleContinue={handleContinue}
@@ -375,16 +375,16 @@ const closeModal = () => setIsModalOpen(false);
             Are you sure you want to submit your appraisal?
           </p>
               <div className="mt-6 flex justify-center space-x-4">
-              <button
-              className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              onClick={() => handleConfirmSubmit()}
+                <button
+                  className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  onClick={() => handleConfirmSubmit()}
                 >
                   Yes
                 </button>
 
                 <button
-              className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              onClick={closeModal}
+                  className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                  onClick={closeModal}
                 >
                   No
                 </button>
@@ -392,12 +392,12 @@ const closeModal = () => setIsModalOpen(false);
 
             </div>
           </div>
-          </div>
+        </div>
 
-        )}
-{isThankYouModalOpen && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+      )}
+      {isThankYouModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <p className="my-3 text-gray-600 text-center">
                Thank you for your submission!</p>
               <div className="mt-4 flex justify-center">

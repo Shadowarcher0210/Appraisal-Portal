@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/static/css/main.ed5d016d.css",
+    "main.js": "/static/js/main.dadc6231.js",
+    "static/media/logo.png": "/static/media/logo.7df4e0d808b52e01d933.png",
+    "static/media/training.png": "/static/media/training.7f656adec9b80cfd19f3.png",
+    "static/media/goal-setting.png": "/static/media/goal-setting.1e2f53c2791ed03dd17f.png",
+    "static/media/growth.png": "/static/media/growth.0cbf80391b96f4f33822.png",
+    "static/media/evaluation.png": "/static/media/evaluation.eaaba4d1315a9756ed9c.png",
+    "static/media/nothing.png": "/static/media/nothing.f3ec3328b1c438977a4e.png",
+    "index.html": "/index.html",
+    "static/media/tick.svg": "/static/media/tick.908eb3184cc7468c1f8163297cc1663d.svg",
+    "main.ed5d016d.css.map": "/static/css/main.ed5d016d.css.map",
+    "main.dadc6231.js.map": "/static/js/main.dadc6231.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ed5d016d.css",
+    "static/js/main.dadc6231.js"
+  ]
+}
