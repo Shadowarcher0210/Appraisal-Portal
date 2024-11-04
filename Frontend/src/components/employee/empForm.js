@@ -28,7 +28,7 @@
 //   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
 //  const [userDetails, setUserDetails] = useState(null);
 //  const [submitNotification, setSubmitNotification] = useState(null);
-								   
+
 
 //   const location = useLocation();
 //   const { timePeriod } = location.state || {};
@@ -57,7 +57,7 @@
 //   const [goalAnswers, setGoalAnswers] = useState(
 //     goalsResponse.map(() => ({ answer: '' }))
 //   );
-  
+
 //   const handleGoalChange = (index, value) => {
 //     const updatedAnswers = [...goalAnswers];
 //     updatedAnswers[index].answer = value;
@@ -69,7 +69,7 @@
 //     if (selfAppraisalPage > 0) {
 //       setSelfAppraisalPage(selfAppraisalPage - 1);
 //     } else if (activeTab > 0) {
-										   
+
 //       setActiveTab(activeTab - 1);
 //     } else if(activeTab === 0){
 //       navigate('/employee-dashboard')
@@ -150,12 +150,12 @@
 //             )}
 //           </div>
 //         ))}
-        
+
 //       </div>
 //     );
 //   };
-  
- 
+
+
 //   const handleConfirmSubmit = async () => {
 //     setIsModalOpen(false);
 //     setIsThankYouModalOpen(true);
@@ -185,7 +185,7 @@
 //         answer: getAnswerFromWeight(weights[2]),
 //         notes: notes[2]
 //       },
-    
+
 //       // Competency Questions
 //       {
 //         questionId: 4,
@@ -259,16 +259,16 @@
 //         answer: goalAnswers[index].answer,
 //         notes: notes[index + 13], // Adjust if needed
 //       })),
-      
+
 //     ];
 
 //     try {
 //       // await new Promise((resolve) => setTimeout(resolve, 2000));
-     
+
 //       const employeeId = localStorage.getItem('employeeId');
 //       const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-													  
-		 
+
+
 //         method: 'PUT',
 //         headers: {
 //           "content-Type": "application/json",
@@ -278,7 +278,7 @@
 //       })
 //       if (response.ok) {
 //         console.log('response', response);
-        
+
 //         const data = await response.json();
 //       } else {
 //         const errorData = await response.json();
@@ -295,18 +295,18 @@
 //       });
 //       const emailData = await emailresponse.json();
 //       console.log(emailData.message);
-  
+
 
 //       //submit notif
 //       console.log('Fetching submit notification for:', { employeeId });
 //       const response2 = await axios.get(`http://localhost:3003/form/getsubmit/${employeeId}`);
-      
+
 //       console.log('API Response:', response2.data);
-      
+
 //       if (response2.data) {
 //         setSubmitNotification(response2.data);
 //         console.log('response2.data.message', response2.data);
-                
+
 //         localStorage.setItem('submitNotification', response2.data.message);
 //         console.log("submitNotification", response2.data.message)
 //       } else {
@@ -323,12 +323,12 @@
 //   }
 
 
-  
+
 //   const closeModal = () => {
 //     setIsModalOpen(false);
 //     // navigate('/employee-dashboard');
 //   };
-  
+
 //   const closeThankYouModal = () => {
 //     setIsThankYouModalOpen(false);
 //     navigate("/employee-dashboard");
@@ -369,7 +369,7 @@
 //           activeStep={activeTab}
 //           completedSteps={completedSteps}
 //         />				  
-					  
+
 // 	  <div className="border p-4 rounded mt-10 shadow-lg">
 // 				 {userDetails && (
 //             <div className="mb-4 flex justify-between">
@@ -387,7 +387,7 @@
 //               </p>
 //             </div>
 //           )}		   
-													   
+
 // 					 {activeTab === 0 && (
 //             <IntroductionTab
 //               handlePreviousForm={handlePreviousForm}
@@ -433,7 +433,7 @@
 //         {isModalOpen && (
 //          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
 //          <div className="bg-white p-5 rounded-lg shadow-lg transform transition-all duration-300 scale-95 hover:scale-100">
-            
+
 //              <h2 className="text-lg font-semibold text-center text-gray-800 mb-5">Submit Confirmation</h2>
 //            <p className="text-gray-800 mb-6 text-center">Are you sure you want to submit your appraisal?</p>
 //            <div className="mt-6 flex  justify-between space-x-4">
@@ -443,7 +443,7 @@
 //              >
 //                Yes
 //              </button>
-       
+
 //              <button
 //                className="bg-red-600 w-1/2 text-white px-5 py-2 rounded-lg transition duration-300 transform hover:bg-red-500 hover:scale-105"
 //                onClick={closeModal}
@@ -453,18 +453,18 @@
 //            </div>
 //          </div>
 //        </div>
-       
+
 
 //         )}
 
 
 //         {isThankYouModalOpen && (
 //           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-            
+
 
 //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
 //          <div className="bg-white p-5 rounded-lg shadow-lg transform transition-all duration-300 scale-95 hover:scale-100">
-            
+
 //              <h2 className="text-lg font-semibold text-center text-gray-800 mb-5">Thank you! </h2>
 //            <p className="text-gray-800 mb-6 text-center">You have successfully submitted your appraisal</p>
 
@@ -476,14 +476,14 @@
 //              >
 //                Close
 //              </button>
-       
-           
+
+
 //            </div>
 //          </div>
 //        </div>
 //           </div>
 
-          
+
 //         )}
 //       </div>
 //     </div>
@@ -557,12 +557,12 @@ const EmpForm = () => {
     newNotes[index] = data;
     setNotes(newNotes);
   };
- const handleGoalChange = (index, value) => {
+  const handleGoalChange = (index, value) => {
     const updatedAnswers = [...goalAnswers];
     updatedAnswers[index].answer = value;
     setGoalAnswers(updatedAnswers);
   };
-  
+
 
   const handleContinue = () => {
     if (activeTab === 1 && selfAppraisalPage === 0) {
@@ -578,16 +578,16 @@ const EmpForm = () => {
     if (selfAppraisalPage > 0) {
       setSelfAppraisalPage(selfAppraisalPage - 1);
     } else if (activeTab > 0) {
-			 
+
       setActiveTab(activeTab - 1);
     } else if (activeTab === 0) {
       navigate("/employee-dashboard");
     }
   };
-  
+
 
   const handleSubmit = async () => {
-		 setIsModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const getAnswerFromWeight = (weight) => {
@@ -607,7 +607,7 @@ const EmpForm = () => {
     }
   };
 
- const handleConfirmSubmit = async () => {
+  const handleConfirmSubmit = async () => {
     setIsModalOpen(false);
     setIsThankYouModalOpen(true);
     const token = localStorage.getItem('token')
@@ -622,11 +622,11 @@ const EmpForm = () => {
         answer: getAnswerFromWeight(weights[0]),
         notes: notes[0]
       },
-   
+
       {
         questionId: 2,
-        question:     "Team-work:I work effectively and efficiently with team.",
-      
+        question: "Team-work:I work effectively and efficiently with team.",
+
         answer: getAnswerFromWeight(weights[1]),
         notes: notes[1]
       },
@@ -636,8 +636,7 @@ const EmpForm = () => {
         answer: getAnswerFromWeight(weights[2]),
         notes: notes[2]
       },
-    
-      // Competency Questions
+
       {
         questionId: 4,
         question: "Adaptability: I am flexible and receptive regarding new ideas and approaches.",
@@ -646,7 +645,7 @@ const EmpForm = () => {
       },
       {
         questionId: 5,
-        question:     "Leadership: I like to take responsibility in managing the team.",
+        question: "Leadership: I like to take responsibility in managing the team.",
 
         answer: getAnswerFromWeight(weights[4]),
         notes: notes[4]
@@ -665,7 +664,7 @@ const EmpForm = () => {
       },
       {
         questionId: 8,
-        question:  "Time Management: I complete my tasks on time.",
+        question: "Time Management: I complete my tasks on time.",
         answer: getAnswerFromWeight(weights[7]),
         notes: notes[7]
       },
@@ -689,7 +688,7 @@ const EmpForm = () => {
       },
       {
         questionId: 12,
-        question:     "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
+        question: "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
 
         answer: getAnswerFromWeight(weights[11]),
         notes: notes[11]
@@ -710,20 +709,20 @@ const EmpForm = () => {
         questionId: goal.questionId,
         question: goal.question,
         answer: goalAnswers[index].answer,
-        notes: notes[index + 13], // Adjust if needed
+        notes: notes[index + 13],
       })),
-      
+
     ];
-    
+
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 2000));
-     
+
       const employeeId = localStorage.getItem('employeeId');
-								   
+
       const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-													  
-		 
+
+
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
@@ -731,17 +730,17 @@ const EmpForm = () => {
         },
         body: JSON.stringify({ pageData })
       })
-		
+
 
       if (response.ok) {
         console.log('response', response);
-        
+
         const data = await response.json();
-										   
+
       } else {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
-			  
+
       }
       const emailresponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
         method: 'POST',
@@ -754,17 +753,16 @@ const EmpForm = () => {
       });
       const emailData = await emailresponse.json();
       console.log(emailData.message);
-  
+
     } catch (error) {
       console.error('Error updating status:', error);
-  
+
     }
     finally {
-      // Optionally reopen the modal or perform any cleanup
       setIsModalOpen(true);
     }
   }
-const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
   const closeThankYouModal = () => {
     setIsThankYouModalOpen(false);
     navigate("/employee-dashboard");
@@ -772,9 +770,9 @@ const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="flex h-auto max-w-full  mt-4">
- <div className="border p-4 w-full rounded shadow-lg ">
+      <div className="border p-4 w-full rounded shadow-lg ">
 
-{activeTab === 0 && (
+        {activeTab === 0 && (
           <Intro2
             handlePreviousForm={handlePreviousForm}
             handleContinue={handleContinue}
@@ -791,7 +789,7 @@ const closeModal = () => setIsModalOpen(false);
             saveNotes={saveNotes}
             handlePreviousForm={handlePreviousForm}
             handleContinue={handleContinue}
-			  
+
           />
         )}
         {activeTab === 2 && (
@@ -803,30 +801,30 @@ const closeModal = () => setIsModalOpen(false);
             handleSubmit={() => setIsModalOpen(true)}
           />
         )}
-						
-     </div>
- {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-  <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-        <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 text-center">
-            Submit Appraisal
-          </h2>
-          
-          <p className="mt-3 text-gray-600 text-center">
-            Are you sure you want to submit your appraisal?
-          </p>
+
+      </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 text-center">
+                Submit Appraisal
+              </h2>
+
+              <p className="mt-3 text-gray-600 text-center">
+                Are you sure you want to submit your appraisal?
+              </p>
               <div className="mt-6 flex justify-center space-x-4">
-              <button
-              className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-              onClick={() => handleConfirmSubmit()}
+                <button
+                  className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  onClick={() => handleConfirmSubmit()}
                 >
                   Yes
                 </button>
 
                 <button
-              className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              onClick={closeModal}
+                  className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                  onClick={closeModal}
                 >
                   No
                 </button>
@@ -834,25 +832,25 @@ const closeModal = () => setIsModalOpen(false);
 
             </div>
           </div>
-          </div>
+        </div>
 
-        )}
-{isThankYouModalOpen && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg">
+      )}
+      {isThankYouModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
             <p className="my-3 text-gray-600 text-center">
-            Thank you for your submission!</p>
-              <div className="mt-4 flex justify-center">
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"
-                  onClick={closeThankYouModal}
-                >
-                  Close
-                </button>
-              </div>
+              Thank you for your submission!</p>
+            <div className="mt-4 flex justify-center">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"
+                onClick={closeThankYouModal}
+              >
+                Close
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
