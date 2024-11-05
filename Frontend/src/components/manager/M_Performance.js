@@ -29,13 +29,19 @@ const M_Performance = () => {
         if (managerName) {
             try {
                 const response = await axios.get(`http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`);
-                setAppraisals(response.data.data);
-                console.log('Fetched Appraisals in Performance Page:', response.data.data);
+                const sortedAppraisals = response.data.data.sort((a, b) => {
+                    if (a.status === 'Submitted' && b.status !== 'Submitted') return -1;
+                    if (a.status !== 'Submitted' && b.status === 'Submitted') return 1;
+                    return 0;
+                });
+                setAppraisals(sortedAppraisals);
+                console.log('Fetched and sorted appraisals in Performance Page:', sortedAppraisals);
             } catch (error) {
                 console.error('Error fetching appraisals in Performance page:', error);
             }
         }
     }, [managerName, startDate, endDate]);
+    
 
     useEffect(() => {
         if (selectedYear) {
@@ -78,10 +84,10 @@ const M_Performance = () => {
                                 <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-gray-500">
                                     {appraisal.managerName}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
+                                <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-gray-700 cursor-pointer">
                                     <button
-                                        className={`${appraisal.status === 'Submitted' ? 'bg-yellow-500' : 'bg-blue-600'
-                                            } text-white hover:bg-blue-700 rounded-md px-2 py-2 w-16`}
+                                        className={`${appraisal.status === 'Submitted' ? 'bg-green-600' : 'bg-green-600'
+                                            } text-white hover:bg-green-700 rounded-md px-2 py-2 w-16`}
                                         onClick={() => handleViewClick(appraisal)}
                                     >
                                         {appraisal.status === 'Submitted' ? 'Review' : 'View'}
