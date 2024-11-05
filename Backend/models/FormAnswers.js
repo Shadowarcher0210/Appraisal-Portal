@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 const formAnswerSchema = new mongoose.Schema(
     {
         employeeId: {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User', 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true
         },
         pageData: [{
@@ -19,9 +19,9 @@ const formAnswerSchema = new mongoose.Schema(
             _id: false
         }],
         timePeriod: {
-            type: [String], 
+            type: [String],
             validate: {
-                validator: function(v) {
+                validator: function (v) {
                     return v.length === 2; // For displaying two dates
                 },
                 message: 'Time period must contain exactly two dates (start and end).'
@@ -31,4 +31,4 @@ const formAnswerSchema = new mongoose.Schema(
     }
 )
 
-module.exports = mongoose.model('form',formAnswerSchema)
+module.exports = mongoose.model('form', formAnswerSchema)

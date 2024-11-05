@@ -10,16 +10,10 @@ const M_myPerformance = () => {
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
     const [appraisals, setAppraisals] = useState(null);
     const [expandedSection, setExpandedSection] = useState('manager');
-
     const employeeName = localStorage.getItem('empName');
     const navigate = useNavigate();
-    //   const menuRef = useRef();
-
-
     const currentYear = new Date().getFullYear();
     const previousYear = currentYear - 1;
-
-
     const toggleSection = (section) => {
         setExpandedSection(expandedSection === section ? null : section);
     };
@@ -45,7 +39,7 @@ const M_myPerformance = () => {
     const handleCloseMenu = () => {
         setOpenMenuIndex(null);
     };
-const fetchAppraisalDetails = async () => {
+    const fetchAppraisalDetails = async () => {
         const employeeId = localStorage.getItem('employeeId');
         if (employeeId) {
             try {
@@ -77,8 +71,6 @@ const fetchAppraisalDetails = async () => {
         { action: "Self-assessment submitted", type: "info" },
         { action: "Review meeting scheduled", type: "warning" },
     ];
-
-
 
     return (
         <div className="justify-center items-start mt-20 ml-6">
@@ -189,7 +181,7 @@ const fetchAppraisalDetails = async () => {
                                 {recentActivities.map((activity, index) => (
                                     <div key={index} className="flex items-start space-x-3 p-1 hover:bg-gray-100 rounded-md transition-colors duration-200">
                                         <div className={`w-3 h-3 rounded-full mt-1 ${activity.type === 'success' ? 'bg-green-500' :
-                                                activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                                            activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
                                             }`} />
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-700">{activity.action}</p>

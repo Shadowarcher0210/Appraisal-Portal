@@ -9,4 +9,4 @@ const EmailSchema = new mongoose.Schema({
     submitted: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('User' ,EmailSchema);
+module.exports = mongoose.model('User', EmailSchema);

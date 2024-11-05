@@ -16,7 +16,7 @@ const pageDataSchema = new mongoose.Schema(
             default: ""
         }
     },
-    { _id: false } 
+    { _id: false }
 );
 
 const appraisalSchema = new mongoose.Schema({
@@ -25,31 +25,31 @@ const appraisalSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    empName:{
-        type:'string',
-        required:true
-    },
-    designation:{
-        type:'string',
-        required:true
-    },
-    department:{
+    empName: {
         type: 'string',
-        required:true
+        required: true
     },
-    empScore:{
+    designation: {
+        type: 'string',
+        required: true
+    },
+    department: {
+        type: 'string',
+        required: true
+    },
+    empScore: {
         type: 'string',
     },
-    band:{
-        type:'string',
-        required:true
+    band: {
+        type: 'string',
+        required: true
     },
 
     timePeriod: {
-        type: [Date], // Array of two dates (start and end)
+        type: [Date], 
         validate: {
             validator: function (v) {
-                return v.length === 2; // Ensures exactly two dates are provided
+                return v.length === 2;
             },
             message: 'Time period must contain exactly two dates (start and end).'
         }
@@ -69,8 +69,8 @@ const appraisalSchema = new mongoose.Schema({
         required: true
     },
     pageData: {
-        type: [pageDataSchema], 
-        default: [] 
+        type: [pageDataSchema],
+        default: []
     }
 });
 

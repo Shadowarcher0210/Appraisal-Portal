@@ -40,13 +40,11 @@ const Modal = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic here, like saving the data or calling an API
     console.log('Employee Details:', employeeDetails);
     onClose();
   };
 
   const handleProceed = () => {
-    // Logic for proceeding with selected employee
     console.log('Selected Employee:', selectedEmployee);
     onClose();
   };

@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const formRoutes = require('./routes/appraisalRoutes'); 
 const empRoutes = require('./routes/dashboardRouter')
 const timePeriod  = require('./routes/timePeriod');
+const performance = require('./routes/manager/PerformanceRoutes')
 const uploadAppraisalLetter  = require('./routes/uploadRouter');
 const sendConfirmationEmails = require('./routes/emailRouter');
 
@@ -19,6 +20,7 @@ app.use(express.json());
 
 app.use('/auth',auth)
 app.use('/form', formRoutes)
+app.use('/appraisal',performance)
 app.use('/all', empRoutes)
 app.use('/time',timePeriod)
 app.use('/letter',uploadAppraisalLetter)

@@ -9,7 +9,7 @@ const Dashboard = () => {
   const [date] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
-  
+
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const navigate = useNavigate();
@@ -88,13 +88,13 @@ const Dashboard = () => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
     const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-    const navigatePath = status === "Submitted" ?`/empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/form";
-  
+    const navigatePath = status === "Submitted" ? `/empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/form";
+
     try {
       const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         { status: newStatus }
       );
-  
+
       if (response.status === 200) {
         console.log(`Status ${newStatus} Successfully:`, response.data);
         fetchAppraisalDetails();
@@ -104,7 +104,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error(`Error updating status to ${newStatus}:`, error);
     }
-  
+
     navigate(navigatePath, { state: { timePeriod } });
   };
 
@@ -118,7 +118,7 @@ const Dashboard = () => {
         <p className='ml-2 mt-3'>{formatDate(date)} <span> , </span>{formatTime(date)}</p>
       </div>
       <br />
-      
+
       <div className="w-12/12 p-4 bg-white border shadow-md rounded-md ml-4 mr-8">
         <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Appraisal</h2>
         <table className="min-w-full divide-y divide-gray-200">
@@ -144,7 +144,7 @@ const Dashboard = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.managerName}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.status}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                    <button 
+                    <button
                       className='bg-blue-500 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16'
                       onClick={() => handleButtonClick(appraisal)}
                     >

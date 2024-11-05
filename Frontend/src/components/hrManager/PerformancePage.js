@@ -88,17 +88,17 @@ const PerformancePage = () => {
               </thead>
               <tbody>
 
-            
-              {filteredApps.length > 0 ? (
-                filteredApps.map((app) => (
-                  <li key={app.id}>
-                    {app.name} - {app.createdDate}
-                  </li>
-                ))
-              ) : (
-                <li>No applications found for the selected academic year.</li>
-              )}
-                </tbody>
+
+                {filteredApps.length > 0 ? (
+                  filteredApps.map((app) => (
+                    <li key={app.id}>
+                      {app.name} - {app.createdDate}
+                    </li>
+                  ))
+                ) : (
+                  <li>No applications found for the selected academic year.</li>
+                )}
+              </tbody>
             </table>
           </div>
         </div>
