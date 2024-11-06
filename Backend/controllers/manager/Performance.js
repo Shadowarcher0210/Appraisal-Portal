@@ -22,4 +22,5 @@ const getEmployeeAppraisals = async (req, res) => {
     }
 };
 
+
 module.exports = { getEmployeeAppraisals };

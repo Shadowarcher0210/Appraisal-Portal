@@ -7,7 +7,6 @@ const M_Performance = () => {
     const [appraisals, setAppraisals] = useState(null);
     const managerName = localStorage.getItem('managerName');
     const navigate = useNavigate();
-
     const currentYear = new Date().getFullYear();
     const startDate = `${currentYear}-04-01`;
     const endDate = `${currentYear + 1}-03-31`;
@@ -41,7 +40,7 @@ const M_Performance = () => {
             }
         }
     }, [managerName, startDate, endDate]);
-    
+
 
     useEffect(() => {
         if (selectedYear) {
@@ -66,7 +65,8 @@ const M_Performance = () => {
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Employee Name</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Assessment Year</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Reporting authority</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Band</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Designation</th>
 
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -82,7 +82,10 @@ const M_Performance = () => {
                                     {formatDate(appraisal.timePeriod[0])} to {formatDate(appraisal.timePeriod[1])}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-gray-500">
-                                    {appraisal.managerName}
+                                    {appraisal.band}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-gray-500">
+                                    {appraisal.designation}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-gray-700 cursor-pointer">
                                     <button

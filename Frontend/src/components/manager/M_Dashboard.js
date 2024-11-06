@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
+import { Calendar, Target } from "lucide-react";
 
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -121,8 +122,10 @@ const M_Dashboard = () => {
       .split(' ')
       .map(word => word[0])
       .join('')
-      .toUpperCase();
+      .toUpperCase()
+      .slice(0, 2);
   };
+  
 
   const bgColors = [
     'bg-blue-500',
@@ -135,6 +138,7 @@ const M_Dashboard = () => {
   return (
     <div className="flex flex-1 items-start mt-20 ml-6">
       <div className='w-10/12'>
+
         <div>
           <label className='font-bold text-4xl w-full ml-2 mb-4 text-indigo-800'>{wishing()}</label>
           <label className='ml-2 text-3xl font-bold text-teal-600'>
@@ -182,7 +186,7 @@ const M_Dashboard = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500"> 
+                  <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
                     No appraisals found for this user.
                   </td>
                 </tr>
@@ -191,8 +195,55 @@ const M_Dashboard = () => {
           </table>
           <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         </div>
+        {/* Cards Grid with improved spacing */}
+        <div className="grid gap-6  lg:grid-cols-4 mb-8 mt-10 ml-4">
+          {/* Appraisal Cycle Card */}
+          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-orange-300 shadow-sm hover:shadow-md transition-shadow">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
+                <h2 className="font-semibold text-gray-800">Appraisal Cycle</h2>
+              </div>
+              <div className="space-y-3">
+                {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
+                  <div className="bg-orange-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600">Due Date</p>
+                    <p className="font-medium text-gray-800">{appraisalDueDate.toLocaleDateString()}</p>
+                  </div>
+                ) : (
+                  <div className="bg-orange-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600">Cycle Period</p>
+                    <p className="font-medium text-gray-800">{appraisalStartDate} to {appraisalEndDate}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-        <div className="mt-8 ml-4 w-3/5 p-4 bg-gray-100 border border-gray-300 shadow-lg rounded-lg">
+          {/* Goal Setting Card */}
+          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-green-400 shadow-sm hover:shadow-md transition-shadow">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <Target className="h-5 w-5 text-green-500 mr-2" />
+                <h2 className="font-semibold text-gray-800">Goal Setting</h2>
+              </div>
+              <div className="space-y-3">
+                {currentDate >= goalSettingVisibleStart && currentDate <= goalSettingDueDate ? (
+                  <div className="bg-green-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600">Due Date</p>
+                    <p className="font-medium text-gray-800">{goalSettingDueDate.toLocaleDateString()}</p>
+                  </div>
+                ) : (
+                  <div className="bg-green-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600">Setting Period</p>
+                    <p className="font-medium text-gray-800">{goalSettingStartDate} to {goalSettingEndDate}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* <div className="mt-8 ml-4 w-3/5 p-4 bg-gray-100 border border-gray-300 shadow-lg rounded-lg">
           <h2 className="text-2xl font-bold text-white bg-indigo-600 p-2 rounded mb-4">Important Dates</h2>
           {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
             <p className="text-md mb-2">
@@ -221,9 +272,8 @@ const M_Dashboard = () => {
           <p className="mt-6 text-sm text-gray-600">
             Ensure your goals for the upcoming year are set during the designated period to align with organizational objectives.
           </p>
-        </div>
+        </div> */}
       </div>
-
       <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
         <aside className="bg-white p-6 shadow-lg">
           <div className="sticky top-0 bg-white pb-2 z-10">
@@ -242,6 +292,7 @@ const M_Dashboard = () => {
                   </div>
                 </div>
               ))}
+
             </div>
           </div>
         </aside>
