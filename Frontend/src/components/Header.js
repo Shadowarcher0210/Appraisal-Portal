@@ -107,6 +107,7 @@ const Header = () => {
         >
           Dashboard
         </div>
+        
         <div
           className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
           onClick={() => handleTabClick('performance', '/employee-performance')}
@@ -127,13 +128,19 @@ const Header = () => {
           className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
           onClick={() => handleTabClick('myPerformance', '/manager-my-performance')}
         >
-          my Performance
+          My Performance
         </div>
         <div
           className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
           onClick={() => handleTabClick('performance', '/manager-performance')}
         >
           Performance
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'goals' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('goals', '/manager-Goals')}
+        >
+          Employee Goals
         </div>
       </div>
       )}
