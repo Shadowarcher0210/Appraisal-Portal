@@ -77,7 +77,7 @@ const M_myPerformance = () => {
             <div>
                 <label className='font-bold text-4xl w-full ml-2 mb-4'></label>
                 <label className='ml-2 text-3xl font-bold text-orange-600'>
-                    Performance Insights
+                    My Performance Insights
                 </label>
                 <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your progress.</p>
             </div>
@@ -133,21 +133,23 @@ const M_myPerformance = () => {
                             </tbody>
                         </table>
                     </div>
-                    <div className="flex justify-between mt-5 ml-2 mr-8">
+
+
+                    {/* <div className="flex justify-between mt-5 ml-2 mr-8">
                         {/* Previous Year Goals Section */}
-                        <div className="w-3/4 p-3 bg-white border shadow-md rounded-md">
-                            <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Goals for {previousYear}-{currentYear} </h2>
+                        {/* <div className="w-full p-3 bg-white border shadow-md rounded-md">
+                            <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Team Goals for {previousYear}-{currentYear} </h2>
 
 
                             {/* Manager Goals */}
-                            <div className="mb-2">
-                                <button
+                            {/* <div className="mb-2"> */}
+                                {/* <button
                                     onClick={() => toggleSection('manager')}
                                     className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                                 >
                                     <div className="flex items-center space-x-3">
                                         <Target className="h-6 w-6 text-blue-500" />
-                                        <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
+                                        <h3 className="text-lg font-semibold text-gray-700"> View Team Goals</h3>
                                     </div>
                                     {expandedSection === 'manager' ? (
                                         <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -167,15 +169,15 @@ const M_myPerformance = () => {
                                                     <span className="text-sm text-gray-500">Weight: 30%</span>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                                        ))} */}
+                                    {/* </div> */}
+                                {/* )} */}
+                            {/* </div> */}
 
-                        </div>
+                        {/* </div> */} 
 
                         {/* Recent Activities Section */}
-                        <div className="w-1/4 ml-4 max-h-96 bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                        {/* <div className="w-1/4 ml-4 max-h-96 bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4 ">Recent Activities</h2>
                             <div className="space-y-2">
                                 {recentActivities.map((activity, index) => (
@@ -191,9 +193,10 @@ const M_myPerformance = () => {
                                 <br />
 
                             </div>
-                        </div>
+                        </div> */}
 
-                    </div>
+                    {/* </div>  */}
+
 
                 </div>
 
