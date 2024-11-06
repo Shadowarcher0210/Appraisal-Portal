@@ -13,6 +13,7 @@ const timePeriod  = require('./routes/timePeriod');
 const performance = require('./routes/manager/PerformanceRoutes')
 const uploadAppraisalLetter  = require('./routes/uploadRouter');
 const sendConfirmationEmails = require('./routes/emailRouter');
+const m_Dashboard = require('./routes/manager/DashboardRoutes')
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/all', empRoutes)
 app.use('/time',timePeriod)
 app.use('/letter',uploadAppraisalLetter)
 app.use('/confirmationEmail',sendConfirmationEmails)
+app.use(m_Dashboard)
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
