@@ -1,7 +1,8 @@
 const express = require('express')
-const { EmployeeGoals } = require('../../controllers/manager/Goals')
+const { postEmployeeGoals, getEmployeeGoals } = require('../../controllers/manager/Goals')
 
 const router = express.Router()
-router.post('/:employeeId', EmployeeGoals)
+router.post('/:employeeId/:startDate/:endDate', postEmployeeGoals)
+router.get('/:employeeId/:startDate/:endDate', getEmployeeGoals)
 
 module.exports=router
