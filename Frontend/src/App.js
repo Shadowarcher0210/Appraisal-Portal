@@ -19,6 +19,7 @@ import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
 import M_Performance from './components/manager/M_Performance.js';
 import M_myPerformance from './components/manager/M_myPerformance.js';
+import M_ViewPage from './components/manager/M_ViewPage.js';
 
 const App = () => {
   const location = useLocation();
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/manager-dashboard" element={<M_Dashboard/>} />
           <Route path='/manager-performance' element={<M_Performance/>}/>
           <Route path='/manager-my-performance' element={<M_myPerformance/>}/>
+          <Route path='/manager-viewPage' element= {<M_ViewPage/>}/>
           
           
      

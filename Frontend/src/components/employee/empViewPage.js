@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
@@ -152,7 +151,10 @@ const {timePeriod}=location.state || {}
           <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
           <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
           <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
-        </tr>
+          {formData && formData[0] && formData[0].managerName && (
+  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager's Evaluation</th>
+)}
+       </tr>
       </thead>
       <tbody>
         {questionsAndAnswers.map((item, index) => {
