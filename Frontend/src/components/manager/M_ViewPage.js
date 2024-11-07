@@ -4,7 +4,7 @@ import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide
 import tick from '../../assets/tick.svg'
 import { useLocation } from 'react-router-dom';
 
-const EmpViewPage = () => {
+const M_ViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
@@ -226,4 +226,4 @@ const EmpViewPage = () => {
   );
 };
 
-export default EmpViewPage;
+export default M_ViewPage;

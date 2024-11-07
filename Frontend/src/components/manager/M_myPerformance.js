@@ -1,22 +1,16 @@
 import axios from 'axios';
-import { ChevronDown, ChevronUp, Target } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 
 const M_myPerformance = () => {
     const [selectedYear, setSelectedYear] = useState(null);
-    const [academicYears, setAcademicYears] = useState([]);
-    const [openMenuIndex, setOpenMenuIndex] = useState(null);
+    const [, setAcademicYears] = useState([]);
+    const [, setOpenMenuIndex] = useState(null);
     const [appraisals, setAppraisals] = useState(null);
-    const [expandedSection, setExpandedSection] = useState('manager');
     const employeeName = localStorage.getItem('empName');
     const navigate = useNavigate();
-    const currentYear = new Date().getFullYear();
-    const previousYear = currentYear - 1;
-    const toggleSection = (section) => {
-        setExpandedSection(expandedSection === section ? null : section);
-    };
+
 
     useEffect(() => {
         const currentYear = new Date().getFullYear();
@@ -57,7 +51,7 @@ const M_myPerformance = () => {
     const handleViewClick = (appraisal) => {
         console.log("Navigating to view");
         const { employeeId, timePeriod } = appraisal;
-        navigate(`/empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}`, { state: { timePeriod } });
+        navigate(`/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}`, { state: { timePeriod } });
         handleCloseMenu();
     };
 
@@ -66,20 +60,15 @@ const M_myPerformance = () => {
         return date.toISOString().split('T')[0];
     };
 
-    const recentActivities = [
-        { action: "Goals approved by manager", type: "success" },
-        { action: "Self-assessment submitted", type: "info" },
-        { action: "Review meeting scheduled", type: "warning" },
-    ];
+  
 
     return (
         <div className="justify-center items-start mt-20 ml-6">
             <div>
-                <label className='font-bold text-4xl w-full ml-2 mb-4'></label>
                 <label className='ml-2 text-3xl font-bold text-orange-600'>
                     My Performance Insights
                 </label>
-                <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your progress.</p>
+                <p className='ml-2 mt-3 text-gray-500 font-medium'>Key metrics and trends to guide your progress.</p>
             </div>
 
             <div className="flex-1 flex ">
@@ -88,13 +77,14 @@ const M_myPerformance = () => {
                 <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
 
                     <div className="w-12/12 p-3 bg-white border shadow-md rounded-md ml-2 mr-8">
-                        <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Preceding Appraisals</h2>
+                        <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-4">Preceding Appraisals</h2>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-00 uppercase tracking-wider">Employee name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Employee name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Assessment Year</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Initiated On</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Reporting Manager</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -119,7 +109,7 @@ const M_myPerformance = () => {
                                                 {appraisal.status}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-blue-900 hover:text-blue-700 cursor-pointer">
-                                                <button className='bg-blue-600 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16' onClick={() => handleViewClick(appraisal)}>View</button>
+                                                <button className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16' onClick={() => handleViewClick(appraisal)}>View</button>
                                             </td>
                                         </tr>
                                     ))

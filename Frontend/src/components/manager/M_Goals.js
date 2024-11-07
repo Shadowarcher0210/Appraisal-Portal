@@ -145,7 +145,7 @@ const M_Goals = () => {
               onClick={() => toggleEmployee(employee.id)}
             >
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-inner">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-800 to-cyan-500 rounded-lg flex items-center justify-center text-white shadow-inner">
                   <Users className="w-6 h-6" />
                 </div>
                 <div>
@@ -166,7 +166,7 @@ const M_Goals = () => {
                     setEditingGoal(null);
                     setShowGoalForm(true);
                   }}
-                  className="flex items-center px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm"
+                  className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Goal
@@ -178,7 +178,7 @@ const M_Goals = () => {
                       handleSubmitGoals(employee.id);
                     }}
                     disabled={submitting[employee.id]}
-                    className="flex items-center px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm disabled:opacity-50"
+                    className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
                   >
                     <Send className="w-4 h-4 mr-2" />
                     {submitting[employee.id] ? 'Submitting...' : 'Submit Goals'}
@@ -207,7 +207,7 @@ const M_Goals = () => {
                               <div className="p-2 bg-blue-50 rounded-lg">
                                 {categoryIcons[goal.category]}
                               </div>
-                              <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
+                              <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
                                 {goal.category}
                               </span>
                             </div>
@@ -216,13 +216,13 @@ const M_Goals = () => {
                                 e.stopPropagation();
                                 handleEditGoal(employee.id, goal);
                               }}
-                              className="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                              className="p-2 text-gray-400 hover:text-cyan-900 transition-colors duration-200"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                           </div>
                           
-                          <h4 className="text-lg font-medium text-gray-900 mb-3 line-clamp-2">
+                          <h4 className="text-lg font-medium text-gray-900 mb-3 ">
                             {goal.description}
                           </h4>
 
@@ -297,7 +297,7 @@ const M_Goals = () => {
                     Description
                   </label>
                   <textarea 
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                    className="w-full p-3 border rounded-lg resize-none"
                     value={goalFormData.description}
                     onChange={e => setGoalFormData({...goalFormData, description: e.target.value})}
                     rows="3"
@@ -311,7 +311,7 @@ const M_Goals = () => {
                     </label>
                     <input 
                       type="number"
-                      className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border rounded-lg "
                       value={goalFormData.weight}
                       onChange={e => setGoalFormData({...goalFormData, weight: e.target.value})}
                       min="0"
@@ -324,7 +324,7 @@ const M_Goals = () => {
                     </label>
                     <input 
                       type="date"
-                      className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-2 border rounded-lg"
                       value={goalFormData.deadline}
                       onChange={e => setGoalFormData({...goalFormData, deadline: e.target.value})}
                     />
@@ -343,7 +343,7 @@ const M_Goals = () => {
                 </button>
                 <button 
                   onClick={handleAddGoal}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center"
+                  className="px-4 py-2 bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 flex items-center"
                 >
                     {editingGoal ? 'Save Changes' : 'Add Goal'}
                   <ArrowRight className="w-4 h-4 ml-2" />

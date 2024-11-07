@@ -20,7 +20,8 @@ const getEmployeeAppraisals = async (req, res) => {
         console.error("Error fetching appraisals:", error);
         res.status(500).json({ success: false, message: "Failed to fetch appraisals" });
     }
-};
+}
+
 
 const managerEvaluation = async (req, res) => {
     const { employeeId, timePeriod, empScore } = req.body;

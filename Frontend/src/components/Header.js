@@ -10,6 +10,7 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'dashboard');
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);
+  const [notiStartsNotification, setNotiStartsNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -54,29 +55,75 @@ const Header = () => {
     };
   }, []);
 
+  // const fetchNotifications = async () => {
+  //   const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
+
+  //   if (!employeeId) {
+  //     console.warn('No employeeId found in localStorage');
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const [expiryResponse, submitResponse] = await Promise.all([
+  //       axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`),
+  //       axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`),
+        
+  //     ]);
+
+  //     if (expiryResponse.data?.data?.message) {
+  //       setAppraisalNotification(expiryResponse.data.data.message);
+  //     }
+
+  //     if (submitResponse.data?.message) {
+  //       setSubmitNotification(submitResponse.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching notifications:', error);
+  //     setError(error.response?.data?.message || 'Failed to fetch notifications');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (showNotificationDropdown) {
+  //     fetchNotifications();
+  //   }
+  // }, [showNotificationDropdown]);
+
+
+
   const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
-
+  
     if (!employeeId) {
       console.warn('No employeeId found in localStorage');
       return;
     }
-
+  
     setIsLoading(true);
     setError(null);
-
+  
     try {
-      const [expiryResponse, submitResponse] = await Promise.all([
+      const [expiryResponse, submitResponse, notiStartsResponse] = await Promise.all([
         axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`),
-        axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`)
+        axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`),
+        axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`) // New API call added
       ]);
-
+  
       if (expiryResponse.data?.data?.message) {
         setAppraisalNotification(expiryResponse.data.data.message);
       }
-
+  
       if (submitResponse.data?.message) {
         setSubmitNotification(submitResponse.data.message);
+      }
+  
+      if (notiStartsResponse.data?.message) {
+        setNotiStartsNotification(notiStartsResponse.data.message); // Assuming you're storing this
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -85,12 +132,13 @@ const Header = () => {
       setIsLoading(false);
     }
   };
-
+  
   useEffect(() => {
     if (showNotificationDropdown) {
       fetchNotifications();
     }
   }, [showNotificationDropdown]);
+  
 
   const empInitial = employeeName.charAt(0).toUpperCase();
 
@@ -224,10 +272,16 @@ const Header = () => {
                       <p className="text-md">{submitNotification}</p>
                     </div>
                   )}
+
+{notiStartsNotification && (
+  <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
+    <p className="text-md">{notiStartsNotification}</p>
+  </div>
+)}
                 </>
               )}
 
-              {!isLoading && !error && !appraisalNotification && !submitNotification && (
+              {!isLoading && !error && !appraisalNotification && !submitNotification && !notiStartsNotification &&   (
                 <div className="text-center">
                   <p className="text-gray-600 mb-6">No notifications available</p>
                   <div className="flex items-center justify-center h-full">

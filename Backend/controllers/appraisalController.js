@@ -322,19 +322,21 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             });
         }
 
-        const formattedEndDate = endDateTime.toISOString().split('T')[0];
-        const formattedNotificationDate = notificationDate.toISOString().split('T')[0];
+        const endDate = new Date(appraisal.timePeriod[1]);
 
-        let message = null;
+       
+        const oneWeekBefore = new Date(endDate);
+        oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
 
-        if (today >= endDateTime) {
-            message = `Your appraisal has expired. End date was: ${formattedEndDate}`;
-        } else if (today >= notificationDate) {
-            const daysRemaining = Math.ceil((endDateTime - today) / (1000 * 60 * 60 * 24));
-            message = `Your appraisal will expire in ${daysRemaining} days. End date: ${formattedEndDate}`;
-        } else {
-            message = `Your appraisal is active. End date: ${formattedEndDate}`;
-        }
+       
+        const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+
+        let message;
+        let notificationStatus;
+
+        if (today >= oneWeekBefore) {
+            message = `Your appraisal will expire in ${daysRemaining} days. End Date: ${endDate.toISOString().split('T')[0]} `;
+        } 
 
         return res.status(200).json({
             success: true,
@@ -402,9 +404,17 @@ const getApplicationNotification = async (req, res) => {
         if (appraisal.status === 'Submitted') {
             return res.status(200).json({
                 success: true,
-                message: `Your appraisal for the period ${formattedStartDate} to ${formattedEndDate} has been submitted successfully.`,
+                message: `Your appraisal has been submitted successfully on ${formattedStartDate}.`,
                 employeeId,
-            });
+            })
+        }
+        else if (appraisal.status === 'Completed'){
+            const managerName = appraisal.managerName || 'the manager';
+            return res.status(200).json({
+                sucess:true,
+                message:`Your Appraisal has been approved by ${managerName}`,
+                employeeId,
+            })
         }
 
         return res.status(200).json({
@@ -424,5 +434,74 @@ const getApplicationNotification = async (req, res) => {
     }
 };
 
+const getApplicationNotificationStarts = async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+        
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
 
-module.exports = {getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
+        const appraisal = await Appraisal.findOne({
+            employeeId,
+            timePeriod: {
+                $elemMatch: {
+                    $gte: currentDate,
+                }
+            }
+        });
+
+        if (!appraisal) {
+            return res.status(200).json({
+                success: true,
+                shouldNotify: false,
+                message: 'No upcoming appraisals for the employee.'
+            });
+        }
+
+        const appraisalStartDate = new Date(appraisal.timePeriod[0]);
+        const appraisalEndDate = new Date(appraisal.timePeriod[1]);
+
+        const timeDifference = appraisalStartDate - currentDate;
+        const daysUntilStart = Math.floor(timeDifference / (1000 * 60 * 60 * 24)); 
+        
+       
+        if (daysUntilStart === 30) {
+            const formattedStartDate = appraisalStartDate.toISOString().split('T')[0];
+            const formattedEndDate = appraisalEndDate.toISOString().split('T')[0];
+
+            const message = `Your appraisal cycle starts in 30 days for the period ${formattedStartDate} to ${formattedEndDate}.`;
+
+            return res.status(200).json({
+                message,
+            });
+        }
+
+        if (daysUntilStart === 10) {
+            const formattedStartDate = appraisalStartDate.toISOString().split('T')[0];
+            const formattedEndDate = appraisalEndDate.toISOString().split('T')[0];
+
+            const message = `Your appraisal cycle starts in 10 days for the period ${formattedStartDate} to ${formattedEndDate}.`;
+
+            return res.status(200).json({
+                message,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            shouldNotify: false,
+            // message: 'No notifications due at the moment.'
+        });
+
+    } catch (error) {
+        console.error('Error fetching application notification:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetch application notification.'
+        });
+    }
+};
+
+
+
+module.exports = {getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}

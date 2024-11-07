@@ -54,4 +54,53 @@ const sendConfirmationEmails = async (req, res) => {
 
 };
 
-module.exports = { sendConfirmationEmails };
+
+const sendCompletedEmails = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const currentDate = new Date().toLocaleDateString();
+    const presentYear = new Date().getFullYear();
+    const nextYear = presentYear + 1;
+
+    const userMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Appraisal Completed Confirmation',
+      html: `Dear ${user.empName},<br><br>
+             This is a system-generated email to inform you that your appraisal has been completed and approved on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
+             Your performance evaluation has been finalized, and your manager will contact you for further actions.<br><br>
+             Thank you for your contribution! If you have any questions, feel free to reach out to HR.<br><br>
+             Best regards,<br>
+             BlueSpire`
+    };
+
+ 
+    await transporter.sendMail(userMailOptions);
+
+    return res.status(200).json({ message: 'Emails sent successfully' });
+
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    return res.status(500).json({ message: 'Error sending emails' });
+  }
+};
+
+module.exports ={sendConfirmationEmails,sendCompletedEmails};
