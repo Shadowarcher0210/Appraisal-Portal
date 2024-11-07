@@ -49,41 +49,30 @@ const EmpForm = () => {
     }
   };
 
-  // const updateWeight = (index, percentage) => {
-  //   const newWeights = [...weights];
-  //   newWeights[index] = percentage;
-  //   setWeights(newWeights);
-  //   console.log("updating weights", newWeights)
-  // };
 
-  // const saveNotes = (index, data) => {
-  //   const newNotes = [...notes];
-  //   newNotes[index] = data;
-  //   setNotes(newNotes);
-  // };
 
-const updateWeight = (indexOrArray, value) => {
-  if (Array.isArray(indexOrArray)) {
-    setWeights(indexOrArray);
-  } else {
-    const newWeights = [...weights];
-    newWeights[indexOrArray] = value;
-    setWeights(newWeights);
-  }
-  console.log("updating weights", weights);
-};
+  const updateWeight = (indexOrArray, value) => {
+    if (Array.isArray(indexOrArray)) {
+      setWeights(indexOrArray);
+    } else {
+      const newWeights = [...weights];
+      newWeights[indexOrArray] = value;
+      setWeights(newWeights);
+    }
+    console.log("updating weights", weights);
+  };
 
-const saveNotes = (indexOrArray, value) => {
-  if (Array.isArray(indexOrArray)) {
-    setNotes(indexOrArray);
-  } else {
-    const newNotes = [...notes];
-    newNotes[indexOrArray] = value;
-    setNotes(newNotes);
-  }
-};
+  const saveNotes = (indexOrArray, value) => {
+    if (Array.isArray(indexOrArray)) {
+      setNotes(indexOrArray);
+    } else {
+      const newNotes = [...notes];
+      newNotes[indexOrArray] = value;
+      setNotes(newNotes);
+    }
+  };
 
- const handleGoalChange = (index, value) => {
+  const handleGoalChange = (index, value) => {
     const updatedAnswers = [...goalAnswers];
     updatedAnswers[index].answer = value;
     setGoalAnswers(updatedAnswers);
@@ -100,8 +89,8 @@ const saveNotes = (indexOrArray, value) => {
     }
   };
 
-  const handleSave = async() => {
-    try {     
+  const handleSave = async () => {
+    try {
       const employeeId = localStorage.getItem('employeeId');
       const updatedPageData = {
         ...pageData,
@@ -115,29 +104,30 @@ const saveNotes = (indexOrArray, value) => {
           "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({ updatedPageData }),
-        status: "In Progress" 
+        status: "In Progress"
       })
-		
+
 
       if (response.ok) {
         console.log('response', response);
         const data = await response.json();
-				console.log("data", data);
+        console.log("data", data);
         navigate("/employee-dashboard");
-        
+
       } else {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
-			  
-      }}
 
-      catch{
-        if (activeTab === 1) {
-          setSelfAppraisalPage(1);
-        }
       }
     }
-  
+
+    catch {
+      if (activeTab === 1) {
+        setSelfAppraisalPage(1);
+      }
+    }
+  }
+
   const handlePreviousForm = () => {
     if (selfAppraisalPage > 0) {
       setSelfAppraisalPage(selfAppraisalPage - 1);
@@ -176,11 +166,11 @@ const saveNotes = (indexOrArray, value) => {
       answer: getAnswerFromWeight(weights[0]),
       notes: notes[0]
     },
- 
+
     {
       questionId: 2,
-      question:     "Team-work:I work effectively and efficiently with team.",
-    
+      question: "Team-work:I work effectively and efficiently with team.",
+
       answer: getAnswerFromWeight(weights[1]),
       notes: notes[1]
     },
@@ -190,7 +180,7 @@ const saveNotes = (indexOrArray, value) => {
       answer: getAnswerFromWeight(weights[2]),
       notes: notes[2]
     },
-  
+
     // Competency Questions
     {
       questionId: 4,
@@ -200,7 +190,7 @@ const saveNotes = (indexOrArray, value) => {
     },
     {
       questionId: 5,
-      question:"Leadership: I like to take responsibility in managing the team.",
+      question: "Leadership: I like to take responsibility in managing the team.",
 
       answer: getAnswerFromWeight(weights[4]),
       notes: notes[4]
@@ -219,7 +209,7 @@ const saveNotes = (indexOrArray, value) => {
     },
     {
       questionId: 8,
-      question:  "Time Management: I complete my tasks on time.",
+      question: "Time Management: I complete my tasks on time.",
       answer: getAnswerFromWeight(weights[7]),
       notes: notes[7]
     },
@@ -243,7 +233,7 @@ const saveNotes = (indexOrArray, value) => {
     },
     {
       questionId: 12,
-      question:"Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
+      question: "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
 
       answer: getAnswerFromWeight(weights[11]),
       notes: notes[11]
@@ -264,24 +254,24 @@ const saveNotes = (indexOrArray, value) => {
       questionId: goal.questionId,
       question: goal.question,
       answer: goalAnswers[index]?.answer || "No Response",
-      notes: notes[index + 13], 
+      notes: notes[index + 13],
     })),
-    
-  ];
- 
 
- const handleConfirmSubmit = async () => {
+  ];
+
+
+  const handleConfirmSubmit = async () => {
     setIsModalOpen(false);
     setIsThankYouModalOpen(true);
     if (!token) {
       console.log("No token found. Please log in.");
       return;
     }
-    
 
-    try {     
+
+    try {
       const employeeId = localStorage.getItem('employeeId');
-      const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {								  
+      const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
@@ -349,31 +339,23 @@ const saveNotes = (indexOrArray, value) => {
             handlePreviousForm={handlePreviousForm}
             handleSave={handleSave}
             handleSubmit={() => setIsModalOpen(true)}
-			  
+
           />
         )}
-        {/* {activeTab === 2 && (
-          <Goals2
-            goalsResponse={goalsResponse}
-            goalAnswers={goalAnswers}
-            handleGoalChange={handleGoalChange}
-            handlePreviousForm={handlePreviousForm}
-            handleSubmit={() => setIsModalOpen(true)}
-          />
-        )} */}
-						
-     </div>
- {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-  <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-        <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 text-center">
-            Submit Appraisal
-          </h2>
-          
-          <p className="mt-3 text-gray-600 text-center">
-            Are you sure you want to submit your appraisal?
-          </p>
+
+
+      </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 text-center">
+                Submit Appraisal
+              </h2>
+
+              <p className="mt-3 text-gray-600 text-center">
+                Are you sure you want to submit your appraisal?
+              </p>
               <div className="mt-6 flex justify-center space-x-4">
                 <button
                   className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
@@ -399,18 +381,18 @@ const saveNotes = (indexOrArray, value) => {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <p className="my-3 text-gray-600 text-center">
-               Thank you for your submission!</p>
-              <div className="mt-4 flex justify-center">
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"
-                  onClick={closeThankYouModal}
-                >
-                  Close
-                </button>
-              </div>
+              Thank you for your submission!</p>
+            <div className="mt-4 flex justify-center">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"
+                onClick={closeThankYouModal}
+              >
+                Close
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };

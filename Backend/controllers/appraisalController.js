@@ -1,6 +1,4 @@
-const mongoose = require('mongoose')
 const Appraisal = require('../models/Appraisal');
-const FormAnswers = require('../models/FormAnswers')
 const Employee = require('../models/User')
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -10,7 +8,7 @@ app.use(bodyParser.json())
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { pageData } = req.body;
-    const isExit = req.query.isExit === 'true'; 
+    const isExit = req.query.isExit === 'true';
     try {
         if (!employeeId) {
             return res.status(400).send({ error: 'User ID is required' });
@@ -27,7 +25,7 @@ const saveAppraisalDetails = async (req, res) => {
         }
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
-        const newStatus = isExit ? 'In Progress' : 'Submitted'; 
+        const newStatus = isExit ? 'In Progress' : 'Submitted';
         const updatedAppraisal = await Appraisal.findOneAndUpdate(
             {
                 employeeId: employeeId,
@@ -55,68 +53,68 @@ const saveAppraisalDetails = async (req, res) => {
 };
 
 const updateAppraisalStatus = async (req, res) => {
-    const { employeeId, startDate, endDate } = req.params; 
-    const { status } = req.body; 
-  
+    const { employeeId, startDate, endDate } = req.params;
+    const { status } = req.body;
+
     try {
-      if (!employeeId) {
-        return res.status(400).send({ error: "employeeId is required" });
-      }
-  
-      if (!startDate || !endDate) {
-        return res.status(400).send({ error: "A valid start and end date are required." });
-      }
-  
-      const timePeriod = [new Date(startDate), new Date(endDate)];
-  
-      const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Completed"];
-      if (!validStatuses.includes(status)) {
-        return res.status(400).send({ error: "Invalid status value provided" });
-      }
-  
-      const appraisal = await Appraisal.findOneAndUpdate(
-        {
-          employeeId: employeeId,
-          timePeriod: { $all: timePeriod },
-        },
-        { status: status }, 
-        {
-          new: true, 
-          fields: {
-            _id: 0,
-            timePeriod: 1,
-            initiatedOn: 1,
-            managerName: 1,
-            depName: 1,
-            empScore: 1,
-            status: 1,
-          },
+        if (!employeeId) {
+            return res.status(400).send({ error: "employeeId is required" });
         }
-      );
-  
-      if (!appraisal) {
-        return res.status(404).json({
-          message: "Appraisal not found for this employee and time period.",
+
+        if (!startDate || !endDate) {
+            return res.status(400).send({ error: "A valid start and end date are required." });
+        }
+
+        const timePeriod = [new Date(startDate), new Date(endDate)];
+
+        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Completed"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).send({ error: "Invalid status value provided" });
+        }
+
+        const appraisal = await Appraisal.findOneAndUpdate(
+            {
+                employeeId: employeeId,
+                timePeriod: { $all: timePeriod },
+            },
+            { status: status },
+            {
+                new: true,
+                fields: {
+                    _id: 0,
+                    timePeriod: 1,
+                    initiatedOn: 1,
+                    managerName: 1,
+                    depName: 1,
+                    empScore: 1,
+                    status: 1,
+                },
+            }
+        );
+
+        if (!appraisal) {
+            return res.status(404).json({
+                message: "Appraisal not found for this employee and time period.",
+            });
+        }
+
+        res.status(200).json({
+            message: "Appraisal status updated successfully!",
+            status: appraisal.status,
+            timePeriod: appraisal.timePeriod,
+            initiatedOn: appraisal.initiatedOn,
+            managerName: appraisal.managerName,
+            depName: appraisal.department,
+            empScore: appraisal.empScore,
+            pageData: appraisal.pageData,
         });
-      }
-  
-      res.status(200).json({
-        message: "Appraisal status updated successfully!",
-        status: appraisal.status,
-        timePeriod: appraisal.timePeriod,
-        initiatedOn: appraisal.initiatedOn,
-        managerName: appraisal.managerName,
-        depName: appraisal.department,
-        empScore: appraisal.empScore,
-        pageData: appraisal.pageData,
-      });
     } catch (error) {
-      console.error("Error updating appraisal status:", error);
-      res.status(500).send({ error: "Error updating appraisal status" });
+        console.error("Error updating appraisal status:", error);
+        res.status(500).send({ error: "Error updating appraisal status" });
     }
-  };
+};
 const getAppraisals = async (req, res) => {
-    const { employeeId } = req.params; 
+    const { employeeId } = req.params;
     try {
         const appraisals = await Appraisal.find({ employeeId: employeeId }, { timePeriod: 1, initiatedOn: 1, designation: 1, department: 1, managerName: 1, empScore: 1, status: 1, _id: 0 });
         const user = await Employee.findOne({ employeeId: employeeId }, { empName: 1 });
@@ -125,7 +123,7 @@ const getAppraisals = async (req, res) => {
         }
 
         console.log('Retrieved Appraisals:', appraisals);
-      //checking dep
+        //checking dep
         console.log("dep,", appraisals[0].department)
         if (appraisals.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });
@@ -160,22 +158,22 @@ const getAppraisals = async (req, res) => {
     }
 };
 const getAppraisalAnswers = async (req, res) => {
-    const { employeeId, startDate, endDate } = req.params; 
+    const { employeeId, startDate, endDate } = req.params;
     try {
 
-           const start = new Date(startDate).toISOString().split('T')[0]
-            const end = new Date(endDate).toISOString().split('T')[0]
+        const start = new Date(startDate).toISOString().split('T')[0]
+        const end = new Date(endDate).toISOString().split('T')[0]
 
         const appraisalAnswers = await Appraisal.find(
-            { 
-                employeeId: employeeId, 
-               "timePeriod.0": {$gte : start}, 
-                "timePeriod.1": {$lte : end}, 
-             },
-             { pageData:1, timePeriod:1,empName:1,designation:1,department:1,band:1,managerName:1 });
-     
-     
-             console.log('Retrieved Appraisals Answers:', appraisalAnswers);
+            {
+                employeeId: employeeId,
+                "timePeriod.0": { $gte: start },
+                "timePeriod.1": { $lte: end },
+            },
+            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1 });
+
+
+        console.log('Retrieved Appraisals Answers:', appraisalAnswers);
 
 
         if (appraisalAnswers.length === 0) {
@@ -183,12 +181,12 @@ const getAppraisalAnswers = async (req, res) => {
         }
         const responseData = appraisalAnswers.map(appraisal => ({
             employeeId,
-            empName:appraisal.empName,
-            designation:appraisal.designation,
+            empName: appraisal.empName,
+            designation: appraisal.designation,
             department: appraisal.department,
-            band:appraisal.band,
-            timePeriod:appraisal.timePeriod,
-            managerName:appraisal.managerName,
+            band: appraisal.band,
+            timePeriod: appraisal.timePeriod,
+            managerName: appraisal.managerName,
             pageData: appraisal.pageData
 
         }));
@@ -200,22 +198,22 @@ const getAppraisalAnswers = async (req, res) => {
 };
 
 //for performance tab
-const getEmployeeAppraisal = async (req,res)=>{
-    try{
-        const {employeeId} = req.params;
+const getEmployeeAppraisal = async (req, res) => {
+    try {
+        const { employeeId } = req.params;
         // const user = await Employee.findOne(employeeId, '-password');
-        const statuses = ['Submitted','Under Review','Completed'];
+        const statuses = ['Submitted', 'Under Review', 'Completed'];
         const appraisals = await Appraisal.find({
             employeeId,
             status: { $in: statuses },
-            
-          });
-          if (!appraisals.length) {
+
+        });
+        if (!appraisals.length) {
             return res.status(404).json({ message: 'No appraisals found.' });
-          }
-      
-          res.status(200).json(appraisals);
-    }catch(error){
+        }
+
+        res.status(200).json(appraisals);
+    } catch (error) {
         console.error('Error fetching appraisals:', error);
         res.status(500).json({ message: 'Server error', error });
     }
@@ -274,7 +272,7 @@ const createAppraisalForm = async (req, res) => {
 
 const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
-    
+
     try {
         const startDateTime = new Date(startDate);
         if (isNaN(startDateTime.getTime())) {
@@ -284,13 +282,28 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             });
         }
 
+
+        const endDateTime = new Date(startDateTime);
+        endDateTime.setDate(endDateTime.getDate() + 7);
+
+
+        startDateTime.setHours(0, 0, 0, 0);
+        endDateTime.setHours(0, 0, 0, 0);
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+
+
+        const notificationDate = new Date(endDateTime);
+        notificationDate.setDate(notificationDate.getDate() - 7);
 
         const query = {
             employeeId: employeeId,
             timePeriod: { $exists: true, $size: 2 }
         };
+
+        console.log('Checking appraisal for employeeId:', employeeId, 'with start date:', startDate);
+        console.log('Query:', JSON.stringify(query));
 
         const appraisal = await Appraisal.findOne(query).select({
             timePeriod: 1,
@@ -299,6 +312,8 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             empScore: 1,
             managerName: 1
         });
+
+        console.log('Found appraisal:', JSON.stringify(appraisal));
 
         if (!appraisal) {
             return res.status(404).json({
@@ -331,17 +346,17 @@ const sendExpiringAppraisalNotification = async (req, res) => {
                 message
             }
         });
-        
+
     } catch (error) {
         console.error('Error checking appraisal expiration:', error);
-        
+
         if (error.name === 'CastError') {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid user ID format'
             });
         }
-        
+
         return res.status(500).json({
             success: false,
             message: 'Error checking appraisal expiration',

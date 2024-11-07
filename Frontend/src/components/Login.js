@@ -22,6 +22,7 @@ const Login = () => {
       localStorage.setItem('employeeId', user.employeeId);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('empName',user.empName)
+      localStorage.setItem('managerName',user.managerName)
       localStorage.setItem('designation',user.designation)
       localStorage.setItem('empType',user.empType)
       if(user.empType === 'Employee'){

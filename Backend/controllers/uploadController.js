@@ -5,13 +5,13 @@ const path = require('path');
 
 const upload = multer({
     storage: multer.diskStorage({
-        destination: 'uploads/',  
+        destination: 'uploads/',
         filename: (req, file, cb) => {
             const originalName = file.originalname;
             cb(null, originalName);
         }
     })
-}).single('appraisalLetter');  // Single file upload named 'appraisalLetter'
+}).single('appraisalLetter');
 
 const uploadAppraisalLetter = async (req, res) => {
     upload(req, res, async (err) => {
@@ -20,7 +20,7 @@ const uploadAppraisalLetter = async (req, res) => {
         }
 
         const employeeId = req.employeeId;
-        console.log("employeeId",employeeId)
+        console.log("employeeId", employeeId)
         if (!employeeId) {
             return res.status(400).send({ error: 'User ID is required' });
         }
@@ -33,7 +33,7 @@ const uploadAppraisalLetter = async (req, res) => {
 
             const appraisalUpdate = await Appraisal.updateOne(
                 { employeeId },  // Find the appraisal record by employeeId
-                { appraisalLetter: req.file ? req.file.path : null }  
+                { appraisalLetter: req.file ? req.file.path : null }
             );
 
             if (appraisalUpdate.matchedCount === 0) {

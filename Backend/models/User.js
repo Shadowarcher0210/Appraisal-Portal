@@ -6,7 +6,7 @@ const userSchema = new mongose.Schema(
     employeeId: {
       type: String,
       require: [true, 'employee Id is required'],
-      unique:true
+      unique: true
     },
     empName: {
       type: String,

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
 import axios from 'axios';
+import { Calendar, Clock, User } from "lucide-react";
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [date] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
@@ -18,10 +18,10 @@ const Dashboard = () => {
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
 
-  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-  const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
-  const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
+  // const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
+  // const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
+  // const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
+  // const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
@@ -79,9 +79,6 @@ const Dashboard = () => {
     setModalOpen(false);
   };
 
-  const handleMenuClick = (index) => {
-    setOpenMenuIndex(openMenuIndex === index ? null : index);
-  };
 
 
   const handleButtonClick = async (appraisal) => {
@@ -109,92 +106,115 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="justify-center items-start mt-20 ml-6">
-      <div>
-        <label className='font-bold text-4xl w-full ml-2 mb-4'>{wishing()}</label>
-        <label className='ml-2 text-3xl font-bold text-orange-600'>
-          {employeeName}
-        </label>
-        <p className='ml-2 mt-3'>{formatDate(date)} <span> , </span>{formatTime(date)}</p>
+    <div className="min-h-screen bg-white">
+      {/* Header Section with improved layout */}
+      <div className="px-8 py-16 pt-20  bg-white ">
+        <div className=" mx-auto">
+          <div className="flex items-baseline space-x-2">
+            <h1 className="text-4xl font-bold">{wishing()}</h1>
+            <h2 className="text-3xl font-bold text-orange-600">{employeeName}</h2>
+          </div>
+          <div className="flex items-center mt-3 text-gray-600">
+            <Clock className="h-4 w-4 mr-2" />
+            <span>{formatDate(date)}</span>
+            <span className="mx-2">•</span>
+            <span>{formatTime(date)}</span>
+          </div>
+        </div>
       </div>
-      <br />
-      
-      <div className="w-12/12 p-4 bg-white border shadow-md rounded-md ml-4 mr-8">
-        <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Appraisal</h2>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-              <button className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</button>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {userData ? (
-              userData.map((appraisal, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.empName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                    {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.initiatedOn}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.managerName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">{appraisal.status}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                    <button 
-                      className='bg-blue-500 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16'
-                      onClick={() => handleButtonClick(appraisal)}
-                    >
-                      {appraisal.status === "Submitted" ? "View" : "Edit"}
-                    </button>
-                  </td>
+
+      {/* Main Content */}
+      <div className="  px-8 -mt-12">
+        {/* Cards Grid with improved spacing */}
+        <div className=" ">
+               {/* Appraisal Table Section */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8  border-b">
+          <div className=" py-4 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-white bg-orange-500 p-3 rounded">Appraisal</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
-                  No appraisals found for this user.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {userData ? (
+                  userData.map((appraisal, index) => (
+                    <tr key={index} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <User className="h-4 w-4 text-gray-400 mr-2" />
+                          <span className="text-sm text-gray-900">{appraisal.empName}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appraisal.initiatedOn}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appraisal.managerName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium
+                          ${appraisal.status === "Submitted" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {appraisal.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button 
+                          className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-4 py-2 text-sm transition-colors"
+                          onClick={() => handleButtonClick(appraisal)}
+                        >
+                          {appraisal.status === "Submitted" ? "View" : "Edit"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                      No appraisals found for this user.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+          {/* Appraisal Cycle Card */}
+          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-orange-300 shadow-sm hover:shadow-md transition-shadow w-80">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
+                <h2 className="font-semibold text-gray-800">Appraisal Cycle</h2><br/>
+               
+              </div>
+              <div className="space-y-3">
+                {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
+                  <div className="bg-orange-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600">Due Date</p>
+                    <p className="font-medium text-gray-800">{appraisalDueDate.toLocaleDateString()}</p>
+                  </div>
+                ) : (
+                  <div className="bg-orange-50 rounded-md p-4">
+                    <p className="text-sm text-gray-600 mb-2">Cycle Period</p>
+                    
+                    <p className="font-medium text-gray-700">{appraisalStartDate} to {appraisalEndDate}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+       
+        </div>
       </div>
-
-      <div className="mt-8 ml-4 w-3/5 p-4 bg-white border shadow-md rounded-md">
-        <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Important Dates</h2>
-        {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
-          <p className="text-md mb-2">
-            <span className="font-medium text-gray-700">Please complete your appraisal before: </span>
-            <span className="underline">{appraisalDueDate.toLocaleDateString()}</span>
-          </p>
-        ) : (
-          <p className="text-md mb-2">
-            <span className="font-medium p-2 text-gray-700">Appraisal Cycle: </span>
-            <span className="">{appraisalStartDate} to {appraisalEndDate}</span>
-          </p>
-        )}
-
-        {currentDate >= goalSettingVisibleStart && currentDate <= goalSettingDueDate ? (
-          <p className="text-md mb-2">
-            <span className="font-medium p-2 text-gray-700">Please complete your goal setting before: </span>
-            <span className="underline">{goalSettingDueDate.toLocaleDateString()}</span>
-          </p>
-        ) : (
-          <p className="text-md mb-2">
-            <span className="font-medium p-2 text-gray-700">Goal Setting: </span>
-            <span className="">{goalSettingStartDate} to {goalSettingEndDate}</span>
-          </p>
-        )}
-
-        <p className="mt-6 text-sm p-2">
-          Ensure your goals for the upcoming year are set during the designated period to align with organizational objectives.
-        </p>
-      </div>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

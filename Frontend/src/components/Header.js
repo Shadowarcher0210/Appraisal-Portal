@@ -14,6 +14,7 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+  const empType = localStorage.getItem('empType')
      
   const navigate = useNavigate();
 
@@ -146,6 +147,7 @@ const Header = () => {
       <div className="logo">
         <img src={logo} alt="Logo" className="h-8 w-auto" />
       </div>
+      {empType === 'Employee' &&(
       <div className="fixed ml-36 left-0  flex space-x-8 ">
         <div
           className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
@@ -153,13 +155,65 @@ const Header = () => {
         >
           Dashboard
         </div>
+        
         <div
           className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
-          onClick={() => handleTabClick('performance', '/performance')}
+          onClick={() => handleTabClick('performance', '/employee-performance')}
         >
           Performance
         </div>
       </div>
+      )}
+      {empType === 'Manager' &&(
+      <div className="fixed ml-36 left-0  flex space-x-8 ">
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('dashboard', '/manager-dashboard')}
+        >
+          Dashboard
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('myPerformance', '/manager-my-performance')}
+        >
+          My Performance
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('performance', '/manager-performance')}
+        >
+          Performance
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'goals' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('goals', '/manager-Goals')}
+        >
+          Employee Goals
+        </div>
+      </div>
+      )}
+      {empType === 'HR' &&(
+      <div className="fixed ml-36 left-0  flex space-x-8 ">
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'dashboard' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('dashboard', '/hr-dashboard')}
+        >
+          Dashboard
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('myPerformance', '/hr-performance')}
+        >
+          my Performance
+        </div>
+        <div
+          className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
+          onClick={() => handleTabClick('performance', '/hr-performance')}
+        >
+          Performance
+        </div>
+      </div>
+      )}
       <div className="header-right flex items-center ml-5">
         <div className="relative mr-4" ref={notificationRef}>
           <button

@@ -76,7 +76,7 @@ const PreviousGoalsSection = ({ initialData = {} }) => {
   return (
     <div className="w-12/12 p-4 bg-white border shadow-md rounded-md ml-4 mr-8 mt-8">
       <h2 className="text-2xl font-bold text-white bg-blue-500 p-2 rounded mb-6">Previous Year Goals</h2>
-      
+
       {/* Year Tabs */}
       <div className="flex space-x-2 mb-6">
         {Object.keys(yearlyGoals).map((year) => (
@@ -84,8 +84,8 @@ const PreviousGoalsSection = ({ initialData = {} }) => {
             key={year}
             onClick={() => setSelectedYear(year)}
             className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-200 
-              ${selectedYear === year 
-                ? 'bg-blue-500 text-white' 
+              ${selectedYear === year
+                ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
             {year}

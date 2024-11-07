@@ -7,8 +7,6 @@ const UserModel = require('../models/User');
 const registerUser = async (req, res) => {
   try {
     const { employeeId, empName, email, password, doj, managerName, designation, department, band, gender, empType } = req.body;
-
-
     if (!employeeId || !empName || !email || !password || !doj || !managerName || !designation || !department || !band || !gender || !empType) {
       return res.status(500).send({
         success: false,
@@ -61,20 +59,14 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body; // Extract email and password from the request body
-
-    // Validate that email and password are provided
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Email and password are required',
       });
     }
-
-    // Fetch the user based on email
     const user = await Employee.findOne({ email });
-
-    // Check if user exists
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -82,7 +74,6 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Compare the provided password with the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
@@ -116,7 +107,6 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Find the user by email
     const user = await UserModel.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -130,7 +120,6 @@ const forgotPassword = async (req, res) => {
       expiresIn: '7d',
     });
 
-    // Set up nodemailer transport
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
