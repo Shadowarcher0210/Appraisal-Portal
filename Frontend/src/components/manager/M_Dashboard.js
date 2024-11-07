@@ -6,11 +6,10 @@ import { Calendar, Target } from "lucide-react";
 
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  // const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [date] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
-
+  const [employees, setEmployees] = useState([]);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const navigate = useNavigate();
@@ -24,19 +23,7 @@ const M_Dashboard = () => {
   const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
   const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
-  const Names = [
-    " Madhulika",
-    " Mounika Bai Thakur",
-    " Surya Selvam",
-    " Venkatesh.",
-    " Naveen",
-    " Prince Nathan",
-    " Kavya Ummala",
-    " Lalitha ",
-    " Saila sree",
-    " Jagadeesh",
-    " Arjun chandra",
-  ]
+
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
@@ -65,11 +52,27 @@ const M_Dashboard = () => {
       console.log('User ID not found in local storage.');
     }
   };
+  const allEmployees = async () => {
+    const managerName = localStorage.getItem('empName')
+    if (managerName) {
+      try {
+        const response = await axios.get(`http://localhost:3003/employees/${managerName}`)
+        setEmployees(response.data.data);
+
+        console.log('Employee List :', response.data.data)
+      } catch (error) {
+        console.error('Error fetching employees in  Dashboard page :', error)
+      }
+    }
+  }
 
   useEffect(() => {
     fetchAppraisalDetails();
+    allEmployees();
   }, []);
 
+  // END POINT for fetching all employees 
+  
   const wishing = () => {
     const hour = date.getHours();
     if (hour < 12) return 'Good Morning';
@@ -125,7 +128,7 @@ const M_Dashboard = () => {
       .toUpperCase()
       .slice(0, 2);
   };
-  
+
 
   const bgColors = [
     'bg-blue-500',
@@ -243,36 +246,6 @@ const M_Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* <div className="mt-8 ml-4 w-3/5 p-4 bg-gray-100 border border-gray-300 shadow-lg rounded-lg">
-          <h2 className="text-2xl font-bold text-white bg-indigo-600 p-2 rounded mb-4">Important Dates</h2>
-          {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
-            <p className="text-md mb-2">
-              <span className="font-medium text-gray-800">Please complete your appraisal before: </span>
-              <span className="underline text-red-600">{appraisalDueDate.toLocaleDateString()}</span>
-            </p>
-          ) : (
-            <p className="text-md mb-2">
-              <span className="font-medium text-gray-800">Appraisal Cycle: </span>
-              <span className="text-indigo-700">{appraisalStartDate} to {appraisalEndDate}</span>
-            </p>
-          )}
-
-          {currentDate >= goalSettingVisibleStart && currentDate <= goalSettingDueDate ? (
-            <p className="text-md mb-2">
-              <span className="font-medium text-gray-800">Please complete your goal setting before: </span>
-              <span className="underline text-red-600">{goalSettingDueDate.toLocaleDateString()}</span>
-            </p>
-          ) : (
-            <p className="text-md mb-2">
-              <span className="font-medium text-gray-800">Goal Setting: </span>
-              <span className="text-indigo-700">{goalSettingStartDate} to {goalSettingEndDate}</span>
-            </p>
-          )}
-
-          <p className="mt-6 text-sm text-gray-600">
-            Ensure your goals for the upcoming year are set during the designated period to align with organizational objectives.
-          </p>
-        </div> */}
       </div>
       <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
         <aside className="bg-white p-6 shadow-lg">
@@ -282,13 +255,13 @@ const M_Dashboard = () => {
 
           <div className="bg-gray-50 rounded-md p-4 mt-4">
             <div className="space-y-3">
-              {Names.map((name, index) => (
+              {employees.map((name, index) => (
                 <div key={index} className="justify-normal flex">
-                  <div className={`w-8 h-8 ${bgColors[index % bgColors.length]} rounded-full flex items-center justify-center text-white font-semibold`}>
-                    {getInitials(name)}
+                  <div className={`w-8 h-8 flex-shrink-0 ${bgColors[index % bgColors.length]} rounded-full flex items-center justify-center text-white font-semibold`}>
+                    {getInitials(name.empName)}
                   </div>
                   <div className="ml-3 font-medium self-center">
-                    <span>{name}</span>
+                    <span>{name.empName}</span>
                   </div>
                 </div>
               ))}
