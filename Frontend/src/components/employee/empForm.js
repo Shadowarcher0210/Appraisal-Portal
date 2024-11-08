@@ -294,8 +294,9 @@ const EmpForm = () => {
 
       if (response.ok) {
         console.log('response', response);
-
-        const data = await response.json();
+        localStorage.removeItem('weights');
+        localStorage.removeItem('notes');
+  
 
       } else {
         const errorData = await response.json();

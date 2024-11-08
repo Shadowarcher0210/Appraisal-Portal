@@ -72,7 +72,7 @@ const E_PerformancePage = () => {
   const handleViewClick = (appraisal) => {
     console.log("Navigating to view");
     const { employeeId, timePeriod } = appraisal;
-    navigate(`/empview?${employeeId}&${timePeriod[0]}&${timePeriod[1]}`, { state: { timePeriod } });
+    navigate(`/empview/${employeeId}`, { state: { timePeriod } });
     handleCloseMenu();
   };
 
