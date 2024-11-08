@@ -1,4 +1,5 @@
 const Goals = require('../../models/Goals');
+const User = require('../../models/User');
 
 // const postEmployeeGoals = async (req, res) => {
 //     try {
@@ -101,36 +102,75 @@ const Goals = require('../../models/Goals');
 //         res.status(500).json({ message: 'Internal server error' });
 //     }
 // };
+
+// const postEmployeeGoal = async (req, res) => {
+//     try {
+//         const { employeeId } = req.params;
+//         const goals = Array.isArray(req.body) ? req.body : req.body.goals;
+
+//         if (!goals || !Array.isArray(goals) || goals.length === 0) {
+//             return res.status(400).json({ message: 'Goals array is required and cannot be empty.' });
+//         }
+
+//         for (const goal of goals) {
+//             const { employeeId, empName, category, description, weightage, deadline } = goal;
+
+//             if ( !empName || !category || !description || !weightage || !deadline) {
+//                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
+//             }
+//         }
+
+//         const newGoals = goals.map((goal) => new Goals({
+//             employeeId,
+//             empName: goal.empName,
+//             category: goal.category,
+//             description: goal.description,
+//             weightage: goal.weightage,
+//             deadline: new Date(goal.deadline).toISOString().split('T')[0], 
+//         }));
+
+//         const savedGoals = await Goals.insertMany(newGoals);
+
+//         res.status(201).json({ message: 'Goals created successfully', data: savedGoals });
+
+//     } catch (error) {
+//         console.error('Error in creating goals:', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// };
+
 const postEmployeeGoal = async (req, res) => {
     try {
         const { employeeId } = req.params;
+        const user = await User.findOne({ employeeId });
+        if (!user) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+        const empName = user.empName; 
+
         const goals = Array.isArray(req.body) ? req.body : req.body.goals;
 
-        // Check if goals array is provided and non-empty
         if (!goals || !Array.isArray(goals) || goals.length === 0) {
             return res.status(400).json({ message: 'Goals array is required and cannot be empty.' });
         }
 
-        // Validate each goal in the array
         for (const goal of goals) {
-            const { empName, category, description, weightage, deadline } = goal;
+            const { category, description, weightage, deadline } = goal;
 
-            if (!empName || !category || !description || !weightage || !deadline) {
+            if (!category || !description || !weightage || !deadline) {
                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
             }
         }
 
-        // Map over the array to create new goal documents
         const newGoals = goals.map((goal) => new Goals({
             employeeId,
-            empName: goal.empName,
+            empName, 
             category: goal.category,
             description: goal.description,
             weightage: goal.weightage,
-            deadline: new Date(goal.deadline).toISOString().split('T')[0], // Ensure the date format is correct
+            deadline: new Date(goal.deadline).toISOString().split('T')[0], 
         }));
 
-        // Save all goals at once using insertMany
         const savedGoals = await Goals.insertMany(newGoals);
 
         res.status(201).json({ message: 'Goals created successfully', data: savedGoals });
@@ -140,8 +180,6 @@ const postEmployeeGoal = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
-
-
 const getEmployeeGoal = async (req, res) => {
     try {
         const { employeeId} = req.params;

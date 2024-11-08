@@ -91,7 +91,7 @@ const M_Performance = () => {
 
             <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
                 <div className="w-12/12 p-3 bg-white border shadow-md rounded-md ml-2 mr-8">
-                    <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Preceding Appraisals</h2>
+                    <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-4">Preceding Appraisals</h2>
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
                             <tr>
@@ -121,7 +121,7 @@ const M_Performance = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                             <button
-                                                className="bg-blue-600 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16"
+                                                className="bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16"
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
                                                 View

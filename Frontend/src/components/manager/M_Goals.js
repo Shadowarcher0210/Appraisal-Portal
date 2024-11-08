@@ -11,7 +11,8 @@ const M_Goals = () => {
 
   const [editingGoal, setEditingGoal] = useState(null);
   const [goalFormData, setGoalFormData] = useState({
-    empName: 'Madhu',
+    employeeId: '',
+    empName: '',
     category: 'development',
     description: '',
     weightage: '',
@@ -56,23 +57,9 @@ const M_Goals = () => {
 
       setEditingGoal(null);
     } else {
-      // setEmployeeGoals(prev => ({
-      //   ...prev,
-      //   [selectedEmployee]: [
-      //     ...(prev[selectedEmployee] || []),
-      //     {
-      //       //id: Date.now(),
-      //       ...goalFormData,
-      //       employeeName
-      //       // status: 'Not Started',
-      //       // progress: 0,
-      //       // created_at: new Date().toISOString()
-      //     }
-      //   ]
-      // }));
       setEmployeeGoals(prev => {
         const updatedGoals = {
-          ...prev,
+          
           [selectedEmployee]: [
             ...(prev[selectedEmployee] || []),
             {
@@ -135,6 +122,7 @@ const M_Goals = () => {
     setSelectedEmployee(employeeId);
     setEditingGoal(goal);
     setGoalFormData({
+      employeeId,
       empName: goal.empName,
       description: goal.description,
       category: goal.category,
@@ -153,13 +141,13 @@ const M_Goals = () => {
     return colors[status] || colors['Not Started'];
   };
 
-  const handleSubmitGoals = async () => {
+  const handleSubmitGoals = async (employeeId) => {
     try {
-        const employeeId = localStorage.getItem('employeeId');
+        // const employeeId = localStorage.getItem('employeeId');
         const allGoals = Object.values(employeeGoals).flatMap((goals) => goals);
 
         const response = await axios.post(`http://localhost:3003/goals/${employeeId}`, { goals: allGoals });
-        console.log(response.data.message || 'Goals submitted successfully');
+        console.log(response.data.message );
     } catch (error) {
         console.error('Error submitting goals:', error);
         console.log(error.response?.data?.message || 'Failed to submit goals. Please try again.');
@@ -214,7 +202,9 @@ const M_Goals = () => {
                 {employeeGoals[employee.employeeId]?.length > 0 && (
                 
                   <button
-                      onClick={handleSubmitGoals}
+                  onClick={(e) => {
+                        handleSubmitGoals(employee.employeeId);
+                      }}          
                       disabled={Object.values(submitting).some((isSubmitting) => isSubmitting)}
                       className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
                     >
