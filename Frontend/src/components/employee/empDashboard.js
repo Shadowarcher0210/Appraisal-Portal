@@ -130,7 +130,7 @@ const Dashboard = () => {
                {/* Appraisal Table Section */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8  border-b">
           <div className=" py-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-white bg-orange-500 p-3 rounded">Appraisal</h2>
+            <h2 className="text-2xl font-bold text-white bg-blue-500 p-3 rounded">Appraisal</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
