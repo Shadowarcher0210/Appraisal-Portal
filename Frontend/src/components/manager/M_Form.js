@@ -20,6 +20,7 @@ const M_Form = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
+
   const [goalAnswers, setGoalAnswers] = useState(
     goalsResponse.map(() => ({ answer: "" }))
   );
