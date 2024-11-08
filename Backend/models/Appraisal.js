@@ -14,6 +14,10 @@ const pageDataSchema = new mongoose.Schema(
         notes: {
             type: String,
             default: ""
+        },
+        weights: {
+            type: String,
+            default: " "
         }
     },
     { _id: false }

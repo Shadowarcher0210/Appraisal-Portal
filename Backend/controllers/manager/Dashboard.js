@@ -4,7 +4,7 @@ const getEmployeesForManager = async (req, res) => {
     const { managerName } = req.params;
     try {
   
-        const employees = await Employees.find({ managerName }).select('empName , -_id');
+        const employees = await Employees.find({ managerName }).select('empName employeeId designation department -_id');
 
         res.status(200).json({ success: true, data: employees });
     } catch (error) {

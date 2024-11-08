@@ -54,7 +54,7 @@ const App = () => {
 
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
-          <Route path="/empview" element={<EmpViewPage />} />
+          <Route path="/empview/:employeeId" element={<EmpViewPage />} />
 
           <Route path="/employee-dashboard" element={<Dashboard />} />
           <Route path="/employee-performance" element={<E_PerformancePage />} />

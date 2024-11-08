@@ -36,7 +36,7 @@ const M_Performance = () => {
 
         try {
             const response = await axios.get(
-                `http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`
+               ` http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`
             );
             console.log('Fetched Appraisals in Performance Page:', response.data);
             const allAppraisals = response.data.data
@@ -55,7 +55,8 @@ const M_Performance = () => {
     }, [selectedYear]);
     const handleViewClick = (appraisal) => {
         const { employeeId, timePeriod } = appraisal;
-        navigate(`/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}`, { state: { timePeriod } });
+        console.log('Employee Id :',employeeId)
+        navigate(`/empview/${employeeId}`, { state: { timePeriod } });
     };
     useEffect(() => {
         console.log('Updated appraisals:', appraisals);
@@ -66,35 +67,31 @@ const M_Performance = () => {
     return (
         <div className="justify-center items-start mt-20 ml-6">
             <div>
-                <label className='ml-2 text-3xl font-bold text-orange-600'>Performance Insights of your Team</label>
-                <p className='ml-2 mt-3 text-gray-500 font-medium'>Key metrics and trends to guide your Team progress.</p>
+                <label className='ml-2 text-3xl font-bold text-orange-600'>Performance Insights</label>
+                <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your Team progress.</p>
             </div>
 
-            <div className='mt-6 ml-2 w-48'>
-                <label className='block text-gray-700 font-semibold mb-2'>
-                    Time Period:
-                </label>
-                <div className='relative'>
+            <div className='mt-2 ml-2'>
+                <label className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
+                    <label htmlFor="time-period">Time Period:</label>
                     <select
-                    id="time-period"
-                    value={selectedYear || ''}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className='block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none  focus:ring-cyan-800 focus:border-cyan-800 bg-white text-gray-700 text-lg'
+                        id="time-period"
+                        value={selectedYear || ''}
+                        onChange={(e) => setSelectedYear(e.target.value)}
                     >
-                    {academicYears.map((year) => (
-                        <option key={year} value={year}>
-                        {year}
-                        </option>
-                    ))}
+
+                        {academicYears.map((year) => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
                     </select>
-                   
-                </div>
-                </div>
+                </label>
+            </div>
 
-
-            <div className="flex-1 p-1 mt-5 overflow-hidden max-h-full">
+            <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
                 <div className="w-12/12 p-3 bg-white border shadow-md rounded-md ml-2 mr-8">
-                    <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-4">Preceding Appraisals</h2>
+                    <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-4">Preceding Appraisals</h2>
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-100">
                             <tr>
@@ -118,13 +115,13 @@ const M_Performance = () => {
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                                             {appraisal.managerName}
                                         </td>
-                                        <td className="px-6 py-2 mt-4 inline-flex text-sm font-semibold rounded-lg bg-green-100 text-green-700">
-                                        {appraisal.status}
+                                        <td className="px-6 py-4  whitespace-nowrap">
+                                            <span className='inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>{appraisal.status}</span>
                                             
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                             <button
-                                                className="bg-cyan-800 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16"
+                                                className="bg-blue-600 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16"
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
                                                 View

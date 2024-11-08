@@ -2,16 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const EmpViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
-
-  const employeeId = localStorage.getItem('employeeId');
+const {employeeId}=useParams();
   const currentYear = new Date().getFullYear() + 1;
-  const nextYear = currentYear + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
   // Static questions and answers
@@ -158,6 +155,7 @@ const EmpViewPage = () => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
                   console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
+                  const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
@@ -185,9 +183,14 @@ const EmpViewPage = () => {
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      <td className="p-2 text-sm text-gray-700 w-40">
-                        <span className="text-gray-600">No data available</span>
+                       {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-48">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (<td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">-</span>
                       </td>
+                      )}
                     </tr>
                   );
                 })}

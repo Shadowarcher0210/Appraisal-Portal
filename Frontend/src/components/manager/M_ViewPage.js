@@ -151,6 +151,7 @@ const M_ViewPage = () => {
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
+                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager Evaluation</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,6 +159,7 @@ const M_ViewPage = () => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
                   console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
+                  const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
@@ -166,7 +168,7 @@ const M_ViewPage = () => {
                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
-                        <td className="p-2 text-sm text-gray-700 w-48">
+                        <td className="p-2 text-sm text-gray-700 w-72">
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
                             <span className="text-gray-600 px-2 py-1 rounded">{previousAnswer}</span>
@@ -185,9 +187,24 @@ const M_ViewPage = () => {
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      <td className="p-2 text-sm text-gray-700 w-40">
-                        <span className="text-gray-600">No data available</span>
+                    {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-32">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
                       </td>
+                      )}
+                           {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-36 ">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
+                      </td>
+                      )}
                     </tr>
                   );
                 })}
