@@ -12,7 +12,7 @@ const getEmployeeAppraisals = async (req, res) => {
                     { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
                 ]
             },
-            status: { $in: ["Submitted", "Completed"] }
+            status: { $in: ["Submitted","Under Review", "Completed"] }
         });
 
         res.status(200).json({ success: true, data: appraisals });

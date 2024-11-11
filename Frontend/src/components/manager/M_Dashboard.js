@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
 import { Calendar, Target } from "lucide-react";
+import TeamMembersSidebar from './TeamMembers';
 
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -248,7 +249,9 @@ const M_Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
+
+      <TeamMembersSidebar employees={employees} />
+      {/* <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
         <aside className="bg-white p-6 shadow-lg">
           <div className="sticky top-0 bg-white pb-2 z-10">
             <h2 className="text-xl font-semibold text-gray-800">Team Members</h2>
@@ -270,7 +273,7 @@ const M_Dashboard = () => {
             </div>
           </div>
         </aside>
-      </div>
+      </div> */}
 
     </div>
   )

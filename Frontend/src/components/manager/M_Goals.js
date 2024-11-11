@@ -647,7 +647,7 @@ const M_Goals = () => {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          {(!submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0) && (
+          {(!submittedEmployees.includes(employee.employeeId) ) && (
             <>
               <button
                 onClick={(e) => {

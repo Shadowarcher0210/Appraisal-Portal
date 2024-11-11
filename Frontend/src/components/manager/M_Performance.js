@@ -53,10 +53,42 @@ const M_Performance = () => {
             fetchAllAppraisalDetails();
         }
     }, [selectedYear]);
-    const handleViewClick = (appraisal) => {
-        const { employeeId, timePeriod } = appraisal;
-        console.log('Employee Id :',employeeId)
-        navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+    
+    // const handleViewClick = (appraisal) => {
+    //     const { employeeId, timePeriod } = appraisal;
+    //     console.log('Employee Id :',employeeId)
+    //     navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+    // };
+
+    const handleViewClick = async (appraisal) => {
+        const { employeeId, timePeriod, status } = appraisal;
+
+        // If the status is "Submitted", update it to "Under Review"
+        if (status === "Submitted") {
+            try {
+                const response = await axios.put(
+                    `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+                    { status: "Under Review" }
+                );
+
+                if (response.status === 200) {
+                    console.log('Status updated to Under Review:', response.data);
+                    fetchAllAppraisalDetails(); // Refresh the list after status update
+                } else {
+                    console.error('Failed to update status:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating status to Under Review:', error);
+            }
+        }
+
+        if (status === "Submitted" || status === "Under Review") {
+           
+            navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+        } else if (status === "Completed") {
+            // Navigate to employee view if status is "Completed"
+            navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+        }
     };
     useEffect(() => {
         console.log('Updated appraisals:', appraisals);
@@ -124,7 +156,7 @@ const M_Performance = () => {
                                                 className="bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16"
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
-                                                View
+                                                {appraisal.status === "Completed" ? "View" : "Review"}
                                             </button>
                                         </td>
                                     </tr>

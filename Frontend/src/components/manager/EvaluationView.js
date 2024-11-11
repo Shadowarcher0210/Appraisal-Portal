@@ -236,7 +236,7 @@ import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams ,useNavigate} from 'react-router-dom';
 
-const EmpViewPage = () => {
+const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState(""); // If you're using a state to store the email
 
@@ -318,16 +318,12 @@ const {employeeId}=useParams();
             answer: response.data[0]?.pageData[index]?.answer || '',
             notes: response.data[0]?.pageData[index]?.notes || '',
             weights: response.data[0]?.pageData[index]?.weights || '',
-            managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
-              ? {
-                  percentage: response.data[0]?.pageData[index]?.managerEvaluation?.percentage || 0
-                }
-              : { percentage: 0 }  // Default value if managerEvaluation is missing
+            managerEvaluation: {
+              percentage: response.data[0]?.pageData[index]?.managerEvaluation?.percentage || 0
+            }
           }))
-          
         };
-        console.log("res check for eval", initialFormData);
-        
+
         setFormData([initialFormData]);
         setLoading(false);
       } catch (error) {
@@ -389,6 +385,50 @@ const {employeeId}=useParams();
 
   
 
+  const handleSubmit = async () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return;
+  
+    try {
+      const email2 = {email}
+      console.log("email", email2);
+      
+     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
+      console.log("Submitting form with employeeId:", employeeId, "and email:", email);
+  
+      const submissionData = {
+        pageData: formData[0].pageData.map(item => ({
+          questionId: item.questionId,
+          answer: item.answer || '',
+          notes: item.notes || '',
+          weights: item.weights || '',
+          managerEvaluation: {
+            percentage: item.managerEvaluation?.percentage || 0
+          }
+        }))
+      };
+      
+  
+      await axios.put(
+        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        submissionData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("PUT request successful.");
+  
+      await axios.post(
+        "http://localhost:3003/confirmationEmail/completedEmail",
+        { userId: employeeId, email: email },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("POST request for confirmation email successful.");
+  
+      navigate("/manager-dashboard");
+    } catch (error) {
+      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+      setError("Error submitting evaluation");
+    }
+  };
+  
   
 
   
@@ -530,12 +570,10 @@ const {employeeId}=useParams();
               <tbody>
                 {questionsAndAnswers.map((item, index) => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-                  console.log("prev ans", previousAnswer)
+                  // console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
-                  const managerEvaluation = formData ? formData[0].pageData[index]?.managerEvaluation?.percentage : null;
-                    console.log("eval", managerEvaluation)
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
                       <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
@@ -572,8 +610,11 @@ const {employeeId}=useParams();
                       )}
                       {/* {status === 'Completed' && ( */}
                        <td className="p-2 text-sm text-gray-600">
-
-                      <span className="text-gray-600">{managerEvaluation}</span>
+                      <input
+                        className="w-20 p-1 border border-gray-300 rounded  "
+                        value={formData[0].pageData[index].managerEvaluation?.percentage || ''}
+                        onChange={(e) => handleManagerEvaluationChange(e, index)}
+                      />
                     </td>
                     </tr>
                   );
@@ -607,11 +648,18 @@ const {employeeId}=useParams();
             ))}
           </div>
         </div>
-    
+        <div className="mt-6 flex justify-end">
+          <button
+            className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
+        </div>
       </div>
 
     </div>
   );
 };
 
-export default EmpViewPage;
+export default EvaluationView;
