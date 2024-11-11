@@ -145,9 +145,9 @@ const {employeeId}=useParams();
                 <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Requirement</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
+                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Response</th>
+                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Notes</th>
+                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,8 +184,8 @@ const {employeeId}=useParams();
                       </td>
                       )}
                        {weights ? (
-                        <td className="p-2 text-sm text-gray-700 w-48">
-                          <span className="text-gray-600">{weights}</span>
+                        <td className="p-2 text-sm text-center text-gray-700 w-48">
+                          <span className="text-gray-600 ">{weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>

@@ -4,7 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express()
 app.use(bodyParser.json())
-
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { pageData } = req.body;
@@ -26,12 +25,20 @@ const saveAppraisalDetails = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
         const newStatus = isExit ? 'In Progress' : 'Submitted';
+
+        const updateFields = { pageData, status: newStatus };
+        if (newStatus === 'Submitted') {
+            const currentDate = new Date();
+            const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
+            updateFields.submittedDate = formattedDate;
+        }
+
         const updatedAppraisal = await Appraisal.findOneAndUpdate(
             {
                 employeeId: employeeId,
                 timePeriod: { $all: timePeriod },
             },
-            { pageData, status: newStatus },
+            updateFields,
             { new: true }
         );
 
@@ -51,6 +58,7 @@ const saveAppraisalDetails = async (req, res) => {
         });
     }
 };
+
 
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
