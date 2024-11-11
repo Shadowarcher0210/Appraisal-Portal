@@ -256,7 +256,9 @@ const M_Dashboard = () => {
 
           <div className="bg-gray-50 rounded-md p-4 mt-4">
             <div className="space-y-3">
-              {employees.map((name, index) => (
+              {employees
+              .sort((a, b) => a.empName.localeCompare(b.empName))
+              .map((name, index) => (
                 <div key={index} className="justify-normal flex">
                   <div className={`w-8 h-8 flex-shrink-0 ${bgColors[index % bgColors.length]} rounded-full flex items-center justify-center text-white font-semibold`}>
                     {getInitials(name.empName)}
