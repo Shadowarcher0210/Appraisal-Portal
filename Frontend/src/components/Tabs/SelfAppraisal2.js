@@ -105,6 +105,8 @@ const SelfAppraisal = ({
     if (isFormComplete()) {
       console.log("filled");
       handleSubmit();
+      localStorage.removeItem('weights');
+      localStorage.removeItem('notes');
     } else {
       alert("Please complete all fields before submitting.");
     }

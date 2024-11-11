@@ -75,6 +75,10 @@ const appraisalSchema = new mongoose.Schema({
     pageData: {
         type: [pageDataSchema],
         default: []
+    },
+    submittedDate: { 
+        type: Date,
+        default: null
     }
 });
 
