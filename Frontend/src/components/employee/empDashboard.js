@@ -80,31 +80,35 @@ const Dashboard = () => {
   };
 
 
-
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-    const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-    const navigatePath = status === "Submitted" ?`/empview/${employeeId}` : "/form";
+    
+    const navigatePath = ["Submitted", "Under Review", "Completed"].includes(status)
+      ? `/empview/${employeeId}`  
+      : "/form"; 
+    if (!["Submitted", "Under Review", "Completed"].includes(status)) {
+      try {
+        const response = await axios.put(
+          `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+          { status: "In Progress" }
+        );
   
-    try {
-      const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        { status: newStatus }
-      );
-  
-      if (response.status === 200) {
-        console.log(`Status ${newStatus} Successfully:`, response.data);
-        fetchAppraisalDetails();
-      } else {
-        console.error('Failed to update status:', response.statusText);
+        if (response.status === 200) {
+          console.log(`Status updated to In Progress successfully:`, response.data);
+          fetchAppraisalDetails(); // Fetch updated data after status change
+        } else {
+          console.error('Failed to update status:', response.statusText);
+        }
+      } catch (error) {
+        console.error(`Error updating status:`, error);
       }
-    } catch (error) {
-      console.error(`Error updating status to ${newStatus}:`, error);
     }
   
+    // Navigate to the appropriate page (either to "form" or "empview/:employeeId")
     navigate(navigatePath, { state: { timePeriod } });
   };
-
+  
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section with improved layout */}
@@ -166,13 +170,14 @@ const Dashboard = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <button 
-                          className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-4 py-2 text-sm transition-colors"
-                          onClick={() => handleButtonClick(appraisal)}
-                        >
-                          {appraisal.status === "Submitted" ? "View" : "Edit"}
-                        </button>
-                      </td>
+  <button 
+    className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-4 py-2 text-sm transition-colors"
+    onClick={() => handleButtonClick(appraisal)}
+  >
+    {["Submitted", "Under Review", "Completed"].includes(appraisal.status) ? "View" : "Edit"}
+  </button>
+</td>
+
                     </tr>
                   ))
                 ) : (

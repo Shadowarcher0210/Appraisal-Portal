@@ -54,7 +54,7 @@ const {employeeId}=useParams();
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-
+const status = formData?formData.status:null
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
@@ -141,6 +141,7 @@ const {employeeId}=useParams();
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
+              
               <thead>
                 <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
@@ -148,6 +149,10 @@ const {employeeId}=useParams();
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
+                  {status === "Completed" && (
+  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager's Evaluation</th>
+)}
+
                 </tr>
               </thead>
               <tbody>

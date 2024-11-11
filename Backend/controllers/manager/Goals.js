@@ -208,8 +208,36 @@ const getEmployeeGoal = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+const editGoal = async (req, res) => {
+    try {
+        const { employeeId, goalId } = req.params; 
+        const { category, description, weightage, deadline } = req.body;
+
+        if (!category || !description || !weightage || !deadline) {
+            return res.status(400).json({ message: 'All required fields must be provided.' });
+        }
+
+        const goal = await Goals.findOne({ _id: goalId, employeeId });
+
+        if (!goal) {
+            return res.status(404).json({ message: 'Goal not found for this employee.' });
+        }
+
+        goal.category = category;
+        goal.description = description;
+        goal.weightage = weightage;
+        goal.deadline = new Date(deadline).toISOString().split('T')[0]; // Ensure the deadline is formatted properly
+
+        const updatedGoal = await goal.save();
+
+        res.status(200).json({ message: 'Goal updated successfully', data: updatedGoal });
+    } catch (error) {
+        console.error('Error in editing goal:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 
 
-module.exports = { postEmployeeGoal, getEmployeeGoal };
+module.exports = { postEmployeeGoal, getEmployeeGoal ,editGoal };
  

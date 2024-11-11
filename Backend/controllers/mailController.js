@@ -27,7 +27,7 @@ const sendConfirmationEmails = async (req, res) => {
       to: email,
       subject: 'Confirmation of Your Appraisal Form Submission',
       html: `Dear ${user.empName},<br><br>
-             This is a system-generated email to confirm that you have successfully submitted your appraisal form on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
+             This is a system-generated email to confirm that you have successfully submitted your appraisal form on ${submittedDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
              Thank you for your submission. Your appraisal will be reviewed by your manager, and you will be notified of any updates or further actions required. If you have any questions or need assistance, please do not hesitate to reach out to your HR representative.<br><br>
              Best regards,<br>
              BlueSpire`

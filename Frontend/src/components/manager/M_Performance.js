@@ -53,11 +53,39 @@ const M_Performance = () => {
             fetchAllAppraisalDetails();
         }
     }, [selectedYear]);
-    const handleViewClick = (appraisal) => {
-        const { employeeId, timePeriod } = appraisal;
-        console.log('Employee Id :',employeeId)
-        navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+
+    const handleViewClick = async (appraisal) => {
+        const { employeeId, timePeriod, status } = appraisal;
+
+        // If the status is "Submitted", update it to "Under Review"
+        if (status === "Submitted") {
+            try {
+                const response = await axios.put(
+                    `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+                    { status: "Under Review" }
+                );
+
+                if (response.status === 200) {
+                    console.log('Status updated to Under Review:', response.data);
+                    fetchAllAppraisalDetails(); // Refresh the list after status update
+                } else {
+                    console.error('Failed to update status:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error updating status to Under Review:', error);
+            }
+        }
+
+        if (status === "Submitted" || status === "Under Review") {
+           
+            navigate(`/evaluation-form/${employeeId}`, { state: { timePeriod } });
+        } else if (status === "Completed") {
+            // Navigate to employee view if status is "Completed"
+            navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+        }
     };
+
+ 
     useEffect(() => {
         console.log('Updated appraisals:', appraisals);
     }, [appraisals]);
@@ -120,11 +148,11 @@ const M_Performance = () => {
                                             
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
-                                            <button
-                                                className="bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16"
+                                        <button
+                                                className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 ${appraisal.status === "Completed" ? '' : 'cursor-pointer'}`}
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
-                                                View
+                                                {appraisal.status === "Completed" ? "View" : "Review"}
                                             </button>
                                         </td>
                                     </tr>
