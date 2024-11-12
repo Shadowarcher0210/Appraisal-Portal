@@ -44,7 +44,9 @@ const TeamMembersDisplay = ({ employees }) => {
 
         {/* Team Members List */}
         <div className="space-y-2 max-h-[600px] overflow-y-auto">
-          {filteredEmployees.map((emp, index) => (
+          {filteredEmployees
+          .sort((a, b) => a.empName.localeCompare(b.empName))
+          .map((emp, index) => (
             <div
               key={index}
               className="flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors duration-200"
