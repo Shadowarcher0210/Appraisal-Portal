@@ -53,6 +53,12 @@ const M_Performance = () => {
             fetchAllAppraisalDetails();
         }
     }, [selectedYear]);
+    
+    // const handleViewClick = (appraisal) => {
+    //     const { employeeId, timePeriod } = appraisal;
+    //     console.log('Employee Id :',employeeId)
+    //     navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+    // };
 
     const handleViewClick = async (appraisal) => {
         const { employeeId, timePeriod, status } = appraisal;
@@ -78,7 +84,7 @@ const M_Performance = () => {
 
         if (status === "Submitted" || status === "Under Review") {
            
-            navigate(`/evaluation-form/${employeeId}`, { state: { timePeriod } });
+            navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Completed") {
             // Navigate to employee view if status is "Completed"
             navigate(`/empview/${employeeId}`, { state: { timePeriod } });

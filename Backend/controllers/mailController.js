@@ -37,7 +37,7 @@ const sendConfirmationEmails = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: 'naveen.pandranki@thebluespire.com',
       subject: 'Confirmation of Appraisal Form Submission',
-      text: `Dear ${appraisal.managerName},\n\nThis is a system-generated email to confirm that ${user.empName} has successfully submitted their This is a system-generated email to confirm that your appraisal form for thefor the ${appraisal.initiatedOn} appraisal cycle.\n\nSubmission Details:\nEmployee Name: ${user.empName} \nEmployee ID: ${user._id}\nDepartment: ${user.department}.\n\nPlease review the submitted form at your convenience. If you have any questions or require further information, please contact your HR representative.\n\nThank you.\n\nBest regards,\nBlueSpire`
+      text: `Dear ${appraisal.managerName},\n\nThis is a system-generated email to confirm that ${user.empName} has successfully submitted their appraisal form for the ${appraisal.initiatedOn} appraisal cycle.\n\nSubmission Details:\nEmployee Name: ${user.empName} \nEmployee ID: ${user._id}\nDepartment: ${user.department}.\n\nThank you.\n\nBest regards,\nBlueSpire`
     };
 
     await transporter.sendMail(userMailOptions);
@@ -83,11 +83,11 @@ const sendCompletedEmails = async (req, res) => {
     const userMailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: 'Appraisal Completed Confirmation',
+      subject: 'Appraisal Reviewed Confirmation',
       html: `Dear ${user.empName},<br><br>
-             This is a system-generated email to inform you that your appraisal has been completed and approved on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
-             Your performance evaluation has been finalized, and your manager will contact you for further actions.<br><br>
-             Thank you for your contribution! If you have any questions, feel free to reach out to HR.<br><br>
+             This is a system-generated email to inform you that your appraisal has been approved on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
+             Your performance evaluation has been finalized, and your manager will contact you for any further actions required.<br><br>
+             If you have any questions, feel free to reach out to HR.<br><br>
              Best regards,<br>
              BlueSpire`
     };

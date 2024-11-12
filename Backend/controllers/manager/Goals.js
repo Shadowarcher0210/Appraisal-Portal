@@ -208,6 +208,7 @@ const getEmployeeGoal = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 const editGoal = async (req, res) => {
     try {
         const { employeeId, goalId } = req.params; 
@@ -238,6 +239,5 @@ const editGoal = async (req, res) => {
 };
 
 
-
-module.exports = { postEmployeeGoal, getEmployeeGoal ,editGoal };
+module.exports = { postEmployeeGoal, getEmployeeGoal, editGoal };
  

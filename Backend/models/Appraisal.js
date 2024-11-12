@@ -18,6 +18,10 @@ const pageDataSchema = new mongoose.Schema(
         weights: {
             type: String,
             default: " "
+        },
+        managerEvaluation: {
+            type: String,
+            default: null
         }
     },
     { _id: false }
@@ -50,7 +54,7 @@ const appraisalSchema = new mongoose.Schema({
     },
 
     timePeriod: {
-        type: [Date], 
+        type: [Date],
         validate: {
             validator: function (v) {
                 return v.length === 2;
@@ -76,7 +80,7 @@ const appraisalSchema = new mongoose.Schema({
         type: [pageDataSchema],
         default: []
     },
-    submittedDate: { 
+    submittedDate: {
         type: Date,
         default: null
     }

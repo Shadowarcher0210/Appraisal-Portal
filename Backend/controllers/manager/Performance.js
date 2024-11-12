@@ -4,6 +4,10 @@ const getEmployeeAppraisals = async (req, res) => {
     const { managerName, startDate, endDate } = req.params;
 
     try {
+       
+        console.log('Start Date:', new Date(startDate));
+        console.log('End Date:', new Date(endDate));
+
         const appraisals = await Appraisal.find({
             managerName,
             $expr: {
@@ -12,15 +16,19 @@ const getEmployeeAppraisals = async (req, res) => {
                     { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
                 ]
             },
-            status: { $in: ["Submitted", "Under Review","Completed"] }
+            status: { $in: ["Submitted", "Under Review", "Completed"] }
         });
+
+        if (appraisals.length === 0) {
+            return res.status(404).json({ success: false, message: "No appraisals found for the given period." });
+        }
 
         res.status(200).json({ success: true, data: appraisals });
     } catch (error) {
         console.error("Error fetching appraisals:", error);
         res.status(500).json({ success: false, message: "Failed to fetch appraisals" });
     }
-}
+};
 
 
 const managerEvaluation = async (req, res) => {

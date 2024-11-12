@@ -4,13 +4,90 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express()
 app.use(bodyParser.json())
-const saveAppraisalDetails = async (req, res) => {
+// const saveAppraisalDetails = async (req, res) => {
+//     const { employeeId, startDate, endDate } = req.params;
+//     const { pageData } = req.body;
+//     const isExit = req.query.isExit === 'true';
+//     try {
+//         if (!employeeId) {
+//             return res.status(400).send({ error: 'User ID is required' });
+//         }
+
+//         const isValidDate = (date) => !isNaN(new Date(date).getTime());
+//         if (!isValidDate(startDate) || !isValidDate(endDate)) {
+//             return res.status(400).send({ error: 'Invalid date format.' });
+//         }
+
+//         const user = await Employee.findOne({ employeeId: employeeId }, { empName: 1 });
+//         if (!user) {
+//             return res.status(404).send({ error: 'User not found' });
+//         }
+
+//         const timePeriod = [new Date(startDate), new Date(endDate)];
+//         const newStatus = isExit ? 'In Progress' : 'Submitted';
+
+//         const updateFields = { pageData, status: newStatus };
+//         if (newStatus === 'Submitted') {
+//             const currentDate = new Date();
+//             const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
+//             updateFields.submittedDate = formattedDate;
+//         }
+
+//         const updatedAppraisal = await Appraisal.findOneAndUpdate(
+//             {
+//                 employeeId: employeeId,
+//                 timePeriod: { $all: timePeriod },
+//             },
+//             updateFields,
+//             { new: true }
+//         );
+
+//         if (!updatedAppraisal) {
+//             return res.status(404).json({ message: 'Appraisal form not found.' });
+//         }
+
+//         res.status(201).send({
+//             message: 'Appraisal form saved successfully!',
+//             data: updatedAppraisal,
+//         });
+//     } catch (error) {
+//         console.log('Error saving appraisal form', error);
+//         res.status(500).send({
+//             success: false,
+//             error: error.message
+//         });
+//     }
+// };
+const saveAppraisalDetails = async (req, res) => {  
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData } = req.body;
+    const { pageData } = req.body; 
+
     const isExit = req.query.isExit === 'true';
+
     try {
         if (!employeeId) {
             return res.status(400).send({ error: 'User ID is required' });
+        }
+
+        if (!pageData || !Array.isArray(pageData)) {
+            return res.status(400).send({ 
+                error: 'Page data is required and must be an array' 
+            });
+        }
+
+        for (const question of pageData) {
+            if (!question.questionId || typeof question.answer !== 'string') {
+                return res.status(400).send({ 
+                    error: 'Each page data item must have questionId and answer' 
+                });
+            }
+
+            if (question.managerEvaluation && 
+                (typeof question.managerEvaluation !== 'number')) {
+                return res.status(400).send({ 
+                    error: 'Each manager evaluation must have a percentage' 
+                });
+            }
         }
 
         const isValidDate = (date) => !isNaN(new Date(date).getTime());
@@ -24,21 +101,28 @@ const saveAppraisalDetails = async (req, res) => {
         }
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
-        const newStatus = isExit ? 'In Progress' : 'Submitted';
 
-        const updateFields = { pageData, status: newStatus };
-        if (newStatus === 'Submitted') {
-            const currentDate = new Date();
-            const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
-            updateFields.submittedDate = formattedDate;
-        }
+        // Determine status based on manager evaluation
+        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+        const newStatus = hasManagerEvaluation ? 'Completed' : (isExit ? 'In Progress' : 'Submitted');
+
+        const updatedPageData = pageData.map(question => {
+            if (question.managerEvaluation) {
+                delete question.managerEvaluation.weightedScore;
+            }
+            return question;
+        });
 
         const updatedAppraisal = await Appraisal.findOneAndUpdate(
             {
                 employeeId: employeeId,
                 timePeriod: { $all: timePeriod },
             },
-            updateFields,
+            { 
+                pageData: updatedPageData, 
+                status: newStatus,
+                lastModified: new Date()
+            },
             { new: true }
         );
 
@@ -48,7 +132,7 @@ const saveAppraisalDetails = async (req, res) => {
 
         res.status(201).send({
             message: 'Appraisal form saved successfully!',
-            data: updatedAppraisal,
+            data: updatedAppraisal
         });
     } catch (error) {
         console.log('Error saving appraisal form', error);
@@ -58,7 +142,6 @@ const saveAppraisalDetails = async (req, res) => {
         });
     }
 };
-
 
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
@@ -178,7 +261,7 @@ const getAppraisalAnswers = async (req, res) => {
                 "timePeriod.0": { $gte: start },
                 "timePeriod.1": { $lte: end },
             },
-            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1 });
+            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1, status:1 });
 
 
         console.log('Retrieved Appraisals Answers:', appraisalAnswers);
@@ -195,6 +278,7 @@ const getAppraisalAnswers = async (req, res) => {
             band: appraisal.band,
             timePeriod: appraisal.timePeriod,
             managerName: appraisal.managerName,
+            status:appraisal.status,
             pageData: appraisal.pageData
 
         }));

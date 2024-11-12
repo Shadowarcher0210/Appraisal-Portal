@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
 import { Calendar, Target } from "lucide-react";
+import TeamMembersSidebar from './TeamMembers';
 
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -248,7 +249,9 @@ const M_Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
+
+      <TeamMembersSidebar employees={employees} />
+      {/* <div className="w-2/12 overflow-y-auto max-h-[600px] relative">
         <aside className="bg-white p-6 shadow-lg">
           <div className="sticky top-0 bg-white pb-2 z-10">
             <h2 className="text-xl font-semibold text-gray-800">Team Members</h2>
@@ -256,7 +259,9 @@ const M_Dashboard = () => {
 
           <div className="bg-gray-50 rounded-md p-4 mt-4">
             <div className="space-y-3">
-              {employees.map((name, index) => (
+              {employees
+              .sort((a, b) => a.empName.localeCompare(b.empName))
+              .map((name, index) => (
                 <div key={index} className="justify-normal flex">
                   <div className={`w-8 h-8 flex-shrink-0 ${bgColors[index % bgColors.length]} rounded-full flex items-center justify-center text-white font-semibold`}>
                     {getInitials(name.empName)}
@@ -270,7 +275,7 @@ const M_Dashboard = () => {
             </div>
           </div>
         </aside>
-      </div>
+      </div> */}
 
     </div>
   )

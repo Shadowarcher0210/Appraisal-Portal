@@ -4,7 +4,7 @@ import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams ,useNavigate} from 'react-router-dom';
 
-const EmpViewPage = () => {
+const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState(""); // If you're using a state to store the email
 
@@ -86,13 +86,12 @@ const {employeeId}=useParams();
             answer: response.data[0]?.pageData[index]?.answer || '',
             notes: response.data[0]?.pageData[index]?.notes || '',
             weights: response.data[0]?.pageData[index]?.weights || '',
-            managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
-             
+            managerEvaluation:
+             response.data[0]?.pageData[index]?.managerEvaluation || 0
+            
           }))
-          
         };
-        console.log("res check for eval", initialFormData);
-        
+
         setFormData([initialFormData]);
         setLoading(false);
       } catch (error) {
@@ -119,14 +118,61 @@ const {employeeId}=useParams();
     setFormData(updatedFormData);
   };
 
+  
+
+ const handleSubmit = async () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return;
+  
+    try {
+      const email2 = {email}
+      console.log("email", email2);
+      
+     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
+      console.log("Submitting form with employeeId:", employeeId, "and email:", email);
+  
+      const submissionData = {
+        pageData: formData[0].pageData.map(item => ({
+          questionId: item.questionId,
+          answer: item.answer || '',
+          notes: item.notes || '',
+          weights: item.weights || '',
+          managerEvaluation: item.managerEvaluation|| 0
+          
+        }))
+      };
+      
+  
+      await axios.put(
+        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        submissionData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("PUT request successful.");
+  
+      await axios.post(
+        "http://localhost:3003/confirmationEmail/completedEmail",
+        { userId: employeeId, email: email },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("POST request for confirmation email successful.");
+  
+      navigate("/manager-dashboard");
+    } catch (error) {
+      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+      setError("Error submitting evaluation");
+    }
+  };
+  
+  
+
+  
 
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-    const status = formData?formData.status:null
-
+  const status = formData?formData.status:null
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
@@ -237,34 +283,31 @@ const {employeeId}=useParams();
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              
               <thead>
                 <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Requirement</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
+                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
 
-																																  
-                  {formData[0].status === 'Completed' && (
+                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
+                  {/* {status === 'Completed' && (
         <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
             Manager Evaluation
         </th>
     )
-} 
+} */}
 
                 </tr>
               </thead>
               <tbody>
                 {questionsAndAnswers.map((item, index) => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-                  console.log("prev ans", previousAnswer)
+                  // console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
-                  const managerEvaluation = formData ? formData[0].pageData[index]?.managerEvaluation : null;
-                    console.log("eval", managerEvaluation)
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
                       <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
@@ -288,24 +331,25 @@ const {employeeId}=useParams();
                           <span className="text-gray-600">{notes}</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">No notes to display</span>
+                        <span className="text-gray-600">-</span>
                       </td>
                       )}
                        {weights ? (
-                        <td className="p-2 text-sm text-gray-700 text-center ">
+                        <td className="p-2 text-sm text-center text-gray-700 w-48">
                           <span className="text-gray-600">{weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {formData[0].status === 'Completed' && (
+                      {/* {status === 'Completed' && ( */} 
                        <td className="p-2 text-sm text-gray-600 text-center">
-
-                      <span className="text-gray-600 ">{managerEvaluation} %</span>
-                      
+                      <input
+                        className="w-20 p-1 border border-gray-300 rounded  "
+                        value={formData[0].pageData[index].managerEvaluation|| ''}
+                        onChange={(e) => handleManagerEvaluationChange(e, index)}
+                      />
                     </td>
-                      )}
                     </tr>
                   );
                 })}
@@ -338,11 +382,18 @@ const {employeeId}=useParams();
             ))}
           </div>
         </div>
-    
+        <div className="mt-6 flex justify-end">
+          <button
+            className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+            onClick={handleSubmit}
+          >
+            Submit
+          </button>
+        </div>
       </div>
 
     </div>
   );
 };
 
-export default EmpViewPage;
+export default EvaluationView;
