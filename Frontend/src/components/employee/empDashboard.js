@@ -6,7 +6,7 @@ import { Calendar, Clock, User } from "lucide-react";
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [date] = useState(new Date());
+  const [date, setDate] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
   
@@ -14,7 +14,7 @@ const Dashboard = () => {
   const currentYear = currentDate.getFullYear();
   const navigate = useNavigate();
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
-  const appraisalEndDate = new Date(`${currentYear + 1}-04-31`).toLocaleDateString('en-CA');
+  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
 
@@ -53,6 +53,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchAppraisalDetails();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDate(new Date());
+    }, 1000); 
+    return () => clearInterval(timer);
   }, []);
 
   const wishing = () => {
@@ -215,8 +222,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
-       
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} />

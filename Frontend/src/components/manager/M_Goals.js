@@ -214,7 +214,9 @@ const M_Goals = () => {
 
       <div className="space-y-6">
       <div className="space-y-6">
-  {employees.map((employee) => (
+  {employees
+  .sort((a, b) => a.empName.localeCompare(b.empName))
+  .map((employee) => (
     <div key={employee.id} className="bg-white rounded-xl shadow-md overflow-hidden">
       <div 
         className="p-6 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors duration-200"
