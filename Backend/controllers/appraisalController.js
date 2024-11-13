@@ -504,7 +504,7 @@ const getApplicationNotification = async (req, res) => {
             const managerName = appraisal.managerName || 'the manager';
             return res.status(200).json({
                 sucess:true,
-                message:`Your Appraisal has been approved by ${managerName}`,
+                message:`Your Appraisal has been approved by ${managerName} on ${formattedStartDate}`,
                 employeeId,
             })
         }

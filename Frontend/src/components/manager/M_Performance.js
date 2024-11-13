@@ -40,6 +40,15 @@ const M_Performance = () => {
             );
             console.log('Fetched Appraisals in Performance Page:', response.data);
             const allAppraisals = response.data.data
+            const sortedAppraisals = allAppraisals.sort((a, b) => {
+                if (a.status === "Submitted" || a.status === "Under Review") {
+                    return -1; // Move to the top
+                }
+                if (b.status === "Submitted" || b.status === "Under Review") {
+                    return 1; // Move to the top
+                }
+                return 0; // No change
+            });
             setAppraisals(allAppraisals);
             console.log("empname", allAppraisals)
         } catch (error) {

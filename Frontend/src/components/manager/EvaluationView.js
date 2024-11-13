@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation, useParams ,useNavigate} from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState(""); // If you're using a state to store the email
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-const {employeeId}=useParams();
+  const { employeeId } = useParams();
   const currentYear = new Date().getFullYear() + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
-  
+
   // Static questions and answers
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
@@ -37,7 +37,7 @@ const {employeeId}=useParams();
   const toggleHelpPopup = () => {
     setShowHelpPopup(!showHelpPopup);
   };
-   
+
   useEffect(() => {
     fetchuserDetails();
   }, []);
@@ -58,9 +58,12 @@ const {employeeId}=useParams();
     }
   };
 
+  const handleBack = () => {
+    setIsModalVisible(false);
+    navigate("/manager-dashboard");
+  };
 
 
-  
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
       if (!employeeId || !timePeriod) {
@@ -71,7 +74,7 @@ const {employeeId}=useParams();
 
       try {
         const response = await axios.get(
-         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
         // Initialize the form data with the structure you need
@@ -87,8 +90,8 @@ const {employeeId}=useParams();
             notes: response.data[0]?.pageData[index]?.notes || '',
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation:
-             response.data[0]?.pageData[index]?.managerEvaluation || 0
-            
+              response.data[0]?.pageData[index]?.managerEvaluation || 0
+
           }))
         };
 
@@ -109,70 +112,70 @@ const {employeeId}=useParams();
 
     const updatedFormData = [...formData];
     const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-    
+
     if (!updatedFormData[0].pageData[index].managerEvaluation) {
       updatedFormData[0].pageData[index].managerEvaluation = {};
     }
-    
+
     updatedFormData[0].pageData[index].managerEvaluation = value;
     setFormData(updatedFormData);
   };
 
-  
 
- const handleSubmit = async () => {
+
+  const handleSubmit = async () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
-  
+
     try {
-      const email2 = {email}
+      const email2 = { email }
       console.log("email", email2);
-      
-     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
+
+      // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
       console.log("Submitting form with employeeId:", employeeId, "and email:", email);
-  
+
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
           answer: item.answer || '',
           notes: item.notes || '',
           weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
-          
+          managerEvaluation: item.managerEvaluation || 0
+
         }))
       };
-      
-  
+
+
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         submissionData,
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("PUT request successful.");
-  
+
       await axios.post(
         "http://localhost:3003/confirmationEmail/completedEmail",
         { userId: employeeId, email: email },
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("POST request for confirmation email successful.");
-  
-      navigate("/manager-dashboard");
+
+      setIsModalVisible(true);
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
   };
-  
-  
 
-  
+
+
+
 
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-  const status = formData?formData.status:null
+  const status = formData ? formData.status : null
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
@@ -331,10 +334,10 @@ const {employeeId}=useParams();
                           <span className="text-gray-600">{notes}</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">-</span>
+                        <span className="text-gray-600">No notes to display</span>
                       </td>
                       )}
-                       {weights ? (
+                      {weights ? (
                         <td className="p-2 text-sm text-center text-gray-700 w-48">
                           <span className="text-gray-600">{weights} %</span>
                         </td>
@@ -342,14 +345,14 @@ const {employeeId}=useParams();
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {/* {status === 'Completed' && ( */} 
-                       <td className="p-2 text-sm text-gray-600 text-center">
-                      <input
-                        className="w-20 p-1 border border-gray-300 rounded  "
-                        value={formData[0].pageData[index].managerEvaluation|| ''}
-                        onChange={(e) => handleManagerEvaluationChange(e, index)}
-                      />
-                    </td>
+                      {/* {status === 'Completed' && ( */}
+                      <td className="p-2 text-sm text-gray-600 text-center">
+                        <input
+                          className="w-20 p-1 border border-gray-300 rounded  "
+                          value={formData[0].pageData[index].managerEvaluation || ''}
+                          onChange={(e) => handleManagerEvaluationChange(e, index)}
+                        />
+                      </td>
                     </tr>
                   );
                 })}
@@ -357,10 +360,10 @@ const {employeeId}=useParams();
             </table>
           </div>
         </div>
-
+       
 
         {/* Goals Section */}
-        <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
+        {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
           {formData ? (
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Target size={20} className="text-green-600" />
@@ -381,7 +384,7 @@ const {employeeId}=useParams();
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
         <div className="mt-6 flex justify-end">
           <button
             className="px-6 py-2 text-white bg-blue-600 rounded-lg"
@@ -390,6 +393,31 @@ const {employeeId}=useParams();
             Submit
           </button>
         </div>
+        {isModalVisible && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
+              <div className="p-6">
+
+
+                <p className="mt-3 text-gray-600 text-center">
+                  Thank you for submitting
+                </p>
+                <div className="mt-6 flex justify-center space-x-4">
+                  <button
+                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    onClick={() => handleBack()}
+                  >
+                    back
+                  </button>
+
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        )}
       </div>
 
     </div>

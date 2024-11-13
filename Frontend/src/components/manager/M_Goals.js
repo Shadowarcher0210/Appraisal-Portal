@@ -191,6 +191,7 @@ const M_Goals = () => {
         delete newGoals[employeeToSubmit];
         localStorage.setItem("employeeGoals", JSON.stringify(newGoals));
         return newGoals;
+        
       });
     } catch (error) {
       console.error("Error submitting goals:", error);

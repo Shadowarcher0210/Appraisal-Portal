@@ -27,17 +27,19 @@ const sendConfirmationEmails = async (req, res) => {
       to: email,
       subject: 'Confirmation of Your Appraisal Form Submission',
       html: `Dear ${user.empName},<br><br>
-             This is a system-generated email to confirm that you have successfully submitted your appraisal form on ${submittedDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
-             Thank you for your submission. Your appraisal will be reviewed by your manager, and you will be notified of any updates or further actions required. If you have any questions or need assistance, please do not hesitate to reach out to your HR representative.<br><br>
+             This is a system-generated email to confirm that you have successfully submitted your appraisal form on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
+             Thank you for your submission. Your appraisal will be reviewed by your manager, and you will be notified of any updates or further actions required.\n\nYou can view your application status at <a href="http://localhost:3000">http://localhost:3000/employee-dashboard</a>.   \n\nIf you have any questions or need assistance, please do not hesitate to reach out to your HR representative.<br><br>
              Best regards,<br>
              BlueSpire`
     };
 
     const managerMailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'naveen.pandranki@thebluespire.com',
+      to: 'mounika.takur@thebluespire.com',
       subject: 'Confirmation of Appraisal Form Submission',
-      text: `Dear ${appraisal.managerName},\n\nThis is a system-generated email to confirm that ${user.empName} has successfully submitted their appraisal form for the ${appraisal.initiatedOn} appraisal cycle.\n\nSubmission Details:\nEmployee Name: ${user.empName} \nEmployee ID: ${user._id}\nDepartment: ${user.department}.\n\nThank you.\n\nBest regards,\nBlueSpire`
+      html: `Dear ${user.managerName},<br><br>
+      This is a system-generated email to confirm that ${user.empName} has successfully submitted their appraisal form for the <strong>${presentYear} - ${nextYear}</strong> appraisal cycle.<br><br>
+      Submission Details:\nEmployee Name: ${user.empName} \nDepartment: ${user.department}.\n\nYou can view your employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.\n\nThank you.\n\nBest regards,\nBlueSpire`
     };
 
     await transporter.sendMail(userMailOptions);
@@ -86,7 +88,7 @@ const sendCompletedEmails = async (req, res) => {
       subject: 'Appraisal Reviewed Confirmation',
       html: `Dear ${user.empName},<br><br>
              This is a system-generated email to inform you that your appraisal has been approved on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
-             Your performance evaluation has been finalized, and your manager will contact you for any further actions required.<br><br>
+             Your performance evaluation has been finalized, and your manager will contact you for any further actions required. \n\nYou can view your employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.<br><br>
              If you have any questions, feel free to reach out to HR.<br><br>
              Best regards,<br>
              BlueSpire`
