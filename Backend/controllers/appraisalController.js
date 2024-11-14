@@ -618,7 +618,7 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
         if (appraisals.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No submitted appraisals found for manager ${managerName}`,
+                // message: `No submitted appraisals found for manager ${managerName}`,
             });
         }
 

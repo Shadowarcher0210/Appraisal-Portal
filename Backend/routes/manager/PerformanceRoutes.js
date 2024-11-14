@@ -3,6 +3,6 @@ const { getEmployeeAppraisals, managerEvaluation } = require('../../controllers/
 const router = express.Router()
 
 router.get('/allAppraisals/:managerName/:startDate/:endDate', getEmployeeAppraisals)
-router.post('/evaluation', managerEvaluation)
+// router.post('/evaluation', managerEvaluation)
 
 module.exports = router;

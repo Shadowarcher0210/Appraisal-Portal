@@ -31,31 +31,31 @@ const getEmployeeAppraisals = async (req, res) => {
 };
 
 
-const managerEvaluation = async (req, res) => {
-    const { employeeId, timePeriod, empScore } = req.body;
+// const managerEvaluation = async (req, res) => {
+//     const { employeeId, timePeriod, empScore } = req.body;
 
-    if (!employeeId || !timePeriod || timePeriod.length !== 2 || !empScore) {
-        return res.status(400).json({ message: 'employeeId, timePeriod , and empScore are required' });
-    }
+//     if (!employeeId || !timePeriod || timePeriod.length !== 2 || !empScore) {
+//         return res.status(400).json({ message: 'employeeId, timePeriod , and empScore are required' });
+//     }
 
-    try {
-        const appraisal = await Appraisal.findOneAndUpdate(
-            { employeeId, timePeriod },
-            { empScore },
-            { new: true }
-        );
+//     try {
+//         const appraisal = await Appraisal.findOneAndUpdate(
+//             { employeeId, timePeriod },
+//             { empScore },
+//             { new: true }
+//         );
 
-        if (!appraisal) {
-            return res.status(404).json({ message: 'Appraisal record not found' });
-        }
+//         if (!appraisal) {
+//             return res.status(404).json({ message: 'Appraisal record not found' });
+//         }
 
-        res.status(200).json({ message: 'EmpScore updated successfully', appraisal });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error', error });
-    }
-};
+//         res.status(200).json({ message: 'EmpScore updated successfully', appraisal });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Server error', error });
+//     }
+// };
 
 
 
-module.exports = { getEmployeeAppraisals, managerEvaluation };
+module.exports = { getEmployeeAppraisals };
