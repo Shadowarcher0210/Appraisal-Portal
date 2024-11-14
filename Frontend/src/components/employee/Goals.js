@@ -25,7 +25,7 @@ const PreviousGoalsSection = ({ initialData = {} }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Completed':
+      case 'Under HR Review':
         return 'text-green-500';
       case 'In Progress':
         return 'text-blue-500';

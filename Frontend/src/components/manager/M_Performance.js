@@ -94,7 +94,7 @@ const M_Performance = () => {
         if (status === "Submitted" || status === "Under Review") {
            
             navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
-        } else if (status === "Completed") {
+        } else if (status === "Under HR Review") {
             // Navigate to employee view if status is "Completed"
             navigate(`/empview/${employeeId}`, { state: { timePeriod } });
         }
@@ -164,10 +164,10 @@ const M_Performance = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                         <button
-                                                className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 ${appraisal.status === "Completed" ? '' : 'cursor-pointer'}`}
+                                                className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 ${appraisal.status === "Under HR Review" ? '' : 'cursor-pointer'}`}
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
-                                                {appraisal.status === "Completed" ? "View" : "Review"}
+                                                {appraisal.status === "Under HR Review" ? "View" : "Review"}
                                             </button>
                                         </td>
                                     </tr>

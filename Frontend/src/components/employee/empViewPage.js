@@ -247,7 +247,7 @@ const {employeeId}=useParams();
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
 
 																																  
-                  {formData[0].status === 'Completed' && (
+                  {formData[0].status === 'Under HR Review' && (
         <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
             Manager Evaluation
         </th>
@@ -299,7 +299,7 @@ const {employeeId}=useParams();
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {formData[0].status === 'Completed' && (
+                      {formData[0].status === 'Under HR Review' && (
                        <td className="p-2 text-sm text-gray-600 text-center">
 
                       <span className="text-gray-600 ">{managerEvaluation} %</span>

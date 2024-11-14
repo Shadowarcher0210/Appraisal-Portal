@@ -104,7 +104,7 @@ const saveAppraisalDetails = async (req, res) => {
 
         // Determine status based on manager evaluation
         const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        const newStatus = hasManagerEvaluation ? 'Completed' : (isExit ? 'In Progress' : 'Submitted');
+        const newStatus = hasManagerEvaluation ? 'Under HR Review' : (isExit ? 'In Progress' : 'Submitted');
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -158,7 +158,7 @@ const updateAppraisalStatus = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Completed"];
+        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review"];
         if (!validStatuses.includes(status)) {
             return res.status(400).send({ error: "Invalid status value provided" });
         }
@@ -294,7 +294,7 @@ const getEmployeeAppraisal = async (req, res) => {
     try {
         const { employeeId } = req.params;
         // const user = await Employee.findOne(employeeId, '-password');
-        const statuses = ['Submitted', 'Under Review', 'Completed'];
+        const statuses = ['Submitted', 'Under Review', 'Under HR Review'];
         const appraisals = await Appraisal.find({
             employeeId,
             status: { $in: statuses },
@@ -500,7 +500,7 @@ const getApplicationNotification = async (req, res) => {
                 employeeId,
             })
         }
-        else if (appraisal.status === 'Completed'){
+        else if (appraisal.status === 'Under HR Review'){
             const managerName = appraisal.managerName || 'the manager';
             return res.status(200).json({
                 sucess:true,
@@ -595,5 +595,87 @@ const getApplicationNotificationStarts = async (req, res) => {
 };
 
 
+const notifyManagersOfSubmittedAppraisals = async (req, res) => {
+    try {
+        const { managerName } = req.params;
 
-module.exports = {getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
+        if (!managerName) {
+            return res.status(400).json({
+                success: false,
+                message: "Manager name is required",
+            });
+        }
+
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+       
+        const appraisals = await Appraisal.find({
+            managerName: managerName,
+            status: "Submitted",
+        });
+
+        if (appraisals.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No submitted appraisals found for manager ${managerName}`,
+            });
+        }
+
+        const notifications = [];
+
+        for (const appraisal of appraisals) {
+            const { empName, timePeriod } = appraisal;
+
+            if (timePeriod && timePeriod.length === 2) {
+                const appraisalStartDate = new Date(timePeriod[0]);
+                const appraisalEndDate = new Date(timePeriod[1]);
+
+              
+                const timeDifference = appraisalStartDate - currentDate;
+                const daysUntilStart = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+              
+                const manager = await Employee.findOne({
+                    empName: managerName,
+                    empType: "Manager",
+                });
+
+                if (!manager) {
+                    return res.status(404).json({
+                        success: false,
+                        message: "Manager information not found",
+                    });
+                }
+
+                
+                notifications.push({
+                    employeeName: empName,
+                    managerName: managerName,
+                    submissionDate: new Date(),
+                    message: `${empName} has submitted their appraisal on ${new Date().toISOString().split('T')[0]} for the year ${appraisalStartDate.toISOString().split('T')[0]} to ${appraisalEndDate.toISOString().split('T')[0]}.`,
+                  
+                });
+            }
+        }
+
+        const employeeNamesList = notifications.map((notification) => notification.employeeName).join(', ');
+        
+        res.status(200).json({
+            success: true,
+            notifications,
+            message: `Notifications for the following employees: ${employeeNamesList}`,
+        });
+
+    } catch (error) {
+        console.error("Error fetching manager notifications:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching manager notifications",
+            error: error.message,
+        });
+    }
+};
+
+
+module.exports = {notifyManagersOfSubmittedAppraisals,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}

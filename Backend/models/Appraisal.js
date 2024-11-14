@@ -72,7 +72,7 @@ const appraisalSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["To Do", "In Progress", "Submitted", "Under Review", "Completed"],
+        enum: ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review"],
         default: "To Do",
         required: true
     },
