@@ -26,19 +26,19 @@ const goalsSchema = new mongose.Schema(
       type: String,
       required: [true, 'deadline date is required'],
     },
-    // timePeriod: {
-    //   type: [String],
-    //   validate: {
-    //     validator: function(v) {
-    //       return v.length === 2;
-    //     },
-    //     message: 'Time period must contain exactly two dates (start and end).'
-    //   },
-    //   set: (dates) => {
-    //     // Ensure dates are in YYYY-MM-DD format without the time part
-    //     return dates.map(date => new Date(date).toISOString().split('T')[0]);
-    //   }
-    // }
+    timePeriod: {
+      type: [String],
+      validate: {
+        validator: function(v) {
+          return v.length === 2;
+        },
+        message: 'Time period must contain exactly two dates (start and end).'
+      },
+      set: (dates) => {
+        // Ensure dates are in YYYY-MM-DD format without the time part
+        return dates.map(date => new Date(date).toISOString().split('T')[0]);
+      }
+    }
   },)
 
 module.exports = mongose.model('goals', goalsSchema)
