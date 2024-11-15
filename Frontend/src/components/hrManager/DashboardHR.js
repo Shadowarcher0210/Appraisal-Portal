@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { Calendar, Target } from 'lucide-react';
@@ -75,11 +75,15 @@ const DashboardHR = () => {
       console.log('User ID not found in local storage.');
     }
   };
+  useEffect(() => {
+    fetchAppraisalDetails();
+    // allEmployees();
+  }, []);
     const handleButtonClick = async (appraisal) => {
         const { timePeriod, status } = appraisal;
         const employeeId = localStorage.getItem('employeeId')?.trim();
         const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-        const navigatePath = status === "Submitted" ? `/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/manager-Form";
+        const navigatePath = status === "Submitted" ? `/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/hr-Form";
 
         try {
             const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,

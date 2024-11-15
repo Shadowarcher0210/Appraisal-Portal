@@ -24,6 +24,10 @@ import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
 import EvaluationView from './components/manager/EvaluationView.js';
 import DashboardHR from './components/hrManager/DashboardHR.js';
+import FormHR from './components/hrManager/FormHR.js';
+import MyPerformanceHR from './components/hrManager/MyPerformanceHR.js';
+import PerformanceHR from './components/hrManager/PerformanceHR.js';
+import ViewHR from './components/hrManager/ViewHR.js';
 
 const App = () => {
   const location = useLocation();
@@ -71,6 +75,10 @@ const App = () => {
 
           {/* HR Manager */}
           <Route path='hr-dashboard' element={<DashboardHR/>}/>
+          <Route path='hr-form' element={<FormHR/>}/>
+          <Route path='hr-myperformance' element={<MyPerformanceHR/>}/>
+          <Route path='hr-performance' element={<PerformanceHR/>}/>
+          <Route path='hr-view/:employeeId' element={<ViewHR/>}/>
      
         </Routes>
       </div>

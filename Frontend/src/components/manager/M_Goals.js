@@ -387,7 +387,23 @@ const M_Goals = () => {
                     <option value="leadership">Leadership</option>
                     <option value="technical">Technical</option>
                     <option value="soft-skills">Soft Skills</option>
+                    
+
+                    <option value="others">others</option>
                   </select>
+                  {goalFormData.category === 'others' && (
+    <textarea
+      className="w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+      placeholder="Please specify..."
+      value={goalFormData.otherCategory || ''}
+      onChange={(e) =>
+        setGoalFormData({
+          ...goalFormData,
+          otherCategory: e.target.value,
+        })
+      }
+    ></textarea>
+  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

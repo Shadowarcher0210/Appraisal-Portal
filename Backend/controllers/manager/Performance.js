@@ -33,10 +33,10 @@ const getEmployeeAppraisals = async (req, res) => {
 
 const saveAdditionalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;  // Employee ID and Time Period (startDate, endDate)
-    const { quality, empName, category, description, weightage, deadline } = req.body;  // Other fields from request body
+    const { quality, empName, successMetric, weightage, attainments, comments } = req.body;  // Other fields from request body
 
     // Validation of required fields
-    if (!employeeId || !quality || !empName || !category || !description || !weightage || !deadline || !startDate || !endDate) {
+    if (!employeeId || !quality || !empName || !successMetric || !weightage || !attainments || !comments || !startDate || !endDate) {
         return res.status(400).json({
             error: 'All fields are required: employeeId, quality, empName, category, description, weightage, deadline, startDate, and endDate.'
         });
@@ -55,10 +55,10 @@ const saveAdditionalDetails = async (req, res) => {
             employeeId,
             quality,
             empName,
-            category,
-            description,
+            successMetric,
             weightage,
-            deadline,
+            attainments,
+            comments,
             timePeriod
         });
 

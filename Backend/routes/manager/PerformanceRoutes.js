@@ -3,5 +3,5 @@ const { getEmployeeAppraisals, saveAdditionalDetails} = require('../../controlle
 const router = express.Router()
 
 router.get('/allAppraisals/:managerName/:startDate/:endDate', getEmployeeAppraisals)
-router.post('/saveAdditionalDetails/:employeeId/:startDate/:endDate', saveAdditionalDetails);
+router.put('/saveAdditionalDetails/:employeeId/:startDate/:endDate', saveAdditionalDetails);
 module.exports = router;

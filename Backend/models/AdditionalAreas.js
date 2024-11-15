@@ -14,27 +14,24 @@ const AdditionalSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Employee name is required'],
     },
-    category: {
+    successMetric: {
       type: String,
       required: [true, 'Category is required'],
     },
-    description: {
-      type: String,
-      required: [true, 'Description is required'],
-    },
+   
     weightage: {
       type: Number,
       required: [true, 'Weightage is required'],
       min: [0, 'Weightage must be between 0 and 100'],
       max: [100, 'Weightage must be between 0 and 100'],
     },
-    attainment: {
+    attainments: {
       type: Number,
       required: [true, 'Attainment is required'],
       min: [0, 'Attainment must be between 0 and 100'],
       max: [100, 'Attainment must be between 0 and 100'],
     },
-    deadline: {
+    comments: {
       type: String,
       required: [true, 'Deadline date is required'],
     },

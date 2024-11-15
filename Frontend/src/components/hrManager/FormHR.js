@@ -11,7 +11,7 @@ import SelfAppraisal2 from "../Tabs/SelfAppraisal2";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
-const M_Form = () => {
+const FormHR = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [weights, setWeights] = useState(Array(14).fill(0));
   const [notes, setNotes] = useState(Array(14).fill(""));
@@ -411,4 +411,4 @@ const M_Form = () => {
   );
 };
 
-export default M_Form;
+export default FormHR
