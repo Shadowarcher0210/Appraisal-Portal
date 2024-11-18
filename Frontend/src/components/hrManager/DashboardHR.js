@@ -83,7 +83,7 @@ const DashboardHR = () => {
         const { timePeriod, status } = appraisal;
         const employeeId = localStorage.getItem('employeeId')?.trim();
         const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-        const navigatePath = status === "Submitted" ? `/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/hr-Form";
+        const navigatePath = status === "Submitted" ? `/empview/${employeeId}` : "/hr-Form";
 
         try {
             const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,

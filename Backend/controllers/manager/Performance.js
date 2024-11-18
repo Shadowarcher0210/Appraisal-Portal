@@ -35,14 +35,12 @@ const saveAdditionalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;  // Employee ID and Time Period (startDate, endDate)
     const { quality, empName, successMetric, weightage, attainments, comments } = req.body;  // Other fields from request body
 
-    // Validation of required fields
     if (!employeeId || !quality || !empName || !successMetric || !weightage || !attainments || !comments || !startDate || !endDate) {
         return res.status(400).json({
             error: 'All fields are required: employeeId, quality, empName, category, description, weightage, deadline, startDate, and endDate.'
         });
     }
 
-    // Validate timePeriod
     const timePeriod = [new Date(startDate).toISOString().split('T')[0], new Date(endDate).toISOString().split('T')[0]];
     
     if (timePeriod[0] > timePeriod[1]) {
@@ -50,7 +48,7 @@ const saveAdditionalDetails = async (req, res) => {
     }
 
     try {
-        // Create a new record for the Additional model
+ 
         const newAdditional = new AdditionalAreas({
             employeeId,
             quality,
