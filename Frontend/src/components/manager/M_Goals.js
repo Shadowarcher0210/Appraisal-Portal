@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {
@@ -22,12 +21,8 @@ const M_Goals = () => {
   const [editingGoal, setEditingGoal] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [employeeToSubmit, setEmployeeToSubmit] = useState(null);
-  const [submittedEmployees, setSubmittedEmployees] = useState(() => {
-    const submitted = localStorage.getItem("submittedEmployees");
-    return submitted ? JSON.parse(submitted) : [];
-  });
+  const [submittedEmployees, setSubmittedEmployees] = useState([]);
   const [goals, setGoals] = useState([]);
-
   const [goalFormData, setGoalFormData] = useState({
     employeeId: "",
     empName: "",
@@ -40,13 +35,12 @@ const M_Goals = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [employees, setEmployees] = useState([]);
-
-  const [employeeGoals, setEmployeeGoals] = useState(() => {
-    const storedGoals = localStorage.getItem("employeeGoals");
-    return storedGoals ? JSON.parse(storedGoals) : {};
-  });
-
   const [expandedEmployees, setExpandedEmployees] = useState({});
+
+  // const [employeeGoals, setEmployeeGoals] = useState(() => {
+  //   const storedGoals = localStorage.getItem("employeeGoals");
+  //   return storedGoals ? JSON.parse(storedGoals) : {};
+  // });
 
   const categoryIcons = {
     development: <Target className="w-5 h-5" />,
@@ -74,7 +68,7 @@ const M_Goals = () => {
     )?.empName;
 
     if (editingGoal) {
-      setEmployeeGoals((prev) => ({
+      setGoals((prev) => ({
         ...prev,
         [selectedEmployee]: prev[selectedEmployee].map((goal) =>
           goal.id === editingGoal.id ? { ...goal, ...goalFormData } : goal
@@ -82,7 +76,7 @@ const M_Goals = () => {
       }));
       setEditingGoal(null);
     } else {
-      setEmployeeGoals((prev) => {
+      setGoals((prev) => {
         const newGoal = {
           ...goalFormData,
           id: Date.now(),
@@ -93,7 +87,6 @@ const M_Goals = () => {
           ...prev,
           [selectedEmployee]: [...(prev[selectedEmployee] || []), newGoal],
         };
-        localStorage.setItem("employeeGoals", JSON.stringify(updatedGoals));
         return updatedGoals;
       });
     }
@@ -115,11 +108,9 @@ const M_Goals = () => {
       if (managerName) {
         try {
           const response = await axios.get(
-            `http://localhost:3003/employees/${managerName}`
-          );
+            `http://localhost:3003/employees/${managerName}`);
           response.data.data.forEach((employee) =>
-            fetchGoals(employee.employeeId)
-          );
+          fetchGoals(employee.employeeId));
           setEmployees(response.data.data);
         } catch (error) {
           console.error("Error fetching employees:", error);
@@ -166,32 +157,30 @@ const M_Goals = () => {
   };
 
   const handleSubmitGoals = async () => {
+    console.log("inside submit");
+    
     if (!employeeToSubmit) return;
-
     setSubmitting((prev) => ({ ...prev, [employeeToSubmit]: true }));
     try {
-      const goals = employeeGoals[employeeToSubmit] || [];
+      // const goals = goals[employeeToSubmit] || [];
+      const employeeGoals = goals[employeeToSubmit] || [];
       const response = await axios.post(
         `http://localhost:3003/goals/${employeeToSubmit}`,
-        { goals }
+        { goals: employeeGoals }
       );
+      console.log("Response from submission:", response);
 
       setSubmittedEmployees((prev) => {
         const newSubmitted = [...prev, employeeToSubmit];
-        localStorage.setItem(
-          "submittedEmployees",
-          JSON.stringify(newSubmitted)
-        );
+        console.log("new submitted employees:", newSubmitted)
         return newSubmitted;
       });
 
       // Clear goals for this employee after successful submission
-      setEmployeeGoals((prev) => {
+      setGoals((prev) => {
         const newGoals = { ...prev };
         delete newGoals[employeeToSubmit];
-        localStorage.setItem("employeeGoals", JSON.stringify(newGoals));
         return newGoals;
-        
       });
     } catch (error) {
       console.error("Error submitting goals:", error);
@@ -214,74 +203,74 @@ const M_Goals = () => {
       </div>
 
       <div className="space-y-6">
-      <div className="space-y-6">
-  {employees
-  .sort((a, b) => a.empName.localeCompare(b.empName))
-  .map((employee) => (
-    <div key={employee.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-      <div 
-        className="p-6 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors duration-200"
-        onClick={() => toggleEmployee(employee.employeeId)}
-      >
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-800 to-cyan-500 rounded-lg flex items-center justify-center text-white shadow-inner">
-            <Users className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-gray-800">{employee.empName}</h3>
-            <div className="flex items-center text-sm text-gray-500 mt-1">
-              <Award className="w-4 h-4 mr-1" />
-              <span>{employee.designation}</span>
-              <span className="mx-2">•</span>
-              <span>{employee.department}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          {(!submittedEmployees.includes(employee.employeeId) ) && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedEmployee(employee.employeeId);
-                  setEditingGoal(null);
-                  setShowGoalForm(true);
-                }}
-                className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Goal
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSubmitConfirm(employee.employeeId);
-                }}
-                disabled={submitting[employee.employeeId]}
-                className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Submit Goals
-              </button>
-            </>
-          )}
-          {goals[employee.employeeId]?.length > 0 && submittedEmployees.includes(employee.employeeId) ? (
-            <span className="text-green-600 font-medium flex items-center">
-              <Award className="w-4 h-4 mr-2" />
-              Goals Submitted
-            </span>
-          ) : null}
-          {expandedEmployees[employee.employeeId] ? 
-            <ChevronUp className="w-5 h-5 text-gray-400" /> : 
-            <ChevronDown className="w-5 h-5 text-gray-400" />
-          }
-        </div>
-      </div>
+        <div className="space-y-6">
+          {employees
+            .sort((a, b) => a.empName.localeCompare(b.empName))
+            .map((employee) => (
+              <div key={employee.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                <div
+                  className="p-6 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors duration-200"
+                  onClick={() => toggleEmployee(employee.employeeId)}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-800 to-cyan-500 rounded-lg flex items-center justify-center text-white shadow-inner">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg text-gray-800">{employee.empName}</h3>
+                      <div className="flex items-center text-sm text-gray-500 mt-1">
+                        <Award className="w-4 h-4 mr-1" />
+                        <span>{employee.designation}</span>
+                        <span className="mx-2">•</span>
+                        <span>{employee.department}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    {(!submittedEmployees.includes(employee.employeeId)) && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedEmployee(employee.employeeId);
+                            setEditingGoal(null);
+                            setShowGoalForm(true);
+                          }}
+                          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Goal
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSubmitConfirm(employee.employeeId);
+                          }}
+                          disabled={submitting[employee.employeeId]}
+                          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Submit Goals
+                        </button>
+                      </>
+                    )}
+                    {goals[employee.employeeId]?.length > 0 && submittedEmployees.includes(employee.employeeId) ? (
+                      <span className="text-green-600 font-medium flex items-center">
+                        <Award className="w-4 h-4 mr-2" />
+                        Goals Submitted
+                      </span>
+                    ) : null}
+                    {expandedEmployees[employee.employeeId] ?
+                      <ChevronUp className="w-5 h-5 text-gray-400" /> :
+                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                    }
+                  </div>
+                </div>
 
                 {expandedEmployees[employee.employeeId] && (
                   <div className="p-6 border-t border-gray-100 bg-gray-50">
                     {goals[employee.employeeId]?.length > 0 ||
-                    submittedEmployees.includes(employee.employeeId) ? (
+                      submittedEmployees.includes(employee.employeeId) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {goals[employee.employeeId]?.map((goal) => (
                           <div
@@ -301,19 +290,19 @@ const M_Goals = () => {
                                 {!submittedEmployees.includes(
                                   employee.employeeId
                                 ) && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleEditGoal(employee.employeeId, goal);
-                                    }}
-                                    className="p-2 text-gray-400 hover:text-cyan-900 transition-colors duration-200"
-                                  >
-                                    <Edit2 className="w-4 h-4" />
-                                  </button>
-                                )}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditGoal(employee.employeeId, goal);
+                                      }}
+                                      className="p-2 text-gray-400 hover:text-cyan-900 transition-colors duration-200"
+                                    >
+                                      <Edit2 className="w-4 h-4" />
+                                    </button>
+                                  )}
                               </div>
 
-                              <h4 className="text-lg font-medium text-gray-900 mb-3">
+                              <h4 className="text-md text-gray-700 text-md mb-3">
                                 {goal.description}
                               </h4>
 

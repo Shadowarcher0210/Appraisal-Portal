@@ -23,6 +23,9 @@ import M_Goals from './components/manager/M_Goals';
 import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
 import EvaluationView from './components/manager/EvaluationView.js';
+import EvaluationView1 from './components/manager/EvaluationView1.js';
+import EvaluationSummary from './components/manager/EvaluationSummary.js';
+import EvaluationView2 from './components/manager/EvaluationView2.js';
 
 const App = () => {
   const location = useLocation();
@@ -68,6 +71,11 @@ const App = () => {
           <Route path='/manager-View' element ={<M_ViewPage />} />
           
           <Route path='/evaluationView/:employeeId' element ={<EvaluationView />} />
+          <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
+          <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />
+          <Route path='/evaluationSummary/:employeeId' element={<EvaluationSummary />} />
+
+
           
      
         </Routes>
