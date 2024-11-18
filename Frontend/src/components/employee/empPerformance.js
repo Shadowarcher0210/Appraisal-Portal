@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Target, TrendingUp,Briefcase, Plus, Users, Send, Calendar, ArrowRight, Award, BarChart, Edit2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Target, TrendingUp, Briefcase, Plus, Users, Send, Calendar, ArrowRight, Award, BarChart, Edit2 } from 'lucide-react';
 
 const E_PerformancePage = () => {
   const [selectedYear, setSelectedYear] = useState(null);
@@ -99,19 +99,21 @@ const E_PerformancePage = () => {
 
   useEffect(() => {
     const fetchEmployeeGoals = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3003/goals/${employeeId}`);
-            setEmployeeGoals(response.data.data || []); 
-            setLoading(false);
-        } catch (err) {
-            console.error('Error fetching goals:', err);
-            setError('Error fetching employee goals');
-            setLoading(false);
-        }
+      try {
+        const response = await axios.get(`http://localhost:3003/goals/${employeeId}`);
+        setEmployeeGoals(response.data.data || []);
+        console.log("goals", response.data)
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching goals:', err);
+        setError('Error fetching employee goals');
+        setLoading(false);
+      }
     };
 
     fetchEmployeeGoals();
-}, []);
+  }, []);
 
 
 
@@ -239,60 +241,60 @@ const E_PerformancePage = () => {
                 )}
               </div> */}
               <div className="mb-2">
-      <button
-        onClick={() => toggleSection('manager')}
-        className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-      >
-        <div className="flex items-center space-x-3">
-          <Target className="h-6 w-6 text-blue-500" />
-          <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
-        </div>
-        {expandedSection === 'manager' ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
-        ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
-        )}
-      </button>
-
-      {expandedSection === 'manager' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-          {employeeGoals.map((goal, index) => (
-            <div className="bg-white p-6 rounded-lg shadow-md" key={goal._id}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    {categoryIcons[goal.category]}
+                <button
+                  onClick={() => toggleSection('manager')}
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Target className="h-6 w-6 text-blue-500" />
+                    <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
                   </div>
-                  <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
-                    {goal.category}
-                  </span>
-                </div>
+                  {expandedSection === 'manager' ? (
+                    <ChevronUp className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+
+                {expandedSection === 'manager' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+                    {employeeGoals.map((goal, index) => (
+                      <div className="bg-white p-6 rounded-lg shadow-md" key={goal._id}>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-blue-50 rounded-lg">
+                              {categoryIcons[goal.category]}
+                            </div>
+                            <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
+                              {goal.category}
+                            </span>
+                          </div>
+                        </div>
+
+                        <h4 className="text-lg font-medium text-gray-900 mb-3">
+                          {goal.description}
+                        </h4>
+
+                        <div className="flex items-center justify-between mt-4">
+                          <div className="flex items-center space-x-2">
+                            <BarChart className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm font-medium text-gray-900">
+                              Weight: {goal.weightage}%
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm text-gray-600">
+                              Due: {new Date(goal.deadline).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <h4 className="text-lg font-medium text-gray-900 mb-3">
-                {goal.description}
-              </h4>
-
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center space-x-2">
-                  <BarChart className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-900">
-                    Weight: {goal.weightage}%
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-600">
-                    Due: {new Date(goal.deadline).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  
 
 
             </div>

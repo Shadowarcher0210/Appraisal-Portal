@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import { User, Briefcase, TrendingUp, Target, Award } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation } from 'react-router-dom';
 
 const M_ViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
 
   const employeeId = localStorage.getItem('employeeId');
-  const currentYear = new Date().getFullYear() + 1;
-  const nextYear = currentYear + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
   // Static questions and answers

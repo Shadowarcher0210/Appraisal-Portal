@@ -2,21 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-const EvaluationView = () => {
+const ViewHR = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); // If you're using a state to store the email
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
-  const { employeeId } = useParams();
+
+  const employeeId = localStorage.getItem('employeeId');
   const currentYear = new Date().getFullYear() + 1;
+  const nextYear = currentYear + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
-
   // Static questions and answers
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
@@ -39,170 +36,27 @@ const EvaluationView = () => {
   };
 
   useEffect(() => {
-    fetchuserDetails();
-  }, []);
-
-  const fetchuserDetails = async () => {
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-
-        setEmail(response.data.user.email);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
-
-  const handleBack = () => {
-    setIsModalVisible(false);
-    navigate("/manager-dashboard");
-  };
-
-  const handleContinue = () => {
-    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
-   
-  }
-
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError('Employee ID or time period not found');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        // Initialize the form data with the structure you need
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || '',
-          pageData: questionsAndAnswers.map((qa, index) => ({
-            questionId: (index + 1).toString(),
-            answer: response.data[0]?.pageData[index]?.answer || '',
-            notes: response.data[0]?.pageData[index]?.notes || '',
-            weights: response.data[0]?.pageData[index]?.weights || '',
-            managerEvaluation:
-              response.data[0]?.pageData[index]?.managerEvaluation || 0
-
-          }))
-        };
-
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching appraisal details:', error);
-        setError('Error fetching appraisal details');
-        setLoading(false);
+    const appraisalDetails = async () => {
+      if (employeeId) {
+        try {
+          const response = await axios.get(`http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
+          setFormData(response.data);
+          console.log("formdata", response.data);
+        } catch (error) {
+          console.error('Error fetching user details:', error);
+        }
+      } else {
+        console.log('User ID not found in local storage.');
       }
     };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
-
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
-
-    const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
-
-
-  const handleSubmit = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
-
-    try {
-      const email2 = { email }
-      console.log("email", email2);
-
-      // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
-      console.log("Submitting form with employeeId:", employeeId, "and email:", email);
-
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          answer: item.answer || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
-
-        }))
-      };
-
-
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("PUT request successful.");
-
-      await axios.post(
-        "http://localhost:3003/confirmationEmail/completedEmail",
-        { userId: employeeId, email: email },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("POST request for confirmation email successful.");
-
-      setIsModalVisible(true);
-    } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
-    }
-  };
-
-
-
-
+    appraisalDetails()
+  }, [])
 
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-  const status = formData ? formData.status : null
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
-    );
-  }
-
-  if (!formData || !formData[0]) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">No data available</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -212,13 +66,13 @@ const EvaluationView = () => {
       <div className="mb-2">
 
         {/* Header Section */}
-        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
+        <div className="bg-blue-600 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Employee Self Appraisal</h1>
+            <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>
             {formData ? (
 
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-blue-50 text-blue-600  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
 
@@ -296,16 +150,14 @@ const EvaluationView = () => {
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Requirement</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
-
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
-                  
+                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
+                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager Evaluation</th>
                 </tr>
               </thead>
               <tbody>
                 {questionsAndAnswers.map((item, index) => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-                  // console.log("prev ans", previousAnswer)
+                  console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
@@ -316,7 +168,7 @@ const EvaluationView = () => {
                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
-                        <td className="p-2 text-sm text-gray-700 w-48">
+                        <td className="p-2 text-sm text-gray-700 w-72">
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
                             <span className="text-gray-600 px-2 py-1 rounded">{previousAnswer}</span>
@@ -332,25 +184,27 @@ const EvaluationView = () => {
                           <span className="text-gray-600">{notes}</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">No notes to display</span>
-                      </td>
-                      )}
-                      {weights ? (
-                        <td className="p-2 text-sm text-center text-gray-700 w-48">
-                          <span className="text-gray-600">{weights} %</span>
-                        </td>
-                      ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {/* {status === 'Completed' && ( */}
-                      <td className="p-2 text-sm text-gray-600 text-center">
-                        <input
-                          className="w-20 p-1 border border-gray-300 rounded  "
-                          value={formData[0].pageData[index].managerEvaluation || ''}
-                          onChange={(e) => handleManagerEvaluationChange(e, index)}
-                        />
+                    {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-32">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
                       </td>
+                      )}
+                           {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-36 ">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
+                      </td>
+                      )}
                     </tr>
                   );
                 })}
@@ -359,55 +213,34 @@ const EvaluationView = () => {
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
-          <div className='mr-auto'>
-            <button
-              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
-              onClick={handleBack}
-            >
-              Back
-            </button>
-          </div>
-          <div  className='mr-2'>
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSubmit}
-            >
-             Save & Exit
-            </button>
-          </div>
-          <div >
-            <button
-              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
-              onClick={handleContinue}
-            >
-              Continue
-            </button>
-          </div>  
-        </div>
 
-        {isModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-              <div className="p-6">
-                <p className="mt-3 text-gray-600 text-center">
-                  Thank you for submitting
-                </p>
-                <div className="mt-6 flex justify-center space-x-4">
-                  <button
-                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    onClick={() => handleBack()}
-                  >
-                    back
-                  </button>
+        {/* Goals Section */}
+        <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
+          {formData ? (
+            <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <Target size={20} className="text-green-600" />
+              Goals for
+              {` ${new Date(formData[0].timePeriod[0]).getFullYear() + 1} - ${new Date(formData[0].timePeriod[1]).getFullYear() + 1}`}
+              <br />
+            </h2>) : (<div />)}
+          <div className="space-y-3 pr-4">
+            {goals.map((goal, index) => (
+              <div key={index} className="bg-gray-100 rounded p-3">
+                <div className="flex justify-between items-start">
+                  <p className="text-sm font-medium text-gray-700">{goal.title}</p>
+                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
+                    {goal.deadline}
+                  </span>
                 </div>
+                <p className="text-sm text-gray-600 mt-1">{goal.description}</p>
               </div>
-            </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
+
     </div>
   );
 };
 
-export default EvaluationView;
+export default ViewHR;

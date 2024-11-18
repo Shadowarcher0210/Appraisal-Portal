@@ -237,7 +237,7 @@ const Header = () => {
           </div>
           <div
             className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
-            onClick={() => handleTabClick('myPerformance', '/hr-performance')}
+            onClick={() => handleTabClick('myPerformance', '/hr-myperformance')}
           >
             My Performance
           </div>

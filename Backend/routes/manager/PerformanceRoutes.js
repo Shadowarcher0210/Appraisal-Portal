@@ -1,8 +1,7 @@
 const express = require('express');
-const { getEmployeeAppraisals, managerEvaluation } = require('../../controllers/manager/Performance');
+const { getEmployeeAppraisals, saveAdditionalDetails} = require('../../controllers/manager/Performance');
 const router = express.Router()
 
 router.get('/allAppraisals/:managerName/:startDate/:endDate', getEmployeeAppraisals)
-// router.post('/evaluation', managerEvaluation)
-
+router.put('/saveAdditionalDetails/:employeeId/:startDate/:endDate', saveAdditionalDetails);
 module.exports = router;
