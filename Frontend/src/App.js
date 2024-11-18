@@ -14,7 +14,7 @@ import EmpViewPage from './components/employee/empViewPage.js';
 import EmpForm from './components/employee/empForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
-import Goals from './components/Tabs/Goals.js';
+// import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
 import M_Performance from './components/manager/M_Performance.js';
 import M_myPerformance from './components/manager/M_myPerformance.js';
@@ -28,7 +28,11 @@ import FormHR from './components/hrManager/FormHR.js';
 import MyPerformanceHR from './components/hrManager/MyPerformanceHR.js';
 import PerformanceHR from './components/hrManager/PerformanceHR.js';
 import ViewHR from './components/hrManager/ViewHR.js';
+import EvaluationView1 from './components/manager/EvaluationView1.js';
+import EvaluationSummary from './components/manager/EvaluationSummary.js';
+import EvaluationView2 from './components/manager/EvaluationView2.js';
 
+import Self from './components/Tabs/selfAppraisalTab.js'
 const App = () => {
   const location = useLocation();
 
@@ -56,8 +60,7 @@ const App = () => {
           <Route path="/selfform" element={<SelfAppraisal/>} />
           <Route path="/intro" element={<Introduction/>} />
 
-          <Route path="/goals2" element={<Goals/>} />
-
+=
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
@@ -79,6 +82,14 @@ const App = () => {
           <Route path='hr-myperformance' element={<MyPerformanceHR/>}/>
           <Route path='hr-performance' element={<PerformanceHR/>}/>
           <Route path='hr-view/:employeeId' element={<ViewHR/>}/>
+          <Route path="/selfemp" element={<Self/>} />
+
+          <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
+          <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />
+          <Route path='/evaluationSummary/:employeeId' element={<EvaluationSummary />} />
+
+
+          
      
         </Routes>
       </div>

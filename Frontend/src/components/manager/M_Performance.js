@@ -36,7 +36,7 @@ const M_Performance = () => {
 
         try {
             const response = await axios.get(
-               ` http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`
+                ` http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`
             );
             console.log('Fetched Appraisals in Performance Page:', response.data);
             const allAppraisals = response.data.data
@@ -62,7 +62,7 @@ const M_Performance = () => {
             fetchAllAppraisalDetails();
         }
     }, [selectedYear]);
-    
+
     // const handleViewClick = (appraisal) => {
     //     const { employeeId, timePeriod } = appraisal;
     //     console.log('Employee Id :',employeeId)
@@ -100,7 +100,7 @@ const M_Performance = () => {
         }
     };
 
- 
+
     useEffect(() => {
         console.log('Updated appraisals:', appraisals);
     }, [appraisals]);
@@ -160,7 +160,7 @@ const M_Performance = () => {
                                         </td>
                                         <td className="px-6 py-4  whitespace-nowrap">
                                             <span className='inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>{appraisal.status}</span>
-                                            
+
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                         <button

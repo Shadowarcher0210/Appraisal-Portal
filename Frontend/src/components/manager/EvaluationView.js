@@ -63,6 +63,10 @@ const EvaluationView = () => {
     navigate("/manager-dashboard");
   };
 
+  const handleContinue = () => {
+    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
+   
+  }
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -208,13 +212,13 @@ const EvaluationView = () => {
       <div className="mb-2">
 
         {/* Header Section */}
-        <div className="bg-blue-600 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
+        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>
+            <h1 className="text-2xl font-bold text-white">Employee Self Appraisal</h1>
             {formData ? (
 
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-blue-600  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
 
@@ -295,13 +299,7 @@ const EvaluationView = () => {
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
 
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
-                  {/* {status === 'Completed' && (
-        <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-            Manager Evaluation
-        </th>
-    )
-} */}
-
+                  
                 </tr>
               </thead>
               <tbody>
@@ -360,45 +358,38 @@ const EvaluationView = () => {
             </table>
           </div>
         </div>
-       
 
-        {/* Goals Section */}
-        {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
-          {formData ? (
-            <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Target size={20} className="text-green-600" />
-              Goals for
-              {` ${new Date(formData[0].timePeriod[0]).getFullYear() + 1} - ${new Date(formData[0].timePeriod[1]).getFullYear() + 1}`}
-              <br />
-            </h2>) : (<div />)}
-          <div className="space-y-3 pr-4">
-            {goals.map((goal, index) => (
-              <div key={index} className="bg-gray-100 rounded p-3">
-                <div className="flex justify-between items-start">
-                  <p className="text-sm font-medium text-gray-700">{goal.title}</p>
-                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
-                    {goal.deadline}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{goal.description}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
         <div className="mt-6 flex justify-end">
-          <button
-            className="px-6 py-2 text-white bg-blue-600 rounded-lg"
-            onClick={handleSubmit}
-          >
-            Submit
-          </button>
+          <div className='mr-auto'>
+            <button
+              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
+              onClick={handleBack}
+            >
+              Back
+            </button>
+          </div>
+          <div  className='mr-2'>
+            <button
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+              onClick={handleSubmit}
+            >
+             Save & Exit
+            </button>
+          </div>
+          <div >
+            <button
+              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+              onClick={handleContinue}
+            >
+              Continue
+            </button>
+          </div>  
         </div>
+
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
               <div className="p-6">
-
-
                 <p className="mt-3 text-gray-600 text-center">
                   Thank you for submitting
                 </p>
@@ -409,17 +400,12 @@ const EvaluationView = () => {
                   >
                     back
                   </button>
-
-
                 </div>
-
               </div>
             </div>
           </div>
-
         )}
       </div>
-
     </div>
   );
 };
