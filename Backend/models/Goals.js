@@ -14,6 +14,10 @@ const goalsSchema = new mongose.Schema(
       type: String,
       require: [true, 'category is required']
     },
+    otherText: {
+      type: String,
+      require: [true, 'otherText is required']
+    },
     description: {
       type: String,
       require: [true, 'description is required'],
