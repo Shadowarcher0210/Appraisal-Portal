@@ -11,7 +11,7 @@ const router = express.Router()
 router.post('/:employeeId/:startDate/:endDate', postEmpGoals)
 router.get('/:employeeId/:startDate/:endDate', getEmpGoals)
 router.put('/editGoal/:employeeId/:startDate/:endDate',editGoals)
-router.get('/categories/:employeeId', getEmployeeGoal2)
+router.get('/categories/:empType', getEmployeeGoal2)
 
 
 module.exports=router
