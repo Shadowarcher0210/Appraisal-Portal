@@ -14,7 +14,7 @@ import EmpViewPage from './components/employee/empViewPage.js';
 import EmpForm from './components/employee/empForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
-import Goals from './components/Tabs/Goals.js';
+// import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
 import M_Performance from './components/manager/M_Performance.js';
 import M_myPerformance from './components/manager/M_myPerformance.js';
@@ -23,7 +23,7 @@ import M_Goals from './components/manager/M_Goals';
 import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
 import EvaluationView from './components/manager/EvaluationView.js';
-
+import Self from './components/Tabs/selfAppraisalTab.js'
 const App = () => {
   const location = useLocation();
 
@@ -51,8 +51,7 @@ const App = () => {
           <Route path="/selfform" element={<SelfAppraisal/>} />
           <Route path="/intro" element={<Introduction/>} />
 
-          <Route path="/goals2" element={<Goals/>} />
-
+=
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
@@ -69,6 +68,8 @@ const App = () => {
           
           <Route path='/evaluationView/:employeeId' element ={<EvaluationView />} />
           
+          <Route path="/selfemp" element={<Self/>} />
+
      
         </Routes>
       </div>

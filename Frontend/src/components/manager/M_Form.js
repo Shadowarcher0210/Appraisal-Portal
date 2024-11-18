@@ -7,7 +7,7 @@ import {
   goalsResponse,
 } from "./appraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
-import SelfAppraisal2 from "../Tabs/SelfAppraisal2";
+import SelfAppraisalTab from "../Tabs/selfAppraisalTab";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
@@ -21,9 +21,7 @@ const M_Form = () => {
   const [email, setEmail] = useState("");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
 
-  const [goalAnswers, setGoalAnswers] = useState(
-    goalsResponse.map(() => ({ answer: "" }))
-  );
+
 
   const location = useLocation();
   const { timePeriod } = location.state || {};
@@ -52,33 +50,7 @@ const M_Form = () => {
 
 
 
-  const updateWeight = (indexOrArray, value) => {
-    if (Array.isArray(indexOrArray)) {
-      setWeights(indexOrArray);
-    } else {
-      const newWeights = [...weights];
-      newWeights[indexOrArray] = value;
-      setWeights(newWeights);
-    }
-    console.log("updating weights", weights);
-  };
-
-  const saveNotes = (indexOrArray, value) => {
-    if (Array.isArray(indexOrArray)) {
-      setNotes(indexOrArray);
-    } else {
-      const newNotes = [...notes];
-      newNotes[indexOrArray] = value;
-      setNotes(newNotes);
-    }
-  };
-
-  const handleGoalChange = (index, value) => {
-    const updatedAnswers = [...goalAnswers];
-    updatedAnswers[index].answer = value;
-    setGoalAnswers(updatedAnswers);
-  };
-
+  
 
   const handleContinue = () => {
     if (activeTab === 1 && selfAppraisalPage === 0) {
@@ -90,44 +62,7 @@ const M_Form = () => {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      const employeeId = localStorage.getItem('employeeId');
-      const updatedPageData = {
-        ...pageData,
-        weights: weights,
-        notes: notes
-      };
-      const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`, {
-        method: 'PUT',
-        headers: {
-          "content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ updatedPageData }),
-        status: "In Progress"
-      })
-
-
-      if (response.ok) {
-        console.log('response', response);
-        const data = await response.json();
-        console.log("data", data);
-        navigate("/manager-dashboard");
-
-      } else {
-        const errorData = await response.json();
-        console.log(`Error: ${errorData.error}`);
-
-      }
-    }
-
-    catch {
-      if (activeTab === 1) {
-        setSelfAppraisalPage(1);
-      }
-    }
-  }
+ 
 
   const handlePreviousForm = () => {
     if (selfAppraisalPage > 0) {
@@ -344,16 +279,9 @@ const M_Form = () => {
           />
         )}
         {activeTab === 1 && (
-          <SelfAppraisal2
+          <SelfAppraisalTab
             selfAppraisalPage={selfAppraisalPage}
-            weights={weights}
-            notes={notes}
-            updateWeight={updateWeight}
-            saveNotes={saveNotes}
             handlePreviousForm={handlePreviousForm}
-            handleSave={handleSave}
-            handleSubmit={() => setIsModalOpen(true)}
-
           />
         )}
 
