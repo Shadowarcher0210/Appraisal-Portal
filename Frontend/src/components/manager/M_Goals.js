@@ -34,6 +34,13 @@ const M_Goals = () => {
 
   const location = useLocation();
   const { timePeriod } = location.state || {};
+
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+
+  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
+  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
+
   const [employees, setEmployees] = useState([]);
   const [expandedEmployees, setExpandedEmployees] = useState({});
 
@@ -136,9 +143,10 @@ const M_Goals = () => {
 
   const fetchGoals = async (employeeId) => {
     if (employeeId) {
+      console.log("checking time", appraisalStartDate)
       try {
         const response = await axios.get(
-          `http://localhost:3003/goals/${employeeId}`
+          `http://localhost:3003/goals/${employeeId}/${appraisalStartDate}/${appraisalEndDate}`
         );
         setGoals((prevGoals) => ({
           ...prevGoals,
@@ -165,7 +173,7 @@ const M_Goals = () => {
       // const goals = goals[employeeToSubmit] || [];
       const employeeGoals = goals[employeeToSubmit] || [];
       const response = await axios.post(
-        `http://localhost:3003/goals/${employeeToSubmit}`,
+        `http://localhost:3003/goals/${employeeToSubmit}/${timePeriod[0]}/${timePeriod[1]}`,
         { goals: employeeGoals }
       );
       console.log("Response from submission:", response);
@@ -376,7 +384,23 @@ const M_Goals = () => {
                     <option value="leadership">Leadership</option>
                     <option value="technical">Technical</option>
                     <option value="soft-skills">Soft Skills</option>
+                    
+
+                    <option value="others">others</option>
                   </select>
+                  {goalFormData.category === 'others' && (
+    <textarea
+      className="w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+      placeholder="Please specify..."
+      value={goalFormData.otherCategory || ''}
+      onChange={(e) =>
+        setGoalFormData({
+          ...goalFormData,
+          otherCategory: e.target.value,
+        })
+      }
+    ></textarea>
+  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

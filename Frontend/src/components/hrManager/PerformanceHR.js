@@ -3,15 +3,13 @@ import { ChevronDown, ChevronUp, Target } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const M_Performance = () => {
+const PerformanceHR = () => {
     const [selectedYear, setSelectedYear] = useState('');
     const [academicYears, setAcademicYears] = useState([]);
     const [appraisals, setAppraisals] = useState([]);
     const navigate = useNavigate();
 
     const managerName = localStorage.getItem('empName');
-
-    // Generate academic years and set default selected year
     useEffect(() => {
         const currentYear = new Date().getFullYear();
         const startYear = currentYear - 3;
@@ -36,7 +34,7 @@ const M_Performance = () => {
 
         try {
             const response = await axios.get(
-                ` http://localhost:3003/appraisal/allAppraisals/${managerName}/${startDate}/${endDate}`
+               ` http://localhost:3003/appraisal/allAppraisals/${startDate}/${endDate}`
             );
             console.log('Fetched Appraisals in Performance Page:', response.data);
             const allAppraisals = response.data.data
@@ -62,7 +60,7 @@ const M_Performance = () => {
             fetchAllAppraisalDetails();
         }
     }, [selectedYear]);
-
+    
     // const handleViewClick = (appraisal) => {
     //     const { employeeId, timePeriod } = appraisal;
     //     console.log('Employee Id :',employeeId)
@@ -73,11 +71,11 @@ const M_Performance = () => {
         const { employeeId, timePeriod, status } = appraisal;
 
         // If the status is "Submitted", update it to "Under Review"
-        if (status === "Submitted") {
+        if (status === "Under Review") {
             try {
                 const response = await axios.put(
                     `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-                    { status: "Under Review" }
+                    { status: "Under HR Review" }
                 );
 
                 if (response.status === 200) {
@@ -93,14 +91,14 @@ const M_Performance = () => {
 
         if (status === "Submitted" || status === "Under Review") {
            
-            navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+            navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Under HR Review") {
             // Navigate to employee view if status is "Completed"
-            navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+            navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
         }
     };
 
-
+ 
     useEffect(() => {
         console.log('Updated appraisals:', appraisals);
     }, [appraisals]);
@@ -160,7 +158,7 @@ const M_Performance = () => {
                                         </td>
                                         <td className="px-6 py-4  whitespace-nowrap">
                                             <span className='inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>{appraisal.status}</span>
-
+                                            
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                         <button
@@ -187,4 +185,4 @@ const M_Performance = () => {
     );
 };
 
-export default M_Performance;
+export default PerformanceHR;

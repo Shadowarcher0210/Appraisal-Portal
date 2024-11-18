@@ -2,21 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation, useParams ,useNavigate} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-const EmpViewPage = () => {
+const ViewHR = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); // If you're using a state to store the email
-
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
-const {employeeId}=useParams();
+
+  const employeeId = localStorage.getItem('employeeId');
   const currentYear = new Date().getFullYear() + 1;
+  const nextYear = currentYear + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
-  
   // Static questions and answers
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
@@ -37,119 +34,29 @@ const {employeeId}=useParams();
   const toggleHelpPopup = () => {
     setShowHelpPopup(!showHelpPopup);
   };
-   
+
   useEffect(() => {
-    fetchuserDetails();
-  }, []);
-
-  const fetchuserDetails = async () => {
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-
-        setEmail(response.data.user.email);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
-
-
-
-  
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError('Employee ID or time period not found');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        // Initialize the form data with the structure you need
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || '',
-          pageData: questionsAndAnswers.map((qa, index) => ({
-            questionId: (index + 1).toString(),
-            answer: response.data[0]?.pageData[index]?.answer || '',
-            notes: response.data[0]?.pageData[index]?.notes || '',
-            weights: response.data[0]?.pageData[index]?.weights || '',
-            managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
-             
-          }))
-          
-        };
-        console.log("res check for eval", initialFormData);
-        
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching appraisal details:', error);
-        setError('Error fetching appraisal details');
-        setLoading(false);
+    const appraisalDetails = async () => {
+      if (employeeId) {
+        try {
+          const response = await axios.get(`http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
+          setFormData(response.data);
+          console.log("formdata", response.data);
+        } catch (error) {
+          console.error('Error fetching user details:', error);
+        }
+      } else {
+        console.log('User ID not found in local storage.');
       }
     };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
-
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
-
-    const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-    
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-    
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
+    appraisalDetails()
+  }, [])
 
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-    const status = formData?formData.status:null
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
-    );
-  }
-
-  if (!formData || !formData[0]) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">No data available</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -237,7 +144,6 @@ const {employeeId}=useParams();
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              
               <thead>
                 <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
@@ -245,15 +151,7 @@ const {employeeId}=useParams();
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
-
-																																  
-                  {formData[0].status === 'Under HR Review' && (
-        <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-            Manager Evaluation
-        </th>
-    )
-} 
-
+                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager Evaluation</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,8 +161,6 @@ const {employeeId}=useParams();
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
-                  const managerEvaluation = formData ? formData[0].pageData[index]?.managerEvaluation : null;
-                    console.log("eval", managerEvaluation)
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
                       <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
@@ -272,7 +168,7 @@ const {employeeId}=useParams();
                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
-                        <td className="p-2 text-sm text-gray-700 w-48">
+                        <td className="p-2 text-sm text-gray-700 w-72">
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
                             <span className="text-gray-600 px-2 py-1 rounded">{previousAnswer}</span>
@@ -288,23 +184,26 @@ const {employeeId}=useParams();
                           <span className="text-gray-600">{notes}</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">No notes to display</span>
-                      </td>
-                      )}
-                       {weights ? (
-                        <td className="p-2 text-sm text-gray-700 text-center ">
-                          <span className="text-gray-600">{weights} %</span>
-                        </td>
-                      ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {formData[0].status === 'Under HR Review' && (
-                       <td className="p-2 text-sm text-gray-600 text-center">
-
-                      <span className="text-gray-600 ">{managerEvaluation} %</span>
-                      
-                    </td>
+                    {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-32">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
+                      </td>
+                      )}
+                           {weights ? (
+                        <td className="p-2 text-sm text-gray-700 w-36 ">
+                          <span className="text-gray-600">{weights}</span>
+                        </td>
+                      ) : (
+                      <td className="p-2 text-sm text-gray-700">
+                        <span className="text-gray-600">Nothing to show</span>
+                      </td>
                       )}
                     </tr>
                   );
@@ -316,7 +215,7 @@ const {employeeId}=useParams();
 
 
         {/* Goals Section */}
-        {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
+        <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
           {formData ? (
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Target size={20} className="text-green-600" />
@@ -337,12 +236,11 @@ const {employeeId}=useParams();
               </div>
             ))}
           </div>
-        </div> */}
-    
+        </div>
       </div>
 
     </div>
   );
 };
 
-export default EmpViewPage;
+export default ViewHR;

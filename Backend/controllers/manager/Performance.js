@@ -1,3 +1,4 @@
+const AdditionalAreas = require("../../models/AdditionalAreas");
 const Appraisal = require("../../models/Appraisal");
 
 const getEmployeeAppraisals = async (req, res) => {
@@ -16,7 +17,7 @@ const getEmployeeAppraisals = async (req, res) => {
                     { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
                 ]
             },
-            status: { $in: ["Submitted", "Under Review", "Completed"] }
+            status: { $in: ["Submitted", "Under Review", "Under HR Review"] }
         });
 
         if (appraisals.length === 0) {
@@ -30,32 +31,58 @@ const getEmployeeAppraisals = async (req, res) => {
     }
 };
 
+const saveAdditionalDetails = async (req, res) => {
+    const { employeeId, startDate, endDate } = req.params;  // Employee ID and Time Period (startDate, endDate)
+    const { quality, empName, successMetric, weightage, attainments, comments } = req.body;  // Other fields from request body
 
-const managerEvaluation = async (req, res) => {
-    const { employeeId, timePeriod, empScore } = req.body;
+    // Validation of required fields
+    if (!employeeId || !quality || !empName || !successMetric || !weightage || !attainments || !comments || !startDate || !endDate) {
+        return res.status(400).json({
+            error: 'All fields are required: employeeId, quality, empName, category, description, weightage, deadline, startDate, and endDate.'
+        });
+    }
 
-    if (!employeeId || !timePeriod || timePeriod.length !== 2 || !empScore) {
-        return res.status(400).json({ message: 'employeeId, timePeriod , and empScore are required' });
+    // Validate timePeriod
+    const timePeriod = [new Date(startDate).toISOString().split('T')[0], new Date(endDate).toISOString().split('T')[0]];
+    
+    if (timePeriod[0] > timePeriod[1]) {
+        return res.status(400).json({ error: 'Start date cannot be later than end date.' });
     }
 
     try {
-        const appraisal = await Appraisal.findOneAndUpdate(
-            { employeeId, timePeriod },
-            { empScore },
-            { new: true }
-        );
+        // Create a new record for the Additional model
+        const newAdditional = new AdditionalAreas({
+            employeeId,
+            quality,
+            empName,
+            successMetric,
+            weightage,
+            attainments,
+            comments,
+            timePeriod
+        });
 
-        if (!appraisal) {
-            return res.status(404).json({ message: 'Appraisal record not found' });
-        }
+        // Save the new record
+        const savedRecord = await newAdditional.save();
 
-        res.status(200).json({ message: 'EmpScore updated successfully', appraisal });
+        // Send response with saved data
+        res.status(201).json({
+            message: 'Additional details saved successfully!',
+            data: savedRecord
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error', error });
+        console.error('Error saving additional details:', error);
+        res.status(500).json({
+            error: 'Error saving additional details.',
+            details: error.message
+        });
     }
 };
 
 
 
-module.exports = { getEmployeeAppraisals, managerEvaluation };
+
+
+
+
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails };
