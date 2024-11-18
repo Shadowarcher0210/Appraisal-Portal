@@ -383,9 +383,7 @@ const EvaluationView = () => {
             >
               Continue
             </button>
-          </div>
-
-         
+          </div>  
         </div>
 
         {isModalVisible && (

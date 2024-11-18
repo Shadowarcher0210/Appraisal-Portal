@@ -431,11 +431,11 @@ const EvaluationSummary = () => {
   };
 
   const ratingOptions = [
-    { value: '5', label: 'Outstanding', color: 'bg-green-100' },
-    { value: '4', label: 'Exceeds Expectations', color: 'bg-blue-100' },
-    { value: '3', label: 'Meets Expectations', color: 'bg-yellow-100' },
-    { value: '2', label: 'Needs Improvement', color: 'bg-orange-100' },
-    { value: '1', label: 'Unsatisfactory', color: 'bg-red-100' }
+    { value: '5', label: 'Outstanding' },
+    { value: '4', label: 'Exceeds Expectations' },
+    { value: '3', label: 'Meets Expectations' },
+    { value: '2', label: 'Needs Improvement'},
+    { value: '1', label: 'Unsatisfactory' }
   ];
 
   // Sample time period for AppraisalHeader
@@ -494,7 +494,7 @@ const handleContinue = () => {
     <div className="min-h-screen bg-gray-100 p-4 w-full">
       {/* <div className="container mx-auto  bg-white/90 backdrop-blur-sm rounded-lg shadow-xl"> */}
       <div className="mb-2">
-        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-2 mb-1 mt-14 w-full">
+        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 w-full">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Overall FeedBack</h1>
             {formData ? (
@@ -513,7 +513,7 @@ const handleContinue = () => {
 
       <div >
         {formData ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full ">
             {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
@@ -565,7 +565,7 @@ const handleContinue = () => {
     
   
         
-        <div className="p-6 w-full">
+        <div className="   rounded-md ">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             {/* <div className="bg-gray-50 p-6 rounded-lg shadow-sm"> */}
@@ -620,7 +620,7 @@ const handleContinue = () => {
             {/* </div> */}
 
             {/* Performance Ratings */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm w-full">
+            <div className="bg-gray-50 p-4  mt-4 rounded-lg shadow-sm w-full">
               <h3 className="text-lg font-semibold mb-4 text-blue-800">Performance Ratings</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.keys(ReviewData.ratings).map((category) => (
@@ -657,7 +657,7 @@ const handleContinue = () => {
             </div>
 
             {/* Detailed Feedback */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 p-4  rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-4 text-blue-800">Detailed Feedback</h3>
               <div className="space-y-4">
                 {['strengths', 'areasForImprovement', 'goalsAchieved', 'futureObjectives'].map((field) => (
@@ -678,7 +678,7 @@ const handleContinue = () => {
             </div>
 
             {/* Overall Assessment */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3>
               <div className="space-y-4">
                 <div>
@@ -724,7 +724,7 @@ const handleContinue = () => {
             <div className="mt-6 flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+              className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -739,9 +739,18 @@ const handleContinue = () => {
             </button>
           </div> */}
 
+<div  className='mr-2'>
+            <button
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+              onClick={handleSubmit}
+            >
+             Save & Exit
+            </button>
+          </div>
+
           <div>
             <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
               onClick={handleSubmit}
             >
               Submit

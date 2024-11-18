@@ -530,38 +530,28 @@ const handleSubmit = async () => {
         <div className="mt-6 flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
               onClick={handleBack}
             >
               Back
             </button>
           </div>
-          <div className='mr-6'>
+          <div  className='mr-2'>
             <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+              onClick={handleSubmit}
+            >
+             Save & Exit
+            </button>
+          </div>
+          <div >
+            <button
+              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
               onClick={handleContinue}
             >
               Continue
             </button>
-          </div>
-
-          <div className="mr-4">
-            <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
-           
-          </div>
-          <div className="mr-2">
-          <button
-              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
-              onClick={handleSaveAndExit}
-            >
-              Save & Exit
-            </button>
-          </div>
+          </div>  
         </div>
       </div>
     </div>
