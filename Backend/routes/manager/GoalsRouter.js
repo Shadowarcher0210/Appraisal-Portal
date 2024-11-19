@@ -6,6 +6,10 @@ const router = express.Router()
 router.post('/:employeeId/:startDate/:endDate', postEmployeeGoal)
 router.get('/:employeeId/:startDate/:endDate', getEmployeeGoal)
 router.put('/editGoal/:employeeId/:startDate/:endDate',editGoal)
+
+router.post('/:employeeId/:startDate/:endDate', postEmployeeGoal)
+router.get('/:employeeId/:startDate/:endDate', getEmployeeGoal)
+router.put('/editGoal/:employeeId/:startDate/:endDate',editGoal)
 router.get('/categories/:empType', getEmployeeGoal2)
 
 
