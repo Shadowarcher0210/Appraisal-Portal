@@ -60,7 +60,7 @@ const EvaluationView = () => {
 
   const handleBack = () => {
     setIsModalVisible(false);
-    navigate("/manager-dashboard");
+    navigate("/manager-performance");
   };
 
   const handleContinue = () => {

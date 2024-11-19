@@ -15,6 +15,7 @@ import {
 import { useLocation } from "react-router-dom";
 
 const M_Goals = () => {
+  const [categories, setCategories] = useState(null);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [submitting, setSubmitting] = useState({});
@@ -109,6 +110,26 @@ const M_Goals = () => {
     setShowGoalForm(false);
   };
 
+
+
+  const [empType, setEmpType] = useState("Employee"); // Replace with actual logic to determine empType
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/goals/categories/${empType}`
+        );
+        setCategories(response.data.data); // Assuming the response contains a `data` property with an array of categories
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, [empType]);
+
   useEffect(() => {
     const allEmployees = async () => {
       const managerName = localStorage.getItem("empName");
@@ -170,7 +191,6 @@ const M_Goals = () => {
     if (!employeeToSubmit) return;
     setSubmitting((prev) => ({ ...prev, [employeeToSubmit]: true }));
     try {
-      // const goals = goals[employeeToSubmit] || [];
       const employeeGoals = goals[employeeToSubmit] || [];
       const response = await axios.post(
         `http://localhost:3003/goals/${employeeToSubmit}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -366,7 +386,7 @@ const M_Goals = () => {
                 }
               </h3>
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Category
                   </label>
@@ -386,9 +406,36 @@ const M_Goals = () => {
                     <option value="soft-skills">Soft Skills</option>
                     
 
-                    <option value="others">others</option>
+                    
                   </select>
-                  {goalFormData.category === 'others' && (
+                 
+                </div> */}
+
+
+<div>
+      <form>
+        <label htmlFor="category">Category:</label>
+        <select
+          id="category"
+          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          value={goalFormData.category}
+          onChange={(e) =>
+            setGoalFormData({
+              ...goalFormData,
+              category: e.target.value,
+            })
+          }
+        >
+          <option value="" disabled>
+            Select a category
+          </option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        {goalFormData.category === 'Others' && (
     <textarea
       className="w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
       placeholder="Please specify..."
@@ -401,7 +448,8 @@ const M_Goals = () => {
       }
     ></textarea>
   )}
-                </div>
+      </form>
+    </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Description
