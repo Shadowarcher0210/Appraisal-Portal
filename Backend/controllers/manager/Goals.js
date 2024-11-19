@@ -179,105 +179,74 @@ const editGoal = async (req, res) => {
     }
 };
 
+const updateManagerGoalWeight = async (req, res) => {
+    try {
+        const { goals } = req.body;
+        const { employeeId, startDate, endDate } = req.params
+        if (!Array.isArray(goals) || goals.length === 0) {
+            return res.status(400).json({ message: 'Goals array is required and cannot be empty' });
+        }
 
-// const postEmployeeGoal = async (req, res) => {
-//     try {
-//         const { employeeId } = req.params;
-//         const { empName, category, description, weightage, deadline } = req.body;
+        const results = [];
 
-//         if (!empName || !category || !description || !weightage || !deadline) {
-//             return res.status(400).json({ message: 'All required fields must be provided.' });
-//         }
+        for (const goal of goals) {
+            const {managerWeightage } = goal;
 
-//         const newGoal = new Goals({
-//             employeeId,
-//             empName,
-//             category,
-//             description,
-//             weightage,
-//             deadline: new Date(deadline).toISOString().split('T')[0], // Ensure the date format is correct
-//         });
+            if (managerWeightage === undefined) {
+                results.push({
+                    status: 'Failed',
+                    message: 'Missing required fields',
+                });
+                continue;
+            }
 
-//         const savedGoal = await newGoal.save();
-//         res.status(201).json({ message: 'Goal created successfully', data: savedGoal });
+            const timePeriod = [new Date(startDate), new Date(endDate)];
 
-//     } catch (error) {
-//         console.error('Error in creating goal:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
+            const existingGoal = await Goals.findOne({ employeeId, timePeriod });
 
-// const postEmployeeGoal = async (req, res) => {
-//     try {
-//         const { employeeId } = req.params;
-//         const goals = req.body.goals;
+            if (!existingGoal) {
+                results.push({
+                    status: 'Failed',
+                    message: 'Goal not found',
+                });
+                continue;
+            }
 
-//         if (!goals || !Array.isArray(goals) || goals.length === 0) {
-//             return res.status(400).json({ message: 'Goals array is required and cannot be empty.' });
-//         }
+            if (managerWeightage > existingGoal.weightage) {
+                results.push({
+                    status: 'Failed',
+                    message: 'Manager weightage must be less than or equal to the existing weightage',
+                });
+                continue;
+            }
 
-//         for (const goal of goals) {
-//             const { empName, category, description, weightage, deadline } = goal;
+            existingGoal.managerWeightage = managerWeightage;
+            await existingGoal.save();
 
-//             if (!empName || !category || !description || !weightage || !deadline) {
-//                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
-//             }
-//         }
+            results.push({
+                message: 'Manager weightage updated successfully',
+                updatedGoal: {
+                    employeeId: existingGoal.employeeId,
+                    empName: existingGoal.empName,
+                    category: existingGoal.category,
+                    description: existingGoal.description,
+                    weightage: existingGoal.weightage,
+                    managerWeightage: existingGoal.managerWeightage,
+                    deadline: existingGoal.deadline,
+                    timePeriod: existingGoal.timePeriod,
+                },
+            });
+        }
 
-//         const newGoals = goals.map((goal) => new Goals({
-//             employeeId,
-//             empName: goal.empName,
-//             category: goal.category,
-//             description: goal.description,
-//             weightage: goal.weightage,
-//             deadline: new Date(goal.deadline).toISOString().split('T')[0], // Ensure the date format is correct
-//         }));
+        res.status(200).json( results);
+    } catch (error) {
+        console.error('Error in updating manager weights:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
-//         const savedGoals = await Goals.insertMany(newGoals);
+module.exports = { postEmployeeGoal, getEmployeeGoal,getEmployeeGoal2, editGoal, updateManagerGoalWeight };
 
-//         res.status(201).json({ message: 'Goals created successfully', data: savedGoals });
-
-//     } catch (error) {
-//         console.error('Error in creating goals:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
-
-// const postEmployeeGoal = async (req, res) => {
-//     try {
-//         const { employeeId } = req.params;
-//         const goals = Array.isArray(req.body) ? req.body : req.body.goals;
-
-//         if (!goals || !Array.isArray(goals) || goals.length === 0) {
-//             return res.status(400).json({ message: 'Goals array is required and cannot be empty.' });
-//         }
-
-//         for (const goal of goals) {
-//             const { employeeId, empName, category, description, weightage, deadline } = goal;
-
-//             if ( !empName || !category || !description || !weightage || !deadline) {
-//                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
-//             }
-//         }
-
-//         const newGoals = goals.map((goal) => new Goals({
-//             employeeId,
-//             empName: goal.empName,
-//             category: goal.category,
-//             description: goal.description,
-//             weightage: goal.weightage,
-//             deadline: new Date(goal.deadline).toISOString().split('T')[0], 
-//         }));
-
-//         const savedGoals = await Goals.insertMany(newGoals);
-
-//         res.status(201).json({ message: 'Goals created successfully', data: savedGoals });
-
-//     } catch (error) {
-//         console.error('Error in creating goals:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
 
 
 
@@ -415,69 +384,3 @@ const editGoal = async (req, res) => {
 //         res.status(500).json({ message: 'Internal server error' });
 //     }
 // };
-// const postEmployeeGoal = async (req, res) => {
-//     try {
-//         const { employeeId } = req.params;
-//         const { empName, category, description, weightage, deadline } = req.body;
-
-//         if (!empName || !category || !description || !weightage || !deadline) {
-//             return res.status(400).json({ message: 'All required fields must be provided.' });
-//         }
-
-//         const newGoal = new Goals({
-//             employeeId,
-//             empName,
-//             category,
-//             description,
-//             weightage,
-//             deadline: new Date(deadline).toISOString().split('T')[0], // Ensure the date format is correct
-//         });
-
-//         const savedGoal = await newGoal.save();
-//         res.status(201).json({ message: 'Goal created successfully', data: savedGoal });
-
-//     } catch (error) {
-//         console.error('Error in creating goal:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
-
-// const postEmployeeGoal = async (req, res) => {
-//     try {
-//         const { employeeId } = req.params;
-//         const goals = req.body.goals;
-
-//         if (!goals || !Array.isArray(goals) || goals.length === 0) {
-//             return res.status(400).json({ message: 'Goals array is required and cannot be empty.' });
-//         }
-
-//         for (const goal of goals) {
-//             const { empName, category, description, weightage, deadline } = goal;
-
-//             if (!empName || !category || !description || !weightage || !deadline) {
-//                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
-//             }
-//         }
-
-//         const newGoals = goals.map((goal) => new Goals({
-//             employeeId,
-//             empName: goal.empName,
-//             category: goal.category,
-//             description: goal.description,
-//             weightage: goal.weightage,
-//             deadline: new Date(goal.deadline).toISOString().split('T')[0], // Ensure the date format is correct
-//         }));
-
-//         const savedGoals = await Goals.insertMany(newGoals);
-
-//         res.status(201).json({ message: 'Goals created successfully', data: savedGoals });
-
-//     } catch (error) {
-//         console.error('Error in creating goals:', error);
-//         res.status(500).json({ message: 'Internal server error' });
-//     }
-// };
-
-
-module.exports = { postEmployeeGoal, getEmployeeGoal,getEmployeeGoal2, editGoal };
- 
