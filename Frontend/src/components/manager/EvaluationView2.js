@@ -165,7 +165,7 @@ const EvaluationView2 = () => {
   };
 
   const handleContinue = () => {
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+    navigate(`/evaluationview3/${employeeId}`, { state: { timePeriod } });
   };
 
 
