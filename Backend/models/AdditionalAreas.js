@@ -1,54 +1,51 @@
 const mongoose = require('mongoose');
 
-const AdditionalSchema = new mongoose.Schema(
-  {
-    employeeId: {
-      type: String,
-      required: [true, 'Employee ID is required'],
-    },
-    quality: {
-      type: String,
-      required: [true, 'Quality is required'],
-    },
-    empName: {
-      type: String,
-      required: [true, 'Employee name is required'],
-    },
-    successMetric: {
-      type: String,
-      required: [true, 'Category is required'],
-    },
+const AdditionalSchema = new mongoose.Schema({
+  quality: {
+    type: String,
+    required: [true, 'Quality is required'],
+  },
+  successMetric: {
+    type: String,
+    required: [true, 'SuccessMetric is required'],
+  },
+  weightage: {
+    type: String,
+    required: [true, 'Weightage is required'],
    
-    weightage: {
-      type: Number,
-      required: [true, 'Weightage is required'],
-      min: [0, 'Weightage must be between 0 and 100'],
-      max: [100, 'Weightage must be between 0 and 100'],
-    },
-    attainments: {
-      type: Number,
-      required: [true, 'Attainment is required'],
-      min: [0, 'Attainment must be between 0 and 100'],
-      max: [100, 'Attainment must be between 0 and 100'],
-    },
-    comments: {
-      type: String,
-      required: [true, 'Deadline date is required'],
-    },
-    timePeriod: {
-      type: [String],
-      validate: {
-        validator: function (v) {
-          return v.length === 2;
-        },
-        message: 'Time period must contain exactly two dates (start and end).',
+  },
+  attainments: {
+    type: Number,
+    min: [0, 'Attainment must be between 0 and 100'],
+    max: [100, 'Attainment must be between 0 and 100'],
+  },
+  comments: {
+    type: String,
+    default: "",
+  },
+ 
+    
+  
+});
+
+const AdditionalAreaSchema = new mongoose.Schema({
+  employeeId: {
+    type: String,
+    required: [true, 'Employee ID is required'],
+  },
+  timePeriod: {
+    type: [String],
+    validate: {
+      validator: function(v) {
+        return v.length === 2; // start and end dates
       },
-      set: (dates) => {
-        // Ensure dates are in YYYY-MM-DD format without the time part
-        return dates.map((date) => new Date(date).toISOString().split('T')[0]);
-      },
+      message: 'Time period must contain exactly two dates (start and end).',
     },
   },
-);
+  areas: {
+    type: [AdditionalSchema],  // Store quality questions in an array
+    required: [true, 'Areas are required'],
+  },
+});
 
-module.exports = mongoose.model('AdditionalAreas', AdditionalSchema);
+module.exports = mongoose.model('AdditionalAreas', AdditionalAreaSchema);

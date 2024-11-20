@@ -4,133 +4,168 @@ import {
   User,
   Briefcase,
   TrendingUp,
-  Target,
+
   Award,
-  ChevronRight,
-  Weight,
+
+
 } from "lucide-react";
-import tick from "../../assets/tick.svg";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const EvaluationView2 = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
-  const currentYear = new Date().getFullYear() + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {};
-  const [currentNotes, setCurrentNotes] = useState({});
+  const [attainments, setAttainments] = useState(Array(5).fill(''));
+  const [comments, setComments] = useState(Array(5).fill(''));
 
   // Static questions and answers
-  const questionsAndAnswers = [
+  const AdditionalAreas = [
     {
-      question: "Setting Expectations",
-      answer:
+      quality: "Setting Expectations",
+      successMetric:
         "Setting Expectations ensures clarity on goals, responsibilities, and standards for effective team collaboration.",
-        Weight:"5%",
+      weightage: "5%",
+      
     },
     {
-      question: "Promoting Best Use of Capabilities",
-      answer: "Encouraging effective utilization of skills and tools to achieve optimal performance and desired outcomes.",
-      Weight:"5%",
+      quality: "Promoting Best Use of Capabilities",
+      successMetric: "Encouraging effective utilization of skills and tools to achieve optimal performance and desired outcomes.",
+      weightage: "5%",
+      
     },
     {
-      question: "Information Sharing",
-      answer:
+      quality: "Information Sharing",
+      successMetric:
         "Facilitating seamless exchange of knowledge and updates to enhance collaboration and decision-making processes.",
-        Weight:"5%",
+      weightage: "5%",
+     
     },
     {
-      question: "Promoting Team Culture",
-      answer: "Promoting team culture involves fostering collaboration, communication, trust, and mutual respect to achieve shared goals.",
-      Weight:"5%",
+      quality: "Promoting Team Culture",
+      successMetric: "Promoting team culture involves fostering collaboration, communication, trust, and mutual respect to achieve shared goals.",
+      weightage: "5%",
+     
     },
     {
-      question: "Leading with Dignity and Respect",
-      answer: "Leading with dignity and respect means treating others with fairness, kindness, and valuing their contributions.",
-      Weight:"5%",
+      quality: "Leading with Dignity and Respect",
+      successMetric: "Leading with dignity and respect means treating others with fairness, kindness, and valuing their contributions.",
+      weightage: "5%",
+    
     },
     {
-      question: "Fostering Innovation",
-      answer:
+      quality: "Fostering Innovation",
+      successMetric:
         "Fostering innovation involves encouraging creativity, collaboration, and risk-taking to develop new solutions and ideas.",
-        Weight:"5%",
+      weightage: "5%",
+      
     },
     {
-      question: "Demonstrating Confidence",
-      answer: "Demonstrating confidence means expressing belief in one's abilities, decisions, and actions with clarity and assurance.",
-      Weight:"5%",
+      quality: "Demonstrating Confidence",
+      successMetric: "Demonstrating confidence means expressing belief in one's abilities, decisions, and actions with clarity and assurance.",
+      weightage: "5%",
+      
     },
-    { question: "Driving Initiative", answer: "Driving initiative refers to proactively leading projects, fostering innovation, and taking ownership of outcomes.", Weight:"5%",},
     {
-      question: "Completing Projects",
-      answer:
+      quality: "Driving Initiative", successMetric: "Driving initiative refers to proactively leading projects, fostering innovation, and taking ownership of outcomes.", weightage: "5%",
+      
+    },
+    {
+      quality: "Completing Projects",
+      successMetric:
         " Managing and delivering projects on time, ensuring quality, and meeting client expectations and requirements.",
-        Weight:"5%",
+      weightage: "5%",
+      
     },
     {
-      question: "Meeting Deadlines",
-      answer: "Meeting deadlines means completing tasks on time, ensuring project progress and maintaining team efficiency.",
-      Weight:"5%",
+      quality: "Meeting Deadlines",
+      successMetric: "Meeting deadlines means completing tasks on time, ensuring project progress and maintaining team efficiency.",
+      weightage: "5%",
+     
     },
     {
-      question: "Communicating Expectations",
-      answer:
+      quality: "Communicating Expectations",
+      successMetric:
         "Clearly outlining objectives, responsibilities, and timelines to ensure team alignment and successful outcomes.",
-        Weight:"5%",
+      weightage: "5%",
+     
     },
     {
-      question: "Communicating Feedback",
-      answer:
+      quality: "Communicating Feedback",
+      successMetric:
         "Providing constructive feedback to help employees understand their performance and grow.",
-        Weight:"5%",
+      weightage: "5%",
+      
     },
     {
-      question: "Developing Talent",
-      answer: "Developing talent focuses on identifying, nurturing, and enhancing employees' skills for future leadership roles.",
-      Weight:"5%",
+      quality: "Developing Talent",
+      successMetric: "Developing talent focuses on identifying, nurturing, and enhancing employees' skills for future leadership roles.",
+      weightage: "5%",
+     
     },
     {
-      question: "Following Best Hiring Practices",
-      answer: "Could you clarify which specific hiring practices question you're referring to, so I can help?",
-      Weight:"5%",
+      quality: "Following Best Hiring Practices",
+      successMetric: "Could you clarify which specific hiring practices quality you're referring to, so I can help?",
+      weightage: "5%",
+      
     },
     {
-      question: "Setting Goals",
-      answer: "Setting goals involves defining clear, measurable objectives for employees to track progress and performance.",
-      Weight:"5%",
+      quality: "Setting Goals",
+      successMetric: "Setting goals involves defining clear, measurable objectives for employees to track progress and performance.",
+      weightage: "5%",
+      
     },
     {
-      question: "Efficiency",
-      answer: "Efficiency refers to achieving maximum productivity with minimal wasted effort or resources in processes.",
-      Weight:"5%",
+      quality: "Efficiency",
+      successMetric: "Efficiency refers to achieving maximum productivity with minimal wasted effort or resources in processes.",
+      weightage: "5%",
+    
     },
     {
-      question: "Recovering from Setbacks",
-      answer: "Recovering from setbacks involves learning from mistakes, staying resilient, and adapting to challenges effectively.",
-      Weight:"5%",
+      quality: "Recovering from Setbacks",
+      successMetric: "Recovering from setbacks involves learning from mistakes, staying resilient, and adapting to challenges effectively.",
+      weightage: "5%",
+    
     },
     {
-      question: "Demonstrating Ability to Teach",
-      answer: "Demonstrating the ability to teach involves explaining concepts clearly, engaging others, and fostering understanding.",
-      Weight:"5%",
+      quality: "Demonstrating Ability to Teach",
+      successMetric: "Demonstrating the ability to teach involves explaining concepts clearly, engaging others, and fostering understanding.",
+      weightage: "5%",
+      
+
     },
     {
-      question: "Demonstrating Ability to Learn",
-      answer: "Demonstrating ability to learn involves quickly adapting, acquiring new skills, and applying knowledge effectively.",
-      Weight:"5%",
+      quality: "Demonstrating Ability to Learn",
+      successMetric: "Demonstrating ability to learn involves quickly adapting, acquiring new skills, and applying knowledge effectively.",
+      weightage: "5%",
+
+      
     },
     {
-      question: "Promoting the Brand and Best Business Practices",
-      answer: "Promoting the brand and best business practices involves fostering trust, innovation, and ethical leadership consistently.",
-      Weight:"5%",
+      quality: "Promoting the Brand and Best Business Practices",
+      successMetric: "Promoting the brand and best business practices involves fostering trust, innovation, and ethical leadership consistently.",
+      weightage: "5%",
+      
     },
   ];
+  const handleAttainmentChange = (index, event) => {
+    const newAttainments = [...attainments];
+    newAttainments[index] = event.target.value;
+    setAttainments(newAttainments);
+  };
+
+  // Handle changes in the comments textarea
+  const handleCommentChange = (index, event) => {
+    const newComments = [...comments];
+    newComments[index] = event.target.value;
+    setComments(newComments);
+  };
+
   const toggleHelpPopup = () => {
     setShowHelpPopup(!showHelpPopup);
   };
@@ -155,132 +190,147 @@ const EvaluationView2 = () => {
     }
   };
 
-//   const handleBack = () => {
-//     setIsModalVisible(false);
-//     navigate("/manager-dashboard");
-//   };
 
-  const handleFormBack = () => {
+
+  const handleContinue = async () => {
+    try {
+      const payload = AdditionalAreas.map((area, index) => ({
+        quality: area.quality,
+        successMetric: area.successMetric,
+        weightage: area.weightage,
+        attainments: attainments[index], 
+        comments: comments[index] 
+      }));
+      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+        method: 'PUT',
+        headers: {
+          "content-Type": "application/json",
+          
+        },
+        body: JSON.stringify({ payload }),
+
+      })
+      if (response.ok) {
+        console.log('response', response);
+        const data = await response.json();
+        console.log("data", data);
+        navigate("/employee-dashboard");
+      } else {
+        const errorData = await response.json();
+        console.log(`Error: ${errorData.error}`);
+      }
+
+
+
+    } catch (error) {
+      console.error('Error updating status:', error);
+
+
+    }
+    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  };
+  const isContinueEnabled = attainments.every((attainment) => attainment.trim() !== "");
+
+
+  // useEffect(() => {
+  //   const fetchAppraisalDetails = async () => {
+  //     console.log(employeeId);
+  //     if (!employeeId || !timePeriod) {
+  //       setError("Employee ID or time period not found");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     try {
+  //       const response = await axios.get(
+  //         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+  //       );
+
+  //       // Initialize the form data with the structure you need
+  //       const initialFormData = {
+  //         empName: response.data[0]?.empName || "",
+  //         designation: response.data[0]?.designation || "",
+  //         managerName: response.data[0]?.managerName || "",
+  //         timePeriod: response.data[0]?.timePeriod || timePeriod,
+  //         status: response.data[0]?.status || "",
+  //         pageData: questionsAndAnswers.map((qa, index) => ({
+  //           questionId: (index + 1).toString(),
+  //           successMetric: response.data[0]?.pageData[index]?.successMetric || "",
+  //           notes: response.data[0]?.pageData[index]?.notes || "",
+  //           weights: response.data[0]?.pageData[index]?.weights || "",
+  //           managerEvaluation:
+  //             response.data[0]?.pageData[index]?.managerEvaluation || 0,
+  //         })),
+  //       };
+
+  //       setFormData([initialFormData]);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching appraisal details:", error);
+  //       setError("Error fetching appraisal details");
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchAppraisalDetails();
+  // }, [employeeId, timePeriod]);
+
+  const handleBack = () => {
     navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
   };
 
-  const handleContinue = () => {
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
-  };
+
+  // const handleSaveAndExit = async () => {
+  //   if (!formData || !formData[0] || !formData[0].pageData) return;
+
+  //   try {
+  //     const submissionData = {
+  //       pageData: formData[0].pageData.map(item => ({
+  //         questionId: item.questionId,
+  //         successMetric: item.successMetric || '',
+  //         notes: item.notes || '',
+  //         weights: item.weights || '',
+  //         managerEvaluation: item.managerEvaluation || 0
+  //       }))
+  //     };
+
+  //     console.log("Data saved successfully.", employeeId);
+  //     console.log('TimePeriod1', timePeriod[0])
+  //     console.log('TimePeriod1', timePeriod[1])
 
 
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      console.log(employeeId);
-      if (!employeeId || !timePeriod) {
-        setError("Employee ID or time period not found");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        // Initialize the form data with the structure you need
-        const initialFormData = {
-          empName: response.data[0]?.empName || "",
-          designation: response.data[0]?.designation || "",
-          managerName: response.data[0]?.managerName || "",
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || "",
-          pageData: questionsAndAnswers.map((qa, index) => ({
-            questionId: (index + 1).toString(),
-            answer: response.data[0]?.pageData[index]?.answer || "",
-            notes: response.data[0]?.pageData[index]?.notes || "",
-            weights: response.data[0]?.pageData[index]?.weights || "",
-            managerEvaluation:
-              response.data[0]?.pageData[index]?.managerEvaluation || 0,
-          })),
-        };
-
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching appraisal details:", error);
-        setError("Error fetching appraisal details");
-        setLoading(false);
-      }
-    };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
-
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
-
-    const updatedFormData = [...formData];
-    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
-
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
-  const saveNotesAndSave = (index, value) => {
-    const updatedNotes = [...currentNotes];
-    updatedNotes[index] = value;
-    setCurrentNotes(updatedNotes);
-    // saveNotes?.(index, value);
-  };
-
-//   const handleSubmit = async () => {
-//     navigate(/manager-objective/${employeeId}, { state: { timePeriod } });
-//   };
-
-const handleBack = () => {
-    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}});
-};
-// const handleContinue = () => {
-//     navigate(`/manager-performance/${employeeId}`,{state:{timePeriod}}); 
-//   }
-
-const handleSaveAndExit = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
-  
-    try {
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          answer: item.answer || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
-        }))
-      };
-   
-      console.log("Data saved successfully.",employeeId);
-      console.log('TimePeriod1',timePeriod[0])
-      console.log('TimePeriod1',timePeriod[1])
+  //     await axios.put(
+  //       `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+  //       submissionData,
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+  //     console.log("Data saved successfully.");
 
 
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("Data saved successfully.");
-      
-  
-      // Redirect to evaluation view page after saving data
-      navigate("/manager-performance");
-  
-    } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
-    }
-  };
+  //     // Redirect to evaluation view page after saving data
+  //     navigate("/manager-performance");
 
-const handleSubmit = async () => {
+  //   } catch (error) {
+  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+  //     setError("Error submitting evaluation");
+  //   }
+  // };
+  // useEffect(() => {
+  //   const getAllQuestions = async () => {
+  //     const category = "Additional Areas";
+  //     try {
+  //       const response = await axios.get(`http://localhost:3003/quality/questions/${category}`);
+  //       setQuestions(response.data);
+  //       console.log("Additional Area Question in EvaluationView2 page", response.data)
+  //     } catch (error) {
+  //       console.error("Error fetching all the questions");
+  //     }
+  //   };
+
+  //   getAllQuestions();
+  // }, []);
+
+  const handleSubmit = async () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
 
     try {
@@ -292,7 +342,7 @@ const handleSubmit = async () => {
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
-          answer: item.answer || '',
+          successMetric: item.successMetric || '',
           notes: item.notes || '',
           weights: item.weights || '',
           managerEvaluation: item.managerEvaluation || 0
@@ -315,37 +365,14 @@ const handleSubmit = async () => {
       );
       console.log("POST request for confirmation email successful.");
 
-      setIsModalVisible(true);
+      
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
   };
 
-  const status = formData ? formData.status : null;
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
-    );
-  }
-
-  if (!formData || !formData[0]) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">No data available</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -453,7 +480,7 @@ const handleSubmit = async () => {
                     Success & Metric
                   </th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
-                    Weight
+                    weightage
                   </th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
                     Attainment
@@ -464,9 +491,9 @@ const handleSubmit = async () => {
                 </tr>
               </thead>
               <tbody>
-                {questionsAndAnswers.map((item, index) => {
+                {AdditionalAreas.map((item, index) => {
                   const previousAnswer = formData
-                    ? formData[0].pageData[index]?.answer
+                    ? formData[0].pageData[index]?.successMetric
                     : null;
                   const notes = formData
                     ? formData[0].pageData[index]?.notes
@@ -478,43 +505,31 @@ const handleSubmit = async () => {
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
                       <td className="p-2 text-sm font-medium text-gray-500 ">
-                        {item.question}
+                        {item.quality}
                       </td>
                       <td className="p-2 text-sm text-gray-700 w-86">
                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
-                          {item.answer}
+                          {item.successMetric}
                         </span>
                       </td>
                       <td className="p-2 text-sm text-gray-700 w-86">
                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
-                          {item.Weight}
+                          {item.weightage}
                         </span>
                       </td>
                       <td className="p-2 text-sm text-gray-600 text-center">
                         <input
-                          className="w-20 p-1 border border-gray-300 rounded  "
-                          value={
-                            formData[0].pageData[index].managerEvaluation || ""
-                          }
-                          onChange={(e) =>
-                            handleManagerEvaluationChange(e, index)
-                          }
+                          className="w-20 p-1 border border-gray-300 rounded"
+                          value={attainments[index]}
+                          onChange={(e) => handleAttainmentChange(index, e)}
                         />
                       </td>
 
                       <td className="border-l border-r">
                         <textarea
                           className="w-full p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-md"
-                          value={
-                            currentNotes[questionsAndAnswers.length + index] ||
-                            ""
-                          }
-                          onChange={(e) =>
-                            saveNotesAndSave(
-                              questionsAndAnswers.length + index,
-                              e.target.value
-                            )
-                          }
+                          value={comments[index]}
+                          onChange={(e) => handleCommentChange(index, e)}
                           rows="2"
                           placeholder="Add your comments..."
                         />
@@ -536,22 +551,23 @@ const handleSubmit = async () => {
               Back
             </button>
           </div>
-          <div  className='mr-2'>
+          <div className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={handleSubmit}
             >
-             Save & Exit
+              Save & Exit
             </button>
           </div>
           <div >
             <button
               className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
               onClick={handleContinue}
+              // disabled={!isContinueEnabled}
             >
               Continue
             </button>
-          </div>  
+          </div>
         </div>
       </div>
     </div>

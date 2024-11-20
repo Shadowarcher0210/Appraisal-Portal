@@ -27,9 +27,21 @@ const createQuestion = async (req, res) => {
 };
 
 // Get all questions
+// Get all questions based on category
 const getAllQuestions = async (req, res) => {
+    const { category } = req.query; 
+    
     try {
-        const questions = await Question.find();
+        let questions;
+        
+        if (category) {
+            // Fetch questions based on category
+            questions = await Question.find({ category });
+        } else {
+            // Fetch all questions if no category is provided
+            questions = await Question.find();
+        }
+
         return res.status(200).json({
             message: 'Questions retrieved successfully',
             data: questions
@@ -39,6 +51,7 @@ const getAllQuestions = async (req, res) => {
         return res.status(500).json({ message: 'Error fetching questions', error: error.message });
     }
 };
+
 
 //Get a single question by ID
 const getQuestionById = async (req, res) => {
