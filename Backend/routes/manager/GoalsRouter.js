@@ -1,17 +1,12 @@
 const express = require('express')
-const {  postEmpGoals, getEmpGoals, editGoals, getEmployeeGoal2 } = require('../../controllers/manager/Goals')
+const { getEmployeeGoal, editGoal, getEmployeeGoal2, postEmployeeGoal, updateManagerGoalWeight } = require('../../controllers/manager/Goals')
 
 const router = express.Router()
-// router.post('/:employeeId', postEmployeeGoal)
-//router.get('/:employeeId', getEmployeeGoal)
-// router.post('/:employeeId', postEmployeeGoal)
-// router.get('/:employeeId', getEmployeeGoal)
-// router.put('/editGoal/:employeeId/:goalId',editGoal)
 
-router.post('/:employeeId/:startDate/:endDate', postEmpGoals)
-router.get('/:employeeId/:startDate/:endDate', getEmpGoals)
-router.put('/editGoal/:employeeId/:startDate/:endDate',editGoals)
-router.get('/categories/:employeeId', getEmployeeGoal2)
+router.post('/:employeeId/:startDate/:endDate', postEmployeeGoal)
+router.get('/:employeeId/:startDate/:endDate', getEmployeeGoal)
+router.put('/editGoal/:employeeId/:startDate/:endDate',editGoal)
+router.get('/categories/:empType', getEmployeeGoal2)
+router.put('/managerWeight/:employeeId/:startDate/:endDate', updateManagerGoalWeight)
 
-
-module.exports=router
+module.exports = router

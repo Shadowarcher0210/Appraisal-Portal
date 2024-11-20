@@ -95,7 +95,7 @@ const EvaluationView1 = () => {
     useEffect(() => {
         const fetchEmployeeGoals = async () => {
             try {
-                const response = await axios.get(`http://localhost:3003/goals/${employeeId}`);
+                const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
                 setEmployeeGoals(response.data.data || []);
                 console.log("goals", response.data)
 
@@ -319,13 +319,12 @@ const EvaluationView1 = () => {
             <div className="space-y-4 mx-2 rounded-lg shadow-sm">
                 {/* Self Appraisal Section */}
 
-                <div className="mx-2 mb-8">
-                    <h2 className="text-2xl font-bold mb-6">Development Goals</h2>
+                <div className=" mb-8">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                         {employeeGoals.map((goal, index) => (
                             <div
                                 key={goal._id}
-                                className="bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-purple-100 hover:scale-[1.02]"
+                                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-purple-100 hover:scale-[1.02]"
                             >
                                 {/* Header Section */}
                                 <div className="flex items-center justify-between mb-5">
@@ -364,7 +363,7 @@ const EvaluationView1 = () => {
                                 <br></br>
                                 <div>
                                     <div className='-mb-2'>
-                                        <h className="font-bold ">Managers Review</h>
+                                        <h className="font-semibold text-md ">Managers Review</h>
                                     </div>
                                     <br></br>
                                     <div>
@@ -373,7 +372,7 @@ const EvaluationView1 = () => {
                                             <div className="relative">
                                                 <input
                                                     type="number"
-                                                    className="w-32 p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                                    className="w-32 p-2 border rounded  mb-4"
                                                     value={managerWeightages[goal._id]}
                                                     onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
                                                     onBlur={(e) => {

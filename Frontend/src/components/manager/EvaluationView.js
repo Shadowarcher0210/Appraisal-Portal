@@ -60,7 +60,7 @@ const EvaluationView = () => {
 
   const handleBack = () => {
     setIsModalVisible(false);
-    navigate("/manager-dashboard");
+    navigate("/manager-performance");
   };
 
   const handleContinue = () => {
@@ -171,15 +171,6 @@ const EvaluationView = () => {
   };
 
 
-
-
-
-  const goals = [
-    { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-    { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-    { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  ];
-  const status = formData ? formData.status : null
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
