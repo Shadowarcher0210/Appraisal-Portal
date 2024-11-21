@@ -20,7 +20,7 @@ const pageDataSchema = new mongoose.Schema(
             default: " "
         },
         managerEvaluation: {
-            type: String,
+            type: Number,
             default: null
         }
     },

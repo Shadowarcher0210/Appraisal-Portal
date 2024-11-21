@@ -133,6 +133,16 @@ const M_Goals = () => {
     setShowGoalForm(true);
     fetchCategories(); 
   };
+  useEffect(() => {
+    const submittedEmployeeIds = [];
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('goalsSubmitted_') && localStorage.getItem(key) === 'true') {
+        const employeeId = key.replace('goalsSubmitted_', '');
+        submittedEmployeeIds.push(employeeId);
+      }
+    });
+    setSubmittedEmployees(submittedEmployeeIds);
+  }, []);
 
   useEffect(() => {
     const allEmployees = async () => {
@@ -207,6 +217,7 @@ const M_Goals = () => {
         console.log("new submitted employees:", newSubmitted)
         return newSubmitted;
       });
+      localStorage.setItem(`goalsSubmitted_${employeeToSubmit}`, 'true'); 
 
       // Clear goals for this employee after successful submission
       setGoals((prev) => {
@@ -214,6 +225,23 @@ const M_Goals = () => {
         delete newGoals[employeeToSubmit];
         return newGoals;
       });
+      fetchGoals(employeeToSubmit);
+      try {
+        const emailResponse = await axios.post(
+          'http://localhost:3003/confirmationEmail/goalSubmitEmail',
+          { employeeId: employeeToSubmit }
+        );
+        console.log("Response from confirmation email:", emailResponse);
+  
+        if (!emailResponse.data.success) {
+          console.error("Failed to send confirmation email:", emailResponse.data.message);
+          
+         
+        }
+      } catch (emailError) {
+        console.error("Error sending confirmation email:", emailError);
+     
+      }
     } catch (error) {
       console.error("Error submitting goals:", error);
     } finally {
@@ -258,7 +286,7 @@ const M_Goals = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
+                  {/* <div className="flex items-center space-x-4">
                     {(!submittedEmployees.includes(employee.employeeId)) && (
                       <>
                         <button
@@ -284,17 +312,58 @@ const M_Goals = () => {
                         </button>
                       </>
                     )}
-                    {goals[employee.employeeId]?.length > 0 && submittedEmployees.includes(employee.employeeId) ? (
+                    { submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 (
                       <span className="text-green-600 font-medium flex items-center">
                         <Award className="w-4 h-4 mr-2" />
                         Goals Submitted
                       </span>
-                    ) : <div></div>}
+                    ) }
                     {expandedEmployees[employee.employeeId] ?
                       <ChevronUp className="w-5 h-5 text-gray-400" /> :
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     }
+                  </div> */}
+                  <div className="flex items-center space-x-4">
+                    {!submittedEmployees.includes(employee.employeeId) && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddGoalClick(employee.employeeId);
+                          }}
+                          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Goal
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSubmitConfirm(employee.employeeId);
+                          }}
+                          disabled={submitting[employee.employeeId]}
+                          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Submit Goals
+                        </button>
+                      </>
+                    )}
+
+                    {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
+                      <span className="text-green-600 font-medium flex items-center">
+                        <Award className="w-4 h-4 mr-2" />
+                        Goals Submitted
+                      </span>
+                    )}
+
+                    {expandedEmployees[employee.employeeId] ? (
+                      <ChevronUp className="w-5 h-5 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-400" />
+                    )}
                   </div>
+
                 </div>
 
                 {expandedEmployees[employee.employeeId] && (
