@@ -12,10 +12,9 @@ import {
   BarChart,
   Edit2,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
 
 const M_Goals = () => {
-  const [categories, setCategories] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [submitting, setSubmitting] = useState({});
@@ -27,14 +26,15 @@ const M_Goals = () => {
   const [goalFormData, setGoalFormData] = useState({
     employeeId: "",
     empName: "",
-    category: "development",
+    category: "",
+    otherText: "",
     description: "",
     weightage: "",
     deadline: "",
   });
 
-  const location = useLocation();
-  const { timePeriod } = location.state || {};
+  // const location = useLocation();
+  // const { timePeriod } = location.state || {};
 
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -103,7 +103,8 @@ const M_Goals = () => {
       employeeId: "",
       empName: "",
       description: "",
-      category: "development",
+      category: "",
+      otherText: "",
       weightage: "",
       deadline: "",
     });
@@ -112,23 +113,26 @@ const M_Goals = () => {
 
 
 
-  const [empType, setEmpType] = useState("Employee"); // Replace with actual logic to determine empType
+  const [empType, setEmpType] = useState("Employee"); 
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/goals/categories/${empType}`
-        );
-        setCategories(response.data.data); // Assuming the response contains a `data` property with an array of categories
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3003/goals/categories/${empType}`
+      );
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
-    fetchCategories();
-  }, [empType]);
+
+  const handleAddGoalClick = (employeeId) => {
+    setSelectedEmployee(employeeId);
+    setEditingGoal(null);
+    setShowGoalForm(true);
+    fetchCategories(); 
+  };
 
   useEffect(() => {
     const allEmployees = async () => {
@@ -156,6 +160,7 @@ const M_Goals = () => {
       empName: goal.empName,
       description: goal.description,
       category: goal.category,
+      otherText: goal.otherText,
       weightage: goal.weightage,
       deadline: goal.deadline,
     });
@@ -187,13 +192,12 @@ const M_Goals = () => {
 
   const handleSubmitGoals = async () => {
     console.log("inside submit");
-    
+    console.log("time:", appraisalStartDate, appraisalEndDate)
     if (!employeeToSubmit) return;
     setSubmitting((prev) => ({ ...prev, [employeeToSubmit]: true }));
     try {
       const employeeGoals = goals[employeeToSubmit] || [];
-      const response = await axios.post(
-        `http://localhost:3003/goals/${employeeToSubmit}/${timePeriod[0]}/${timePeriod[1]}`,
+      const response = await axios.post(`http://localhost:3003/goals/${employeeToSubmit}/${appraisalStartDate}/${appraisalEndDate}`,
         { goals: employeeGoals }
       );
       console.log("Response from submission:", response);
@@ -258,17 +262,15 @@ const M_Goals = () => {
                     {(!submittedEmployees.includes(employee.employeeId)) && (
                       <>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedEmployee(employee.employeeId);
-                            setEditingGoal(null);
-                            setShowGoalForm(true);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Goal
-                        </button>
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddGoalClick(employee.employeeId);
+                            }}
+                            className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
+                          >
+                            <Plus className="w-4 h-4 mr-2" /> 
+                            Add Goal
+                          </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -287,7 +289,7 @@ const M_Goals = () => {
                         <Award className="w-4 h-4 mr-2" />
                         Goals Submitted
                       </span>
-                    ) : null}
+                    ) : <div></div>}
                     {expandedEmployees[employee.employeeId] ?
                       <ChevronUp className="w-5 h-5 text-gray-400" /> :
                       <ChevronDown className="w-5 h-5 text-gray-400" />
@@ -311,8 +313,8 @@ const M_Goals = () => {
                                   <div className="p-2 bg-blue-50 rounded-lg">
                                     {categoryIcons[goal.category]}
                                   </div>
-                                  <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
-                                    {goal.category}
+                              <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
+                                   {goal.category === 'Others' ? goal.otherText : goal.category}
                                   </span>
                                 </div>
                                 {!submittedEmployees.includes(
@@ -436,20 +438,20 @@ const M_Goals = () => {
           ))}
         </select>
         {goalFormData.category === 'Others' && (
-    <textarea
-      className="w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-      placeholder="Please specify..."
-      value={goalFormData.otherCategory || ''}
-      onChange={(e) =>
-        setGoalFormData({
-          ...goalFormData,
-          otherCategory: e.target.value,
-        })
-      }
-    ></textarea>
-  )}
-      </form>
-    </div>
+            <textarea
+              className="w-full mt-2 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              placeholder="Please specify..."
+              value={goalFormData.otherText || ''}
+              onChange={(e) =>
+                setGoalFormData({
+                  ...goalFormData,
+                  otherText: e.target.value,
+                })
+              }
+            ></textarea>
+          )}
+          </form>
+        </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Description
@@ -530,18 +532,17 @@ const M_Goals = () => {
       {/* Custom Confirmation Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Submit Goals
               </h3>
               <p className="text-gray-600">
-                Are you sure you want to submit these goals? This action cannot
-                be undone.
+                Are you sure you want to submit these goals?
               </p>
             </div>
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-between space-x-3">
               <button
                 onClick={() => setShowConfirmDialog(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
