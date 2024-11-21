@@ -33,6 +33,7 @@ import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/manager/EvaluationView2.js';
 
 import Self from './components/Tabs/selfAppraisalTab.js'
+import EvaluationView3 from './components/manager/EvaluationView3.js';
 const App = () => {
   const location = useLocation();
 
@@ -86,6 +87,7 @@ const App = () => {
 
           <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
           <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />
+          <Route path='/evaluationView3/:employeeId' element={<EvaluationView3 />} />
           <Route path='/evaluationSummary/:employeeId' element={<EvaluationSummary />} />
 
 

@@ -71,7 +71,7 @@ const PerformanceHR = () => {
         const { employeeId, timePeriod, status } = appraisal;
 
         // If the status is "Submitted", update it to "Under Review"
-        if (status === "Under Review") {
+        if (status === "Under HR Review") {
             try {
                 const response = await axios.put(
                     `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -89,10 +89,10 @@ const PerformanceHR = () => {
             }
         }
 
-        if (status === "Submitted" || status === "Under Review") {
+        if (status === "Under HR Review") {
            
             navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
-        } else if (status === "Under HR Review") {
+        } else if (status === "Completed") {
             // Navigate to employee view if status is "Completed"
             navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
         }
@@ -165,7 +165,7 @@ const PerformanceHR = () => {
                                                 className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 ${appraisal.status === "Under HR Review" ? '' : 'cursor-pointer'}`}
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
-                                                {appraisal.status === "Under HR Review" ? "View" : "Review"}
+                                                {appraisal.status === "Under HR Review" ? "Review" : "View"}
                                             </button>
                                         </td>
                                     </tr>

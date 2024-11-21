@@ -51,7 +51,7 @@ const MyPerformanceHR = () => {
     const handleViewClick = (appraisal) => {
         console.log("Navigating to view");
         const { employeeId, timePeriod } = appraisal;
-        navigate(`/hr-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}`, { state: { timePeriod } });
+        navigate(`/empview/${employeeId}`, { state: { timePeriod } });
         handleCloseMenu();
     };
 

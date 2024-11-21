@@ -312,51 +312,169 @@ const getEmployeeAppraisal = async (req, res) => {
 }
 
 
+// const createAppraisalForm = async (req, res) => {
+//     try {
+//         const { employeeId, timePeriod } = req.body;
+
+      
+//         if (!employeeId || !timePeriod) {
+//             return res.status(400).json({ message: 'All required fields must be provided.' });
+//         }
+
+       
+//         const employee = await Employee.findOne({ employeeId: employeeId }); 
+     
+//         if (!employee) {
+//             return res.status(404).json({ message: 'Employee not found.' });
+//         }
+
+      
+//         const existingAppraisal = await Appraisal.findOne({
+//             employeeId: employeeId,
+//             timePeriod: timePeriod,
+//         });
+
+       
+//         if (existingAppraisal) {
+//             return res.status(400).json({ message: 'An appraisal already exists for this employee in the specified time period.' });
+//         }
+
+//         const newAppraisal = new Appraisal({
+//             employeeId,
+//             empName: employee.empName,
+//             designation: employee.designation,
+//             department: employee.department,
+//             band: employee.band,
+//             timePeriod,
+//             initiatedOn: new Date(),
+//             managerName: employee.managerName,
+//             status: 'To Do',
+//             pageData: [],
+//         });
+
+//         const savedAppraisal = await newAppraisal.save();
+//         res.status(201).json({ message: 'Appraisal form created successfully', data: savedAppraisal });
+
+//     } catch (error) {
+//         console.error('Error in creating appraisal form:', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// };
 const createAppraisalForm = async (req, res) => {
     try {
         const { employeeId, timePeriod } = req.body;
 
-      
+        // Validate the required fields
         if (!employeeId || !timePeriod) {
-            return res.status(400).json({ message: 'All required fields must be provided.' });
+            return res.status(400).json({ message: 'Both employeeId(s) and timePeriod must be provided.' });
         }
 
-       
-        const employee = await Employee.findOne({ employeeId: employeeId }); 
-     
-        if (!employee) {
-            return res.status(404).json({ message: 'Employee not found.' });
+        // If employeeId is a single ID, convert it to an array for uniform handling
+        const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
+
+        // Get the current time period or validate the given one
+        if (!timePeriod) {
+            return res.status(400).json({ message: 'Time period is required.' });
         }
 
-      
-        const existingAppraisal = await Appraisal.findOne({
-            employeeId: employeeId,
-            timePeriod: timePeriod,
+        // Loop over each employeeId
+        const appraisalPromises = employeeIds.map(async (empId) => {
+            const employee = await Employee.findOne({ employeeId: empId });
+
+            if (!employee) {
+                return { employeeId: empId, message: 'Employee not found.' };
+            }
+
+            // Check if an appraisal already exists for this employee and time period
+            const existingAppraisal = await Appraisal.findOne({
+                employeeId: empId,
+                timePeriod: timePeriod,
+            });
+
+            if (existingAppraisal) {
+                return { employeeId: empId, message: 'An appraisal already exists for this employee in the specified time period.' };
+            }
+
+            // Create and save the new appraisal for the employee
+            const newAppraisal = new Appraisal({
+                employeeId: empId,
+                empName: employee.empName,
+                designation: employee.designation,
+                department: employee.department,
+                band: employee.band,
+                timePeriod,
+                initiatedOn: new Date(),
+                managerName: employee.managerName,
+                status: 'To Do',
+                pageData: [],
+            });
+
+            const savedAppraisal = await newAppraisal.save();
+            return { employeeId: empId, message: 'Appraisal created successfully', data: savedAppraisal };
         });
 
-       
-        if (existingAppraisal) {
-            return res.status(400).json({ message: 'An appraisal already exists for this employee in the specified time period.' });
-        }
+        // Wait for all appraisal creation promises to resolve
+        const results = await Promise.all(appraisalPromises);
 
-        const newAppraisal = new Appraisal({
-            employeeId,
-            empName: employee.empName,
-            designation: employee.designation,
-            department: employee.department,
-            band: employee.band,
-            timePeriod,
-            initiatedOn: new Date(),
-            managerName: employee.managerName,
-            status: 'To Do',
-            pageData: [],
+        // Return the results for each employee
+        return res.status(201).json({
+            message: 'Appraisals processed',
+            data: results,
         });
-
-        const savedAppraisal = await newAppraisal.save();
-        res.status(201).json({ message: 'Appraisal form created successfully', data: savedAppraisal });
 
     } catch (error) {
         console.error('Error in creating appraisal form:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const deleteAppraisalForm = async (req, res) => {
+    try {
+        const { employeeId, timePeriod } = req.body;
+
+        // Validate the required fields
+        if (!employeeId || !timePeriod) {
+            return res.status(400).json({ message: 'Both employeeId(s) and timePeriod must be provided.' });
+        }
+
+        // If employeeId is a single ID, convert it to an array for uniform handling
+        const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
+
+        // Loop over each employeeId
+        const deletionPromises = employeeIds.map(async (empId) => {
+            const employee = await Employee.findOne({ employeeId: empId });
+
+            if (!employee) {
+                return { employeeId: empId, message: 'Employee not found.' };
+            }
+
+            // Find the appraisal for this employee and time period
+            const existingAppraisal = await Appraisal.findOne({
+                employeeId: empId,
+                timePeriod: timePeriod,
+            });
+
+            if (!existingAppraisal) {
+                return { employeeId: empId, message: 'No appraisal found for this employee in the specified time period.' };
+            }
+
+            // Delete the appraisal
+            await Appraisal.deleteOne({ _id: existingAppraisal._id });
+
+            return { employeeId: empId, message: 'Appraisal deleted successfully' };
+        });
+
+        // Wait for all deletion promises to resolve
+        const results = await Promise.all(deletionPromises);
+
+        // Return the results for each employee
+        return res.status(200).json({
+            message: 'Appraisals processed for deletion',
+            data: results,
+        });
+
+    } catch (error) {
+        console.error('Error in deleting appraisal form:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -618,7 +736,7 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
         if (appraisals.length === 0) {
             return res.status(404).json({
                 success: false,
-                // message: `No submitted appraisals found for manager ${managerName}`,
+                message: `No submitted appraisals found for manager ${managerName}`,
             });
         }
 
@@ -678,4 +796,4 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
 };
 
 
-module.exports = {notifyManagersOfSubmittedAppraisals,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
+module.exports = {notifyManagersOfSubmittedAppraisals, deleteAppraisalForm,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}

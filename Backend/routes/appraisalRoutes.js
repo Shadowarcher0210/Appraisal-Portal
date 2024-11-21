@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals} = require('../controllers/appraisalController');
+const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm} = require('../controllers/appraisalController');
 const {authenticateUser} = require('../middleware/authenticateUser')
 
 const router = express.Router()
@@ -7,6 +7,7 @@ const router = express.Router()
 router.put('/status/:employeeId/:startDate/:endDate', updateAppraisalStatus)
 router.put('/saveDetails/:employeeId/:startDate/:endDate', saveAppraisalDetails)
 router.post('/createAppraisal', createAppraisalForm);
+router.delete('/deleteAppraisal',deleteAppraisalForm)
 router.get('/display/:employeeId', getAppraisals);
 router.get('/displayAnswers/:employeeId/:startDate/:endDate', getAppraisalAnswers);
 router.get('/performance/:employeeId', getEmployeeAppraisal)
