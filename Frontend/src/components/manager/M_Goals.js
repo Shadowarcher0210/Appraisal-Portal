@@ -140,7 +140,7 @@ const M_Goals = () => {
         const employeeId = key.replace('goalsSubmitted_', '');
         submittedEmployeeIds.push(employeeId);
       }
-    });
+    });  
     setSubmittedEmployees(submittedEmployeeIds);
   }, []);
 
@@ -226,22 +226,6 @@ const M_Goals = () => {
         return newGoals;
       });
       fetchGoals(employeeToSubmit);
-      try {
-        const emailResponse = await axios.post(
-          'http://localhost:3003/confirmationEmail/goalSubmitEmail',
-          { employeeId: employeeToSubmit }
-        );
-        console.log("Response from confirmation email:", emailResponse);
-  
-        if (!emailResponse.data.success) {
-          console.error("Failed to send confirmation email:", emailResponse.data.message);
-          
-         
-        }
-      } catch (emailError) {
-        console.error("Error sending confirmation email:", emailError);
-     
-      }
     } catch (error) {
       console.error("Error submitting goals:", error);
     } finally {
