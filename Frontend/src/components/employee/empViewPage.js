@@ -105,20 +105,7 @@ const {employeeId}=useParams();
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
 
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
-
-    const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-    
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-    
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
+  
 
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },

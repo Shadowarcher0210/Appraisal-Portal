@@ -31,50 +31,7 @@ const getEmployeeAppraisals = async (req, res) => {
     }
 };
 
-// const saveAdditionalDetails = async (req, res) => {
-//     const { employeeId, startDate, endDate } = req.params;  
-//     const { payload } = req.body;  
 
-//     if (!employeeId  ) {
-//         return res.status(400).json({
-//             error: 'All fields are required: employeeId, quality, empName, category, description, weightage, deadline, startDate, and endDate.'
-//         });
-//     }
-
-//     const timePeriod = [new Date(startDate).toISOString().split('T')[0], new Date(endDate).toISOString().split('T')[0]];
-    
-//     if (timePeriod[0] > timePeriod[1]) {
-//         return res.status(400).json({ error: 'Start date cannot be later than end date.' });
-//     }
-
-//     try {
- 
-//         const newAdditional = new AdditionalAreas({
-//             employeeId,
-//             quality,
-//             successMetric,
-//             weightage,
-//             attainments,
-//             comments,
-//             timePeriod
-//         });
-
-//         // Save the new record
-//         const savedRecord = await newAdditional.save();
-
-//         // Send response with saved data
-//         res.status(201).json({
-//             message: 'Additional details saved successfully!',
-//             data: savedRecord
-//         });
-//     } catch (error) {
-//         console.error('Error saving additional details:', error);
-//         res.status(500).json({
-//             error: 'Error saving additional details.',
-//             details: error.message
-//         });
-//     }
-// };
 const saveAdditionalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { payload } = req.body;
@@ -135,13 +92,47 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 };
+const getAdditionalDetails = async (req,res)=>{
+    const { employeeId, startDate, endDate } = req.params;
+    if (!employeeId || !startDate || !endDate) {
+        return res.status(400).json({
+            error: 'Employee ID, start date, and end date are required.',
+        });
+    }
+    const timePeriod = [
+        new Date(startDate).toISOString().split('T')[0],
+        new Date(endDate).toISOString().split('T')[0],
+    ];
+    if (timePeriod[0] > timePeriod[1]) {
+        return res.status(400).json({
+            error: 'Start date cannot be later than end date.',
+        });
+    }
 
+    try {
+       
+        const record = await AdditionalAreas.findOne({
+            employeeId,
+            timePeriod, 
+        });
 
+        if (!record) {
+            return res.status(404).json({
+                message: 'No additional details found for this employee during the specified time period.',
+            });
+        }
+        return res.status(200).json({
+            message: 'Additional details retrieved successfully!',
+            data: record,
+        });
+    } catch (error) {
+        console.error('Error retrieving additional details:', error);
+        return res.status(500).json({
+            error: 'Error retrieving additional details.',
+            details: error.message,
+        });
+    }
 
+}
 
-
-
-
-
-
-module.exports = { getEmployeeAppraisals, saveAdditionalDetails };
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails };

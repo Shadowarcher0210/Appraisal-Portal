@@ -16,11 +16,11 @@ const pageDataSchema = new mongoose.Schema(
             default: ""
         },
         weights: {
-            type: String,
+            type: Number,
             default: " "
         },
         managerEvaluation: {
-            type: String,
+            type: Number,
             default: null
         }
     },
