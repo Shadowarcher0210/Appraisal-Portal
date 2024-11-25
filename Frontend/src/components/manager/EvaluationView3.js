@@ -149,30 +149,30 @@ const EvaluationView3 = () => {
         )}
       </div>
 
-      <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-        <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3>
-        <div className="space-y-4">
+      <div className="bg-white p-4  rounded-md shadow-md mx-2">
+        {/* <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3> */}
+        <div className="space-y-4 ">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Overall Rating</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">Manager Rating</label>
             <input
               type="text"
-              name="overallRating"
+              name="overallrating"
               value={reviewData.overallRating}
               onChange={handleInputChange}
-              className="w- p-2 border border-gray-300 text-center rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              placeholder="overall rating"
+              className=" p-2 border border-gray-300  rounded-md  transition-all"
+              placeholder="Enter your rating"
               pattern="[0-9]*"
               inputMode="numeric"
             />
            
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">Additional Comments</label>
+            <label className="block text-sm font-medium mb-4 text-gray-700">Additional Comments</label>
             <textarea
               name="additionalComments"
               value={reviewData.additionalComments}
               onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all h-24 resize-none"
+              className="w-full p-3 border border-gray-300 rounded-md transition-all h-24 resize-none"
               placeholder="Enter additional comments here..."
             />
           </div>

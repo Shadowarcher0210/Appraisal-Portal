@@ -227,53 +227,68 @@ const EvaluationView2 = () => {
 
 
     }
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+    navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
   const isContinueEnabled = attainments.every((attainment) => attainment.trim() !== "");
 
+  const questionsAndAnswers = [
+    { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
+    { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
+    { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
+    { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
+    { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
+    { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
+    { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
+    { question: 'Time Management', answer: 'I complete my tasks on time. ' },
+    { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
+    { question: 'Creativity', answer: 'I look for solutions outside the work.' },
+    { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
+    { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
+    { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
+    { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
+];
+  useEffect(() => {
+    const fetchAppraisalDetails = async () => {
+      console.log(employeeId);
+      if (!employeeId || !timePeriod) {
+        setError("Employee ID or time period not found");
+        setLoading(false);
+        return;
+      }
 
-  // useEffect(() => {
-  //   const fetchAppraisalDetails = async () => {
-  //     console.log(employeeId);
-  //     if (!employeeId || !timePeriod) {
-  //       setError("Employee ID or time period not found");
-  //       setLoading(false);
-  //       return;
-  //     }
+      try {
+        const response = await axios.get(
+          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
 
-  //     try {
-  //       const response = await axios.get(
-  //         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-  //       );
+        // Initialize the form data with the structure you need
+        const initialFormData = {
+          empName: response.data[0]?.empName || "",
+          designation: response.data[0]?.designation || "",
+          managerName: response.data[0]?.managerName || "",
+          timePeriod: response.data[0]?.timePeriod || timePeriod,
+          status: response.data[0]?.status || "",
+          pageData: questionsAndAnswers.map((qa, index) => ({
+            questionId: (index + 1).toString(),
+            successMetric: response.data[0]?.pageData[index]?.successMetric || "",
+            notes: response.data[0]?.pageData[index]?.notes || "",
+            weights: response.data[0]?.pageData[index]?.weights || "",
+            managerEvaluation:
+              response.data[0]?.pageData[index]?.managerEvaluation || 0,
+          })),
+        };
 
-  //       // Initialize the form data with the structure you need
-  //       const initialFormData = {
-  //         empName: response.data[0]?.empName || "",
-  //         designation: response.data[0]?.designation || "",
-  //         managerName: response.data[0]?.managerName || "",
-  //         timePeriod: response.data[0]?.timePeriod || timePeriod,
-  //         status: response.data[0]?.status || "",
-  //         pageData: questionsAndAnswers.map((qa, index) => ({
-  //           questionId: (index + 1).toString(),
-  //           successMetric: response.data[0]?.pageData[index]?.successMetric || "",
-  //           notes: response.data[0]?.pageData[index]?.notes || "",
-  //           weights: response.data[0]?.pageData[index]?.weights || "",
-  //           managerEvaluation:
-  //             response.data[0]?.pageData[index]?.managerEvaluation || 0,
-  //         })),
-  //       };
+        setFormData([initialFormData]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching appraisal details:", error);
+        setError("Error fetching appraisal details");
+        setLoading(false);
+      }
+    };
 
-  //       setFormData([initialFormData]);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Error fetching appraisal details:", error);
-  //       setError("Error fetching appraisal details");
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchAppraisalDetails();
-  // }, [employeeId, timePeriod]);
+    fetchAppraisalDetails();
+  }, [employeeId, timePeriod]);
 
   const handleBack = () => {
     navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
@@ -469,6 +484,8 @@ const EvaluationView2 = () => {
             <Award size={20} className="text-blue-600" />
             Additional Areas Of Assessment
           </h2>
+
+
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>

@@ -103,8 +103,8 @@ const saveAppraisalDetails = async (req, res) => {
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
         // Determine status based on manager evaluation
-        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        const newStatus = hasManagerEvaluation ? 'Under HR Review' : (isExit ? 'In Progress' : 'Submitted');
+     //   const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+     //   const newStatus = hasManagerEvaluation ? 'Under HR Review' : (isExit ? 'In Progress' : 'Submitted');
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -120,7 +120,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             { 
                 pageData: updatedPageData, 
-                status: newStatus,
+            //    status: newStatus,
                 lastModified: new Date()
             },
             { new: true }
@@ -736,7 +736,7 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
         if (appraisals.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No submitted appraisals found for manager ${managerName}`,
+                // message: `No submitted appraisals found for manager ${managerName}`,
             });
         }
 
@@ -795,5 +795,69 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
     }
 };
 
+const notifyGoalsAssaigned = async (req, res) => {
+    try {
+        const { employeeId, managerName } = req.params;
 
-module.exports = {notifyManagersOfSubmittedAppraisals, deleteAppraisalForm,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification}
+        if (!managerName) {
+            return res.status(400).json({
+                success: false,
+                message: "Manager Name is required"
+            });
+        }
+        if (!employeeId) {
+            return res.status(400).json({
+                success: false,
+                message: "Employee Id is required"
+            });
+        }
+
+        const goal = await Goals.findOne({
+            employeeId,
+            goalStatus: "Goals Submitted"
+        });
+
+        if (!goal) {
+            return res.status(404).json({
+                success: false,
+                // message: "Goals not submitted for this employee"
+            });
+        }
+
+        const appraisal = await Appraisal.findOne({
+            employeeId,
+        });
+
+        if (!appraisal) {
+            return res.status(404).json({
+                success: false,
+                message: "Appraisal data not found"
+            });
+        }
+
+        const presentYear = new Date().getFullYear();
+        const nextYear = presentYear + 1;
+
+       
+
+        const notificationMessage = `Your manager ${managerName} has assigned you goals for the year ${presentYear} to ${nextYear}.`;
+
+        if (goal.goalStatus=== 'Goals Submitted') {
+            return res.status(200).json({
+                success: true,
+                notificationMessage,
+            })
+        }
+
+       
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error sending Notification",
+            error: error.message,
+        });
+    }
+}
+
+module.exports = { notifyManagersOfSubmittedAppraisals, deleteAppraisalForm,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned}

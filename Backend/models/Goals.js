@@ -1,34 +1,46 @@
-const mongose = require('mongoose');
+const mongoose = require('mongoose');
 
-const goalsSchema = new mongose.Schema(
+const goalContent = new mongoose.Schema(
   {
-    employeeId: {
-        type: String,
-        require: [true, 'employee Id is required'],
-    },
-    empName: {
-      type: String,
-      require: [true, 'emp name is required'],
-    },
     category: {
       type: String,
       require: [true, 'category is required']
     },
     otherText: {
       type: String,
-      require: [true, 'otherText is required']
+      // require: [true, 'otherText is required']
     },
     description: {
       type: String,
       require: [true, 'description is required'],
     },
     weightage: {
-      type: String,
+      type: Number,
       required: [true, 'weightage is required'],
     },
     deadline: {
       type: String,
       required: [true, 'deadline date is required'],
+    },
+    managerWeightage:{
+      type: Number
+    },
+    goalStatus: {
+      type: String,
+      require: [true, 'GoalStatus is required'],
+  },
+  },)
+
+  const goalsSchema = new mongoose.Schema({
+    
+    employeeId: {
+        type: "string",
+        ref: 'User',
+        required: true
+    },
+    empName: {
+        type: 'string',
+        required: true
     },
     empType: {
       type: String,
@@ -47,7 +59,13 @@ const goalsSchema = new mongose.Schema(
       set: (dates) => {
         return dates.map(date => new Date(date).toISOString().split('T')[0]);
       }
-    }
-  },)
+    },
+    goals: {
+        type: [goalContent],
+        default: []
+    },
 
-module.exports = mongose.model('goals', goalsSchema)
+});
+
+
+module.exports = mongoose.model('goals', goalsSchema)
