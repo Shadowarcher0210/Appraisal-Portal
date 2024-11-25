@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const UserModel = require('../models/Email');
 const Appraisal = require('../models/Appraisal');
+
 const sendConfirmationEmails = async (req, res) => {
   try {
     const { email } = req.body;
@@ -105,4 +106,63 @@ const sendCompletedEmails = async (req, res) => {
   }
 };
 
-module.exports ={sendConfirmationEmails,sendCompletedEmails};
+const sendGoalsAddedEmails = async (req, res) => {
+  try {
+    const { employeeId } = req.body;
+  
+    if (!employeeId) {
+      return res.status(400).send({
+        success: false,
+        message: 'Employee ID is required',
+      });
+    }
+  
+    const user = await UserModel.findOne({ employeeId });
+  
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: 'User not found',
+      });
+    }
+  
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  
+    const currentDate = new Date().toLocaleDateString();
+    const presentYear = new Date().getFullYear();
+    const nextYear = presentYear + 1;
+  
+    const userMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: 'Goals Submission Notification',
+      html: `
+        <p>Dear ${user.empName},</p><p>This is a system-generated email to inform you that your manager <strong>${user.managerName}</strong> has assigned you goals on <strong>${currentDate}</strong> for the year <strong>${presentYear} - ${nextYear}</strong>.</p>
+        <p>Your manager may contact you for further discussions or clarifications regarding the assigned goals.</p> <p> You can view the submitted goals at <a href="http://localhost:3000/employee-performance">http://localhost:3000/employee-performance </a>.</p> 
+        <p> If you have any questions, feel free to reach out to HR.</p><p>Best regards,<br>BlueSpire</p> `,
+    };
+  
+   
+    await transporter.sendMail(userMailOptions);
+  
+    return res.status(200).json({
+      success: true,
+      message: 'Email sent successfully',
+    });
+  
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error sending email',
+    });
+  }
+  };
+
+module.exports ={sendConfirmationEmails,sendCompletedEmails, sendGoalsAddedEmails};

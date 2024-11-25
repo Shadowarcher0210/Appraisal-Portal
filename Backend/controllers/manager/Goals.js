@@ -35,9 +35,9 @@ const postEmployeeGoal = async (req, res) => {
 //                 return res.status(400).json({ message: 'Each goal must have all required fields provided.' });
 //             }
 
-            if (category === 'Others' && !otherText) {
-                return res.status(400).json({ message: 'Additional text is required for the Others category.' });
-            }
+            // if (category === 'Others' ) {
+            //     return res.status(400).json({ message: 'Additional text is required for the Others category.' });
+            // }
 
             if (isNaN(new Date(deadline))) {
                 return res.status(400).json({ message: `Invalid deadline date: ${deadline}` });

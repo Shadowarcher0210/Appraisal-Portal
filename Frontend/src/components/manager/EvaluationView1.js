@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { User, Briefcase, TrendingUp, Target, Award, ChevronRight, Users, BarChart, Calendar } from 'lucide-react';
+import { User, Briefcase, TrendingUp, Target, Award, ChevronRight, Users, BarChart, Calendar, Calculator } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const EvaluationView1 = () => {
@@ -12,36 +12,89 @@ const EvaluationView1 = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const { employeeId } = useParams();
-    const currentYear = new Date().getFullYear() ;
+    const currentYear = new Date().getFullYear();
     const location = useLocation();
     const { timePeriod } = location.state || {};
     const [employeeGoals, setEmployeeGoals] = useState([]);
-    const categoryIcons = {
+    const [successMessage, setSuccessMessage] = useState('');
+        const categoryIcons = {
         development: <Target className="w-5 h-5" />,
         leadership: <Users className="w-5 h-5" />,
         technical: <BarChart className="w-5 h-5" />,
         'soft-skills': <Award className="w-5 h-5" />
     };
 
+    const [totalWeight, setTotalWeight] = useState(0);
+    const [isWeightCalculationReady, setIsWeightCalculationReady] = useState(false);
+
     const [managerWeightages, setManagerWeightages] = useState({});
 
+    const handleWeightageChange = (goalId, value) => {
+        const numericValue = value === '' ? '' : parseFloat(value);
+
+        if (numericValue !== null && (isNaN(numericValue) || numericValue < 0)) {
+            // If invalid input, set to null
+            setManagerWeightages(prev => ({
+                ...prev,
+                [goalId]: null
+            }));
+            return;
+        };
+
+        setManagerWeightages(prev => ({
+            ...prev,
+            [goalId]: numericValue
+        }));
+
+        const assignedWeights = employeeGoals.reduce((sum, goal) => {
+            const weight = managerWeightages[goal._id];
+            return sum + (weight !== null && !isNaN(weight) ? weight : 0);
+        }, 0);
+        const totalPossibleWeight = employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0);
+
+        const allWeightsAssigned = employeeGoals.every(goal => {
+            const weight = managerWeightages[goal._id];
+            return weight !== null && 
+                   weight !== undefined && 
+                   weight >= 0 && 
+                   weight <= goal.weightage;
+        });
+
+        setIsWeightCalculationReady(allWeightsAssigned);
+    };
+
+    const calculateTotalWeight = () => {
+        // Calculate the total possible weight from all goals
+        const totalPossibleWeight = employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0);
+
+        // Ensure all weights are numbers and sum them
+        const total = Object.values(managerWeightages).reduce((sum, weight) => {
+            const numericWeight = parseFloat(weight);
+            return isNaN(numericWeight) ? sum : sum + numericWeight;
+        }, 0);
+
+        // Only set total weight if it doesn't exceed total possible weight
+        if (total <= totalPossibleWeight) {
+            setTotalWeight(total);
+        } else {
+            // Optionally, you can add an error state or show a message
+            setTotalWeight(0);
+            // You might want to set an error state here
+            // setError("Total weight cannot exceed the sum of all goal weightages");
+        }
+    };
+
     useEffect(() => {
+        // Initialize weightages to null when goals change
         const initialWeightages = employeeGoals.reduce((acc, goal) => {
-            acc[goal._id] = "";
+            acc[goal._id] = null;
             return acc;
         }, {});
         setManagerWeightages(initialWeightages);
+        
+        // Reset weight calculation readiness
+        setIsWeightCalculationReady(false);
     }, [employeeGoals]);
-
-
-    const handleWeightageChange = (goalId, value) => {
-        setManagerWeightages(prev => ({
-            ...prev,
-            [goalId]: value
-        }));
-    };
-
-    // Static questions and answers
     const questionsAndAnswers = [
         { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
         { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
@@ -70,7 +123,7 @@ const EvaluationView1 = () => {
         if (employeeId) {
             try {
                 const response = await axios.get(
-                    `http://localhost:3003/all/details/${employeeId}`
+                   `http://localhost:3003/all/details/${employeeId}`
                 );
 
                 setEmail(response.data.user.email);
@@ -83,14 +136,45 @@ const EvaluationView1 = () => {
     };
 
     const handleBack = () => {
-        navigate(`/evaluationView/${employeeId}`,{state:{timePeriod}});
+        navigate(`/evaluationView/${employeeId}, { state: { timePeriod } }`);
     };
 
-    const handleContinue = () => {
-        navigate(`/evaluationView2/${employeeId}`,{state:{timePeriod}}); 
-      }
 
-   
+    const handleContinue = async () => {
+        setLoading(true);  // Set loading state to true when the request starts
+        const payload = {
+            goals: Object.keys(managerWeightages).map(goalId => ({
+                managerWeightage: managerWeightages[goalId],  
+            }))
+        };
+        console.log("Payload being sent:", payload);
+        try {
+          const response = await axios.put(
+            `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+            payload
+          );
+      
+          if (response.data && response.data.length > 0) {
+            const failedResults = response.data.filter(result => result.status === 'Failed');
+            if (failedResults.length > 0) {
+              setError(failedResults.map(result => result.message).join(', '));
+            } else {
+              setSuccessMessage('Manager weightages updated successfully!');
+            }
+          }
+      
+          // Navigate to another page if necessary (e.g., evaluation page)
+          navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
+      
+        } catch (error) {
+          console.error('Error updating manager weightage:', error);
+          setError('An error occurred while updating manager weightage.');
+        } finally {
+          setLoading(false);  // Set loading to false when the request finishes
+        }
+      };
+      
+
 
     useEffect(() => {
         const fetchEmployeeGoals = async () => {
@@ -212,7 +296,7 @@ const EvaluationView1 = () => {
     };
 
 
-    
+
 
     const status = formData ? formData.status : null
     if (loading) {
@@ -246,11 +330,14 @@ const EvaluationView1 = () => {
         return "bg-emerald-100 text-emerald-700";
     };
 
+
+
+
+
     return (
         <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
             <div className="mb-2">
-
                 <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
                     <div className="flex justify-between items-center">
                         <h1 className="text-2xl font-bold text-white">Employee Goals for {previousYear}-{currentYear}</h1>
@@ -260,7 +347,6 @@ const EvaluationView1 = () => {
                                 <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
                                     {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                                 </span>
-
                             </div>
                         ) : (<div />)}
                     </div>
@@ -370,21 +456,17 @@ const EvaluationView1 = () => {
                                         <div className="flex items-center gap-4 w-full">
                                             <label className="text-sm font-medium text-gray-700 -mt-4">Weight (%)</label>
                                             <div className="relative">
-                                                <input
-                                                    type="number"
-                                                    className="w-32 p-2 border rounded  mb-4"
-                                                    value={managerWeightages[goal._id]}
-                                                    onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
-                                                    onBlur={(e) => {
-                                                        // On blur, if the field is empty, set it to 0
-                                                        if (e.target.value === '') {
-                                                            handleWeightageChange(goal._id, '0');
-                                                        }
-                                                    }}
-                                                    min="0"
-                                                    max={goal.weightage}
-                                                    placeholder={`Max ${goal.weightage}%`}
+                                            <input
+                                                type="number"
+                                                className="w-32 p-2 border rounded mb-4"
+                                                value={managerWeightages[goal._id] || ''}                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
+                                                min="1"
+                                                max={goal.weightage}
+                                                placeholder={`Max ${goal.weightage}%`}
+                                                // onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
                                                 />
+                                            
+
                                                 {Number(managerWeightages[goal._id]) > goal.weightage && (
                                                     <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
                                                         Cannot exceed {goal.weightage}%
@@ -399,42 +481,72 @@ const EvaluationView1 = () => {
                                 </div>
                             </div>
                         ))}
-
                     </div>
+
+                    <div className="mt-6 bg-white p-4 w-3/12 rounded-lg shadow-md">
+                        <div className=" items-center justify-between">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <Calculator className="w-6 h-6 text-cyan-800" />
+                                <span className="font-semibold text-gray-800">Total Weight</span>
+                            </div>
+                            <div className=' flex'>
+                                <button
+                                    className={`px-4 py-2 rounded-lg ${isWeightCalculationReady
+                                        ? 'bg-cyan-800 text-white hover:bg-cyan-700'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                    onClick={calculateTotalWeight}
+                                    disabled={!isWeightCalculationReady}
+                                >
+                                    Calculate Total Weight
+                                </button>
+                                <div className="text-lg font-bold text-cyan-800 ml-4 mt-1">
+                                    {totalWeight.toFixed(2)}%
+                                </div>
+                            </div>
+
+                        </div>
+                        {employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0) < totalWeight && (
+                            <div className="text-red-500 mt-2 text-sm">
+                                Total weight cannot exceed the sum of all goal weightages
+                            </div>
+                        )}
+                    </div>
+
+
+
                 </div>
 
                 <div className="mt-6 flex justify-end">
-          <div className='mr-auto'>
-            <button
-              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
-              onClick={handleBack}
-            >
-              Back
-            </button>
-          </div>
-          <div  className='mr-2'>
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSubmit}
-            >
-             Save & Exit
-            </button>
-          </div>
-          <div >
-            <button
-              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
-              onClick={handleContinue}
-            >
-              Continue
-            </button>
-          </div>  
-        </div>
+                    <div className='mr-auto'>
+                        <button
+                            className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </button>
+                    </div>
+                    <div className='mr-2'>
+                        <button
+                            className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+                            onClick={handleSubmit}
+                        >
+                            Save & Exit
+                        </button>
+                    </div>
+                    <div >
+                        <button
+                            className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+                            onClick={handleContinue}
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
                 {isModalVisible && (
                     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
                             <div className="p-6">
-
-
                                 <p className="mt-3 text-gray-600 text-center">
                                     Thank you for submitting
                                 </p>
@@ -449,10 +561,8 @@ const EvaluationView1 = () => {
                             </div>
                         </div>
                     </div>
-
                 )}
             </div>
-
         </div>
     );
 };

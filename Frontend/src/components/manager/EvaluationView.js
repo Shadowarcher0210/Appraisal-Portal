@@ -125,7 +125,6 @@ const EvaluationView = () => {
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation:
               response.data[0]?.pageData[index]?.managerEvaluation || 0
-
           }))
         };
 
@@ -157,48 +156,48 @@ const EvaluationView = () => {
 
 
 
-  const handleSubmit = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
+  // const handleSubmit = async () => {
+  //   if (!formData || !formData[0] || !formData[0].pageData) return;
 
-    try {
-      const email2 = { email }
-      console.log("email", email2);
+  //   try {
+  //     const email2 = { email }
+  //     console.log("email", email2);
 
-      // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
-      console.log("Submitting form with employeeId:", employeeId, "and email:", email);
+  //     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
+  //     console.log("Submitting form with employeeId:", employeeId, "and email:", email);
 
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          answer: item.answer || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
+  //     const submissionData = {
+  //       pageData: formData[0].pageData.map(item => ({
+  //         questionId: item.questionId,
+  //         answer: item.answer || '',
+  //         notes: item.notes || '',
+  //         weights: item.weights || '',
+  //         managerEvaluation: item.managerEvaluation || 0
 
-        }))
-      };
+  //       }))
+  //     };
 
 
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("PUT request successful.");
+  //     await axios.put(
+  //       `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+  //       submissionData,
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+  //     console.log("PUT request successful.");
 
-      await axios.post(
-        "http://localhost:3003/confirmationEmail/completedEmail",
-        { userId: employeeId, email: email },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("POST request for confirmation email successful.");
+  //     await axios.post(
+  //       "http://localhost:3003/confirmationEmail/completedEmail",
+  //       { userId: employeeId, email: email },
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+  //     console.log("POST request for confirmation email successful.");
 
-      setIsModalVisible(true);
-    } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
-    }
-  };
+  //     setIsModalVisible(true);
+  //   } catch (error) {
+  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+  //     setError("Error submitting evaluation");
+  //   }
+  // };
 
 
   if (loading) {
@@ -394,7 +393,7 @@ const EvaluationView = () => {
           <div  className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSubmit}
+              onClick={handleContinue}
             >
              Save & Exit
             </button>

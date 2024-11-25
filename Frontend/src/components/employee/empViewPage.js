@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import { User, Briefcase, TrendingUp,  Award, } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation, useParams ,useNavigate} from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const EmpViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState(""); // If you're using a state to store the email
-
+ const [additionalAreas , setAdditionalAreas] = useState([]);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const [error, setError] = useState(null);
-const {employeeId}=useParams();
+  const { employeeId } = useParams();
   const currentYear = new Date().getFullYear() + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
-  
+
   // Static questions and answers
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
@@ -37,7 +36,7 @@ const {employeeId}=useParams();
   const toggleHelpPopup = () => {
     setShowHelpPopup(!showHelpPopup);
   };
-   
+
   useEffect(() => {
     fetchuserDetails();
   }, []);
@@ -60,7 +59,7 @@ const {employeeId}=useParams();
 
 
 
-  
+
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
       if (!employeeId || !timePeriod) {
@@ -71,7 +70,7 @@ const {employeeId}=useParams();
 
       try {
         const response = await axios.get(
-         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
         // Initialize the form data with the structure you need
@@ -87,12 +86,12 @@ const {employeeId}=useParams();
             notes: response.data[0]?.pageData[index]?.notes || '',
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
-             
+
           }))
-          
+
         };
         console.log("res check for eval", initialFormData);
-        
+
         setFormData([initialFormData]);
         setLoading(false);
       } catch (error) {
@@ -102,17 +101,58 @@ const {employeeId}=useParams();
       }
     };
 
+
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
-
+// useEffect(()=>{
   
+//   const getAdditionalDetails = async () =>{
+//     try{
+      
+//       // if(formData[0].status === 'Completed'){
+//     const response = await axios.get(`http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`)
+//     console.log('Getting Additional Areas',response.data)
+// setAdditionalAreas(response.data)
+//       // }
+//     }catch{
+//       console.error('Error in fetching Additional Areas:',error)
+//     }
+  
+// }
+// getAdditionalDetails();
+// },)
 
+useEffect(() => {
+  const getAdditionalDetails = async () => {
+    // Make sure formData is loaded and contains status
+    if (formData && formData[0]?.status === 'Completed') {
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+        console.log('Getting Additional Areas', response.data);
+        setAdditionalAreas(response.data.data.areas);
+        console.log("Additional Areas in EMP view page :",response.data.data.areas)
+      } catch (error) {
+        console.error('Error in fetching Additional Areas:', error);
+      }
+    } else {
+      // Optionally handle the case when status is not 'Completed'
+      console.log('Appraisal status is not completed. Skipping fetching additional details.');
+    }
+  };
+
+  // Only run if formData is loaded
+  if (formData && formData[0]?.status) {
+    getAdditionalDetails();
+  }
+})
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
     { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
   ];
-    const status = formData?formData.status:null
+  const status = formData ? formData.status : null
 
   if (loading) {
     return (
@@ -224,7 +264,7 @@ const {employeeId}=useParams();
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              
+
               <thead>
                 <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
@@ -233,13 +273,13 @@ const {employeeId}=useParams();
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
 
-																																  
-                  {formData[0].status === 'Under HR Review' && (
-        <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-            Manager Evaluation
-        </th>
-    )
-} 
+
+                  {formData[0].status === 'Completed' && (
+                    <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
+                      Manager Evaluation
+                    </th>
+                  )
+                  }
 
                 </tr>
               </thead>
@@ -251,7 +291,7 @@ const {employeeId}=useParams();
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   const managerEvaluation = formData ? formData[0].pageData[index]?.managerEvaluation : null;
-                    console.log("eval", managerEvaluation)
+                  console.log("eval", managerEvaluation)
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
                       <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
@@ -278,7 +318,7 @@ const {employeeId}=useParams();
                         <span className="text-gray-600">No notes to display</span>
                       </td>
                       )}
-                       {weights ? (
+                      {weights ? (
                         <td className="p-2 text-sm text-gray-700 text-center ">
                           <span className="text-gray-600">{weights} %</span>
                         </td>
@@ -286,12 +326,12 @@ const {employeeId}=useParams();
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {formData[0].status === 'Under HR Review' && (
-                       <td className="p-2 text-sm text-gray-600 text-center">
+                      {formData[0].status === 'Completed' && (
+                        <td className="p-2 text-sm text-gray-600 text-center">
 
-                      <span className="text-gray-600 ">{managerEvaluation} %</span>
-                      
-                    </td>
+                          <span className="text-gray-600 ">{managerEvaluation} %</span>
+
+                        </td>
                       )}
                     </tr>
                   );
@@ -300,32 +340,75 @@ const {employeeId}=useParams();
             </table>
           </div>
         </div>
+        {formData[0].status==="Completed"&&(
+           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+           <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+             <Award size={20} className="text-blue-600" />
+             Additional Areas Of Assessment
+           </h2>
+           <div className="overflow-x-auto">
+             <table className="w-full border-collapse">
+               <thead>
+                 <tr>
+                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
+                     Quality
+                   </th>
+                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
+                     Success & Metric
+                   </th>
+                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
+                     weightage
+                   </th>
+                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
+                     Attainment
+                   </th>
+                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
+                     Comments
+                   </th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {additionalAreas.map((item, index) => {
+                   return (
+                     <tr key={index} className="border-b border-gray-200 ">
+                       <td className="p-2 text-sm font-medium text-gray-500 ">
+                         {item.quality}
+                       </td>
+                       <td className="p-2 text-sm text-gray-700 w-86">
+                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                           {item.successMetric}
+                         </span>
+                       </td>
+                       <td className="p-2 text-sm text-gray-700 w-86">
+                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                           {item.weightage}%
+                         </span>
+                       </td>
+                       <td className="p-2 text-sm text-gray-600 text-center">
+                       <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                           {item.attainments}%
+                         </span>
+                       </td>
+ 
+                       <td className="border-l border-r text-center">
+                        {item.comments ?(
+                       <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                           {item.comments}
+                         </span>
+                        ):(<span className="px-2 text-blue-600 text-center  py-1 rounded">
+                          -
+                        </span>)}
+                       </td>
+                     </tr>
+                   );
+                 })}
+               </tbody>
+             </table>
+           </div>
+         </div>
+        )}
 
 
-        {/* Goals Section */}
-        {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
-          {formData ? (
-            <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-              <Target size={20} className="text-green-600" />
-              Goals for
-              {` ${new Date(formData[0].timePeriod[0]).getFullYear() + 1} - ${new Date(formData[0].timePeriod[1]).getFullYear() + 1}`}
-              <br />
-            </h2>) : (<div />)}
-          <div className="space-y-3 pr-4">
-            {goals.map((goal, index) => (
-              <div key={index} className="bg-gray-100 rounded p-3">
-                <div className="flex justify-between items-start">
-                  <p className="text-sm font-medium text-gray-700">{goal.title}</p>
-                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
-                    {goal.deadline}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{goal.description}</p>
-              </div>
-            ))}
-          </div>
-        </div> */}
-    
       </div>
 
     </div>

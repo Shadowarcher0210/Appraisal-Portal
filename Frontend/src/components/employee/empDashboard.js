@@ -91,10 +91,10 @@ const Dashboard = () => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
     
-    const navigatePath = ["Submitted", "Under Review", "Under HR Review"].includes(status)
+    const navigatePath = ["Submitted", "Under Review", "Under HR Review","Completed"].includes(status)
       ? `/empview/${employeeId}`  
       : "/form"; 
-    if (!["Submitted", "Under Review", "Under HR Review"].includes(status)) {
+    if (!["Submitted", "Under Review", "Under HR Review","Completed"].includes(status)) {
       try {
         const response = await axios.put(
           `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -181,7 +181,7 @@ const Dashboard = () => {
     className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-4 py-2 text-sm transition-colors"
     onClick={() => handleButtonClick(appraisal)}
   >
-    {["Submitted", "Under Review", "Under HR Review"].includes(appraisal.status) ? "View" : "Edit"}
+    {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Edit"}
   </button>
 </td>
 
