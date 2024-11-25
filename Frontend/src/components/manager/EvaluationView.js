@@ -63,29 +63,39 @@ const EvaluationView = () => {
     navigate("/manager-performance");
   };
 
-  const handleContinue = async () => {
+  const handleContinue =  async () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return;
+  
     try {
+     
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
           answer: item.answer || '',
           notes: item.notes || '',
           weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
-
+          managerEvaluation: item.managerEvaluation|| 0
+          
         }))
       };
+      
+  
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         submissionData,
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("PUT request successful.");
-      navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
+  
+     
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      //setError("Error submitting evaluation");
+      setError("Error submitting evaluation");
     }
+  
+  
+    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
+   
   }
 
   useEffect(() => {
@@ -358,7 +368,9 @@ const EvaluationView = () => {
                         <input
                           className="w-20 p-1 border border-gray-300 rounded  "
                           value={formData[0].pageData[index].managerEvaluation || ''}
-                          onChange={(e) => handleManagerEvaluationChange(e, index)}
+                         
+                          onInput={(e) => handleManagerEvaluationChange(e, index)}
+                          
                         />
                       </td>
                     </tr>

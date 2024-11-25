@@ -10,7 +10,7 @@ const AdditionalSchema = new mongoose.Schema({
     required: [true, 'SuccessMetric is required'],
   },
   weightage: {
-    type: String,
+    type: Number,
     required: [true, 'Weightage is required'],
    
   },
