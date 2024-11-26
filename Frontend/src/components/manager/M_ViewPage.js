@@ -148,7 +148,7 @@ const M_ViewPage = () => {
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Attainment</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager Evaluation</th>
+                  {/* <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Manager Evaluation</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -193,7 +193,7 @@ const M_ViewPage = () => {
                         <span className="text-gray-600">Nothing to show</span>
                       </td>
                       )}
-                           {weights ? (
+                           {/* {weights ? (
                         <td className="p-2 text-sm text-gray-700 w-36 ">
                           <span className="text-gray-600">{weights}</span>
                         </td>
@@ -201,7 +201,7 @@ const M_ViewPage = () => {
                       <td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">Nothing to show</span>
                       </td>
-                      )}
+                      )} */}
                     </tr>
                   );
                 })}

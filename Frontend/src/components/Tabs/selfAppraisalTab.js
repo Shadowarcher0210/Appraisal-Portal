@@ -318,7 +318,8 @@ const handleConfirmSubmit = async () => {
         "content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
       },
-      body: JSON.stringify({ pageData })
+      body: JSON.stringify({ pageData }),
+      status: "Submitted"
     })
     if (response.ok) {
       console.log('response', response); 

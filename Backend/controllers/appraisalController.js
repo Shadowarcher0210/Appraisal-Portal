@@ -60,7 +60,7 @@ app.use(bodyParser.json())
 // };
 const saveAppraisalDetails = async (req, res) => {  
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData } = req.body; 
+    const { pageData  } = req.body; 
 
     const isExit = req.query.isExit === 'true';
 
@@ -102,9 +102,8 @@ const saveAppraisalDetails = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        // Determine status based on manager evaluation
-        // const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        // const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+        const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -120,7 +119,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             { 
                 pageData: updatedPageData, 
-                // status: newStatus,
+                status: newStatus,
                 lastModified: new Date()
             },
             { new: true }

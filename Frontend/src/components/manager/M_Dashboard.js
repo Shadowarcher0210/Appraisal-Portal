@@ -28,7 +28,7 @@ const M_Dashboard = () => {
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
-    if (employeeId) {
+    if (employeeId ) {
       try {
         const response = await axios.get(`http://localhost:3003/form/display/${employeeId}`);
 
@@ -108,27 +108,31 @@ const M_Dashboard = () => {
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-    const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-    const navigatePath = status === "Submitted" ? `/manager-View?${employeeId}&${timePeriod[0]}&${timePeriod[1]}` : "/manager-Form";
-
-    try {
-      const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        { status: newStatus }
-      );
-
-      if (response.status === 200) {
-        console.log(`Status ${newStatus} Successfully:`, response.data);
-        fetchAppraisalDetails();
-      } else {
-        console.error('Failed to update status:', response.statusText);
+  
+    const navigatePath = ["Submitted", "Under Review", "Under HR Review", "Completed"].includes(status)
+      ? `/empview/${employeeId}`  
+      : "/form"; 
+  
+    if (status === "To Do") {
+      try {
+        const response = await axios.put(
+          `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+          { status: "In Progress" }
+        );
+  
+        if (response.status === 200) {
+          console.log(`Status updated to In Progress successfully:`, response.data);
+          fetchAppraisalDetails(); // Fetch updated data after status change
+        } else {
+          console.error('Failed to update status:', response.statusText);
+        }
+      } catch (error) {
+        console.error(`Error updating status:`, error);
       }
-    } catch (error) {
-      console.error(`Error updating status to ${newStatus}:`, error);
     }
-
+  
     navigate(navigatePath, { state: { timePeriod } });
   };
-
   const getInitials = (name) => {
     return name
       .split(' ')

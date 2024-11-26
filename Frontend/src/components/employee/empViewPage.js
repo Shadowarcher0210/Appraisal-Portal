@@ -12,6 +12,8 @@ const EmpViewPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
+  const empType = localStorage.getItem('empType')
+  const [employeeType, setEmployeeType] = useState('');
   const currentYear = new Date().getFullYear() + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
@@ -41,6 +43,10 @@ const EmpViewPage = () => {
     fetchuserDetails();
   }, []);
 
+  useEffect(() => {
+    const storedEmpType = localStorage.getItem('empType'); 
+    setEmployeeType(storedEmpType); 
+}, []);
   const fetchuserDetails = async () => {
     if (employeeId) {
       try {
@@ -104,23 +110,26 @@ const EmpViewPage = () => {
 
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
-// useEffect(()=>{
+useEffect(()=>{
   
-//   const getAdditionalDetails = async () =>{
-//     try{
+  if(empType === 'Manager'){
+  const getAdditionalDetails = async () =>{
+    try{
       
-//       // if(formData[0].status === 'Completed'){
-//     const response = await axios.get(`http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`)
-//     console.log('Getting Additional Areas',response.data)
-// setAdditionalAreas(response.data)
-//       // }
-//     }catch{
-//       console.error('Error in fetching Additional Areas:',error)
-//     }
+      
+    const response = await axios.get(`http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`)
+    console.log('Getting Additional Areas',response.data)
+setAdditionalAreas(response.data.data.areas)
+       
+    }catch{
+      console.error('Error in fetching Additional Areas:',error)
+    }
   
-// }
-// getAdditionalDetails();
-// },)
+}
+  
+getAdditionalDetails();
+  }
+},[])
 
 useEffect(() => {
   const getAdditionalDetails = async () => {
@@ -340,7 +349,8 @@ useEffect(() => {
             </table>
           </div>
         </div>
-        {formData[0].status==="Completed"&&(
+
+       { employeeType==="Manager"&&(
            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
            <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
              <Award size={20} className="text-blue-600" />
