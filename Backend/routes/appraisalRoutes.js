@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm} = require('../controllers/appraisalController');
+const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, notifyGoalsAssaigned} = require('../controllers/appraisalController');
 const {authenticateUser} = require('../middleware/authenticateUser')
 
 const router = express.Router()
@@ -13,8 +13,9 @@ router.get('/displayAnswers/:employeeId/:startDate/:endDate', getAppraisalAnswer
 router.get('/performance/:employeeId', getEmployeeAppraisal)
 router.get('/expiry/:employeeId/:startDate',sendExpiringAppraisalNotification );
 router.get('/getNotification/:employeeId/:startDate',getApplicationNotification );
-router.get('/getNotiStarts/:employeeId',getApplicationNotificationStarts );
+router.get('/getNotiStarts/:employeeId',getApplicationNotificationStarts);
 router.get('/notify/:managerName',notifyManagersOfSubmittedAppraisals);
+router.get('/notifyGoals/:employeeId/managerName',notifyGoalsAssaigned);
 
 
 module.exports = router;

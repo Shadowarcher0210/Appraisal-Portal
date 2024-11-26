@@ -51,10 +51,11 @@ const M_Goals = () => {
   // });
 
   const categoryIcons = {
-    development: <Target className="w-5 h-5" />,
-    leadership: <Users className="w-5 h-5" />,
-    technical: <BarChart className="w-5 h-5" />,
-    "soft-skills": <Award className="w-5 h-5" />,
+    "Development": <Target className="w-5 h-5" />,
+    "Leadership": <Users className="w-5 h-5" />,
+    "Technical": <BarChart className="w-5 h-5" />,
+    "Soft-skills": <Award className="w-5 h-5" />,
+    "Others": <Target className="w-5 h-5" />,  
   };
 
   const toggleEmployee = (employeeId) => {
@@ -186,9 +187,11 @@ const M_Goals = () => {
         );
         setGoals((prevGoals) => ({
           ...prevGoals,
-          [employeeId]: response.data.data,
+          [employeeId]: response.data.data[0].goals,
         }));
-        console.log("Goals getting:", response.data);
+        console.log("Goals getting:", response.data.data[0].goals);
+        console.log("Goals check:", response.data.data[0].goals[0].description);
+
       } catch (error) {
         console.error("Error fetching goals details:", error);
       }
@@ -226,6 +229,18 @@ const M_Goals = () => {
         return newGoals;
       });
       fetchGoals(employeeToSubmit);
+     
+   const emailPayload = {
+        employeeId: employeeToSubmit, 
+        goals: employeeGoals,
+    };
+    console.log("Sending email with payload:", emailPayload);
+    const emailResponse = await axios.post(
+        "http://localhost:3003/confirmationEmail/goalSubmitEmail",
+        emailPayload
+    );
+    console.log("Email API response:", emailResponse);
+
     } catch (error) {
       console.error("Error submitting goals:", error);
     } finally {
@@ -337,7 +352,7 @@ const M_Goals = () => {
                     {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
                       <span className="text-green-600 font-medium flex items-center">
                         <Award className="w-4 h-4 mr-2" />
-                        Goals Submitted
+                        {goals[employee.employeeId]?.[0]?.GoalStatus || 'Goals Submitted'}
                       </span>
                     )}
 
@@ -352,19 +367,18 @@ const M_Goals = () => {
 
                 {expandedEmployees[employee.employeeId] && (
                   <div className="p-6 border-t border-gray-100 bg-gray-50">
-                    {goals[employee.employeeId]?.length > 0 ||
-                      submittedEmployees.includes(employee.employeeId) ? (
+                    {goals[employee.employeeId]?.length > 0 || submittedEmployees.includes(employee.employeeId) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {goals[employee.employeeId]?.map((goal) => (
+                        {goals[employee.employeeId]?.map((goal,index) => (
                           <div
-                            key={goal.id}
+                            key={index}
                             className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
                           >
                             <div className="p-6">
                               <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-2">
                                   <div className="p-2 bg-blue-50 rounded-lg">
-                                    {categoryIcons[goal.category]}
+                                    {categoryIcons[goal.category]}  
                                   </div>
                               <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
                                    {goal.category === 'Others' ? goal.otherText : goal.category}

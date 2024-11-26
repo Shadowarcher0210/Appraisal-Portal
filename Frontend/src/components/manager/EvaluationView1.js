@@ -180,8 +180,8 @@ const EvaluationView1 = () => {
         const fetchEmployeeGoals = async () => {
             try {
                 const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
-                setEmployeeGoals(response.data.data || []);
-                console.log("goals", response.data)
+                setEmployeeGoals(response.data.data[0].goals || []);
+                console.log("goals response", response.data.data[0].goals)
 
                 setLoading(false);
             } catch (err) {
@@ -235,19 +235,19 @@ const EvaluationView1 = () => {
     }, [employeeId, timePeriod]);
 
 
-    const handleManagerEvaluationChange = (e, index) => {
-        if (!formData || !formData[0]) return;
+    // const handleManagerEvaluationChange = (e, index) => {
+    //     if (!formData || !formData[0]) return;
 
-        const updatedFormData = [...formData];
-        const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+    //     const updatedFormData = [...formData];
+    //     const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
 
-        if (!updatedFormData[0].pageData[index].managerEvaluation) {
-            updatedFormData[0].pageData[index].managerEvaluation = {};
-        }
+    //     if (!updatedFormData[0].pageData[index].managerEvaluation) {
+    //         updatedFormData[0].pageData[index].managerEvaluation = {};
+    //     }
 
-        updatedFormData[0].pageData[index].managerEvaluation = value;
-        setFormData(updatedFormData);
-    };
+    //     updatedFormData[0].pageData[index].managerEvaluation = value;
+    //     setFormData(updatedFormData);
+    // };
 
     //   const currentYear = new Date().getFullYear();
     const previousYear = currentYear - 1;
@@ -298,7 +298,7 @@ const EvaluationView1 = () => {
 
 
 
-    const status = formData ? formData.status : null
+    //const status = formData ? formData.status : null
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">

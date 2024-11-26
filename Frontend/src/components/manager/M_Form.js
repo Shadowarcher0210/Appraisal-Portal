@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   instructionsList,
   impInstructions,
-  goalsResponse,
 } from "../manager/appraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import SelfAppraisalTab from "../Tabs/selfAppraisalTab";
@@ -25,32 +23,7 @@ const M_Form = () => {
 
   const location = useLocation();
   const { timePeriod } = location.state || {};
-  const token = localStorage.getItem('token')
-
-  useEffect(() => {
-    fetchuserDetails();
-  }, []);
-
-  const fetchuserDetails = async () => {
-    const employeeId = localStorage.getItem("employeeId");
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-        // setUserDetails(response.data.user);
-        setEmail(response.data.user.email);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
-
-
-
-  
+  const token = localStorage.getItem('token')  
 
   const handleContinue = () => {
     if (activeTab === 1 && selfAppraisalPage === 0) {
@@ -62,8 +35,6 @@ const M_Form = () => {
     }
   };
 
- 
-
   const handlePreviousForm = () => {
     if (selfAppraisalPage > 0) {
       setSelfAppraisalPage(selfAppraisalPage - 1);
@@ -74,9 +45,6 @@ const M_Form = () => {
       navigate("/manager-dashboard");
     }
   };
-
-
-
 
   const getAnswerFromWeight = (weight) => {
     switch (weight) {

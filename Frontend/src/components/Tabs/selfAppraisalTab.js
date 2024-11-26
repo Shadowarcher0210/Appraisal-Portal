@@ -594,3 +594,4 @@ const closeThankYouModal = () => {
 }; 
 
 export default SelfAppraisalTab;
+
