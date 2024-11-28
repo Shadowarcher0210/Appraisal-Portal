@@ -13,6 +13,7 @@ const Header = () => {
   const [submitNotification, setSubmitNotification] = useState(null);
   const [notiStartsNotification, setNotiStartsNotification] = useState(null);
   const [managerNotification, setManagerNotification] = useState(null);
+  const [hrNotification, setHRNotification] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -29,7 +30,6 @@ const Header = () => {
   const employeeName = localStorage.getItem('empName');
   const designation = localStorage.getItem('designation');
   const employeeId = localStorage.getItem('employeeId');
-  const GoalStatus = localStorage.getItem('GoalStatus');
 
   const handleClickOutside = (event) => {
     if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -39,64 +39,94 @@ const Header = () => {
       setShowUserDropdown(false);
     }
   };
+
   const handleMyProfie = () => {
     navigate('/profile');
   };
+
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
   };
 
   const handleTabClick = (tabName, path) => {
-        setActiveTab(tabName);
-        localStorage.setItem('activeTab', tabName);
-        navigate(path);
-      };
+    setActiveTab(tabName);
+    localStorage.setItem('activeTab', tabName);
+    navigate(path);
+  };
 
   const compareNotifications = (current, seen) => {
-    if (empType === 'Manager') {
-      const currentMessages = current?.managerNotification || [];
-      return currentMessages.some(msg => !seen[msg]);
-    } else {
-      const notifications = {
-        appraisal: current?.appraisalNotification,
-        submit: current?.submitNotification,
-        notiStarts: current?.notiStartsNotification
-      };
+    switch (empType) {
+      case 'Manager':
+        const currentManagerMessages = current?.managerNotification || [];
+        return currentManagerMessages.some((msg, index) => 
+          !seen[`managerNotification_${index}`] || seen[`managerNotification_${index}`] !== msg
+        );
       
-      return Object.entries(notifications).some(([key, value]) => 
-        value && (!seen[key] || seen[key] !== value)
-      );
+      case 'Employee':
+        const notifications = {
+          appraisal: current?.appraisalNotification,
+          submit: current?.submitNotification,
+          notiStarts: current?.notiStartsNotification,
+          goals: current?.GoalNotification
+        };
+        return Object.entries(notifications).some(([key, value]) => 
+          value && (!seen[key] || seen[key] !== value)
+        );
+      
+      case 'HR':
+        const currentHRMessages = current?.hrNotification || [];
+        return currentHRMessages.some((msg, index) => 
+          !seen[`hrNotification_${index}`] || seen[`hrNotification_${index}`] !== msg
+        );
+      
+      default:
+        return false;
     }
   };
 
   const updateSeenNotifications = (currentNotifications) => {
     const newSeen = { ...seenNotifications };
     
-    if (empType === 'Manager') {
-      currentNotifications?.managerNotification?.forEach(msg => {
-        newSeen[msg] = true;
-      });
-    } else {
-      if (currentNotifications.appraisalNotification) {
-        newSeen.appraisal = currentNotifications.appraisalNotification;
-      }
-      if (currentNotifications.submitNotification) {
-        newSeen.submit = currentNotifications.submitNotification;
-      }
-      if (currentNotifications.notiStartsNotification) {
-        newSeen.notiStarts = currentNotifications.notiStartsNotification;
-      }
-      if(currentNotifications.GoalNotification){
-        newSeen.notifyGoalsResponse = currentNotifications.notifyGoalsResponse
-      }
+    switch (empType) {
+      case 'Employee':
+        if (currentNotifications.appraisalNotification) {
+          newSeen.appraisal = currentNotifications.appraisalNotification;
+        }
+        if (currentNotifications.submitNotification) {
+          newSeen.submit = currentNotifications.submitNotification;
+        }
+        if (currentNotifications.notiStartsNotification) {
+          newSeen.notiStarts = currentNotifications.notiStartsNotification;
+        }
+        if (currentNotifications.GoalNotification) {
+          newSeen.goals = currentNotifications.GoalNotification;
+        }
+        break;
+      
+      case 'Manager':
+        if (currentNotifications.managerNotification && Array.isArray(currentNotifications.managerNotification)) {
+          currentNotifications.managerNotification.forEach((message, index) => {
+            newSeen[`managerNotification_${index}`] = message;
+          });
+        }
+        break;
+      
+      case 'HR':
+        if (currentNotifications.hrNotification && Array.isArray(currentNotifications.hrNotification)) {
+          currentNotifications.hrNotification.forEach((message, index) => {
+            newSeen[`hrNotification_${index}`] = message;
+          });
+        }
+        break;
+      
+      default:
+        console.warn('Unknown employee type');
     }
 
     setSeenNotifications(newSeen);
     localStorage.setItem('seenNotifications', JSON.stringify(newSeen));
   };
-
-  
 
   const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
@@ -109,93 +139,97 @@ const Header = () => {
     setIsLoading(true);
     setError(null);
   
-  
-  
-  try {
-    let currentNotifications = {
-      managerNotifications: {},
-      employeeNotifications: {
-        submitNotification: '',
-        goalNotification: '',
+    try {
+      let currentNotifications = {
+        managerNotification: [],
         appraisalNotification: '',
-        notiStartsNotification: ''
+        submitNotification: '',
+        notiStartsNotification: '',
+        GoalNotification: '',
+        hrNotification: []
+      };
+  
+      if (empType === 'Manager') {
+        const managerName = localStorage.getItem('empName');
+        try {
+          const notifyManagerResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
+          const notifications = notifyManagerResponse.data.notifications;
+          setManagerNotification(notifications.map(notification => notification.message));
+          currentNotifications.managerNotification = notifications.map(notification => notification.message);
+        } catch (error) {
+          console.error("Error fetching manager notifications:", error);
+        }
+      } else if (empType === "Employee") {
+        try {
+          const managerName = localStorage.getItem('managerName');
+          console.log('Fetching employee notifications for:', managerName);
+  
+          const responses = await Promise.all([ 
+            axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`).catch(error => error), 
+            axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`).catch(error => error),
+            axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`).catch(error => error),
+            axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`).catch(error => error)
+          ]);
+  
+          const [expiryResponse, notiStartsResponse, submitResponse, notifyGoalsResponse] = responses;
+  
+          if (expiryResponse instanceof Error) {
+            console.error('Error fetching appraisal notification:', expiryResponse);
+          } else {
+            setAppraisalNotification(expiryResponse.data?.data?.message);
+            currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
+          }
+  
+          if (notiStartsResponse instanceof Error) {
+            console.error('Error fetching notification start:', notiStartsResponse);
+          } else {
+            setNotiStartsNotification(notiStartsResponse.data?.message);
+            currentNotifications.notiStartsNotification = notiStartsResponse.data?.message;
+          }
+  
+          if (submitResponse instanceof Error) {
+            console.error('Error fetching submit notification:', submitResponse);
+          } else {
+            setSubmitNotification(submitResponse.data?.message);
+            currentNotifications.submitNotification = submitResponse.data?.message;
+          }
+  
+          if (notifyGoalsResponse instanceof Error) {
+            console.error('Error fetching goal notification:', notifyGoalsResponse);
+          } else {
+            setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
+            currentNotifications.GoalNotification = notifyGoalsResponse.data?.notificationMessage;
+          }
+  
+        } catch (error) {
+          console.error("Error fetching employee notifications:", error);
+        }
+      } else if (empType === 'HR') {
+        try {
+          const notifyHRResponse = await axios.get(`http://localhost:3003/form/notifyHR/${empType}`);
+          const hrNotifications = notifyHRResponse.data.notifications;
+          setHRNotification(hrNotifications.map(notification => notification.message));  
+          currentNotifications.hrNotification = hrNotifications.map(notification => notification.message);
+        } catch (error) {
+          console.error("Error fetching HR notifications:", error);
+        }
       }
-    };
   
-    if (empType === 'Manager') {
-      const managerName = localStorage.getItem('empName');
-      try {
-        const notifyManagerResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
-        const notifications = notifyManagerResponse.data.notifications;
-        setManagerNotification(notifications.map(notification => notification.message));
-        currentNotifications.managerNotifications = notifications.map(notification => notification.message);
-        console.log("Manager Notifications:", currentNotifications.managerNotifications);
-      } catch (error) {
-        console.error("Error fetching manager notifications:", error);
+      const hasNew = compareNotifications(currentNotifications, seenNotifications);
+      setHasNewNotifications(hasNew);
+  
+      if (showNotificationDropdown) {
+        updateSeenNotifications(currentNotifications);
       }
-    } else if (empType === "Employee") {
-      try {
-        const managerName = localStorage.getItem('managerName');
-        console.log('Fetching employee notifications for:', managerName);
   
-        const responses = await Promise.all([
-          axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`).catch(error => error), 
-          axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`).catch(error => error),
-          axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`).catch(error => error),
-          axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`).catch(error => error)
-        ]);
-  
-        const [expiryResponse, notiStartsResponse, submitResponse, notifyGoalsResponse] = responses;
-  
-        if (expiryResponse instanceof Error) {
-          console.error('Error fetching appraisal notification:', expiryResponse);
-        } else {
-          setAppraisalNotification(expiryResponse.data?.data?.message);
-          currentNotifications.employeeNotifications.appraisalNotification = expiryResponse.data?.data?.message;
-        }
-  
-        if (notiStartsResponse instanceof Error) {
-          console.error('Error fetching notification start:', notiStartsResponse);
-        } else {
-          setNotiStartsNotification(notiStartsResponse.data?.message);
-          currentNotifications.employeeNotifications.notiStartsNotification = notiStartsResponse.data?.message;
-        }
-  
-        if (submitResponse instanceof Error) {
-          console.error('Error fetching submit notification:', submitResponse);
-        } else {
-          setSubmitNotification(submitResponse.data?.message);
-          currentNotifications.employeeNotifications.submitNotification = submitResponse.data?.message;
-        }
-  
-        if (notifyGoalsResponse instanceof Error) {
-          console.error('Error fetching goal notification:', notifyGoalsResponse);
-        } else {
-          setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
-          currentNotifications.employeeNotifications.goalNotification = notifyGoalsResponse.data?.notificationMessage;
-        }
-  
-        console.log("Employee Notifications:", currentNotifications.employeeNotifications);
-  
-      } catch (error) {
-        console.error("Error fetching employee notifications:", error);
-      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setError(error.response?.data?.message);
+    } finally {
+      setIsLoading(false);
     }
-  
-    const hasNew = compareNotifications(currentNotifications, seenNotifications);
-    setHasNewNotifications(hasNew);
-  
-    if (showNotificationDropdown) {
-      updateSeenNotifications(currentNotifications);
-    }
-  
-  } catch (error) {
-    console.error('Error fetching notifications:', error);
-    setError(error.response?.data?.message);
-  } finally {
-    setIsLoading(false);
-  }
-  }  
+  };
+
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
@@ -208,11 +242,13 @@ const Header = () => {
         appraisalNotification,
         submitNotification,
         notiStartsNotification,
-        managerNotification
+        managerNotification,
+        GoalNotification,
+        hrNotification
       };
       updateSeenNotifications(currentNotifications);
     }
-  }, [appraisalNotification, managerNotification, notiStartsNotification, submitNotification, showNotificationDropdown]);
+  }, [appraisalNotification, managerNotification, notiStartsNotification, submitNotification, showNotificationDropdown, hrNotification, GoalNotification]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -227,6 +263,7 @@ const Header = () => {
       setHasNewNotifications(false);
     }
   };
+
   const empInitial = employeeName.charAt(0).toUpperCase();
 
   return (
@@ -395,6 +432,29 @@ const Header = () => {
                     {managerNotification && managerNotification.length > 0 ? (
                       managerNotification.map((message, index) => (
                         <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                          <p className="text-md">{message}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center">
+          <p className="text-gray-600 mb-6">No notifications to display</p>
+          <div className="flex items-center justify-center h-full">
+            <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+          </div>
+        </div>
+      )}
+    </>
+  ) : (
+    <p>Loading notifications...</p>
+  )
+)}
+
+{empType === 'HR' && (
+                !isLoading && !error ? (
+                  <>
+                    {hrNotification && hrNotification.length > 0 ? (
+                      hrNotification.map((message, index) => (
+                        <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-purple-500 text-purple-900 font-normal">
                           <p className="text-md">{message}</p>
                         </div>
                       ))

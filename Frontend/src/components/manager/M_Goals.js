@@ -31,6 +31,7 @@ const M_Goals = () => {
     description: "",
     weightage: "",
     deadline: "",
+    GoalStatus:""
   });
 
   // const location = useLocation();
@@ -108,6 +109,7 @@ const M_Goals = () => {
       otherText: "",
       weightage: "",
       deadline: "",
+       GoalStatus:"",
     });
     setShowGoalForm(false);
   };

@@ -60,8 +60,8 @@ const sendConfirmationEmails = async (req, res) => {
 
 const sendCompletedEmails = async (req, res) => {
   try {
-    const { email } = req.body;
-    const user = await UserModel.findOne({ email });
+    const { employeeId } = req.body;
+    const user = await UserModel.findOne({ employeeId });
 
     if (!user) {
       return res.status(404).send({
@@ -83,20 +83,21 @@ const sendCompletedEmails = async (req, res) => {
     const presentYear = new Date().getFullYear();
     const nextYear = presentYear + 1;
 
-    const userMailOptions = {
+    const HRMailOptions = {
       from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: 'Appraisal Reviewed Confirmation',
-      html: `Dear ${user.empName},<br><br>
-             This is a system-generated email to inform you that your appraisal has been approved on ${currentDate} for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.<br><br>
-             Your performance evaluation has been finalized, and your manager will contact you for any further actions required. \n\nYou can view your employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.<br><br>
-             If you have any questions, feel free to reach out to HR.<br><br>
-             Best regards,<br>
-             BlueSpire`
+      to:"naveenkumar44820@gmail.com" ,
+       subject : 'Appraisal Reviewed by Manager',
+       html : `Dear HR Team,<br><br>
+                    This is a system-generated email to inform you that the appraisal for employee <strong>${user.empName}</strong> has been reviewed by their manager <strong>${user.managerName}</strong> for the <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle on ${currentDate}.<br><br>
+                    The performance evaluation has been completed, and the manager has finalized the review.<br><br>
+                    You can view and edit the employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.<br><br>
+                    If you have any questions, feel free to reach out.<br><br>
+                    Best regards,<br>
+                    BlueSpire`
     };
 
  
-    await transporter.sendMail(userMailOptions);
+    await transporter.sendMail(HRMailOptions);
 
     return res.status(200).json({ message: 'Emails sent successfully' });
 

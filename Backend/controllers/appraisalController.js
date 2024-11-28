@@ -2,6 +2,7 @@ const Appraisal = require('../models/Appraisal');
 const Employee = require('../models/User')
 const express = require('express');
 const bodyParser = require('body-parser');
+const Goals = require('../models/Goals'); 
 const app = express()
 app.use(bodyParser.json())
 // const saveAppraisalDetails = async (req, res) => {
@@ -103,8 +104,8 @@ const saveAppraisalDetails = async (req, res) => {
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
         // Determine status based on manager evaluation
-        // const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        // const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+        const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -120,7 +121,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             { 
                 pageData: updatedPageData, 
-                // status: newStatus,
+                status: newStatus,
                 lastModified: new Date()
             },
             { new: true }
@@ -289,11 +290,9 @@ const getAppraisalAnswers = async (req, res) => {
     }
 };
 
-//for performance tab
 const getEmployeeAppraisal = async (req, res) => {
     try {
         const { employeeId } = req.params;
-        // const user = await Employee.findOne(employeeId, '-password');
         const statuses = ['Submitted', 'Under Review', 'Under HR Review'];
         const appraisals = await Appraisal.find({
             employeeId,
@@ -364,20 +363,16 @@ const createAppraisalForm = async (req, res) => {
     try {
         const { employeeId, timePeriod } = req.body;
 
-        // Validate the required fields
         if (!employeeId || !timePeriod) {
             return res.status(400).json({ message: 'Both employeeId(s) and timePeriod must be provided.' });
         }
 
-        // If employeeId is a single ID, convert it to an array for uniform handling
         const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
 
-        // Get the current time period or validate the given one
         if (!timePeriod) {
             return res.status(400).json({ message: 'Time period is required.' });
         }
 
-        // Loop over each employeeId
         const appraisalPromises = employeeIds.map(async (empId) => {
             const employee = await Employee.findOne({ employeeId: empId });
 
@@ -385,7 +380,6 @@ const createAppraisalForm = async (req, res) => {
                 return { employeeId: empId, message: 'Employee not found.' };
             }
 
-            // Check if an appraisal already exists for this employee and time period
             const existingAppraisal = await Appraisal.findOne({
                 employeeId: empId,
                 timePeriod: timePeriod,
@@ -395,7 +389,6 @@ const createAppraisalForm = async (req, res) => {
                 return { employeeId: empId, message: 'An appraisal already exists for this employee in the specified time period.' };
             }
 
-            // Create and save the new appraisal for the employee
             const newAppraisal = new Appraisal({
                 employeeId: empId,
                 empName: employee.empName,
@@ -413,10 +406,8 @@ const createAppraisalForm = async (req, res) => {
             return { employeeId: empId, message: 'Appraisal created successfully', data: savedAppraisal };
         });
 
-        // Wait for all appraisal creation promises to resolve
         const results = await Promise.all(appraisalPromises);
 
-        // Return the results for each employee
         return res.status(201).json({
             message: 'Appraisals processed',
             data: results,
@@ -432,15 +423,12 @@ const deleteAppraisalForm = async (req, res) => {
     try {
         const { employeeId, timePeriod } = req.body;
 
-        // Validate the required fields
         if (!employeeId || !timePeriod) {
             return res.status(400).json({ message: 'Both employeeId(s) and timePeriod must be provided.' });
         }
 
-        // If employeeId is a single ID, convert it to an array for uniform handling
         const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
 
-        // Loop over each employeeId
         const deletionPromises = employeeIds.map(async (empId) => {
             const employee = await Employee.findOne({ employeeId: empId });
 
@@ -448,7 +436,6 @@ const deleteAppraisalForm = async (req, res) => {
                 return { employeeId: empId, message: 'Employee not found.' };
             }
 
-            // Find the appraisal for this employee and time period
             const existingAppraisal = await Appraisal.findOne({
                 employeeId: empId,
                 timePeriod: timePeriod,
@@ -458,16 +445,13 @@ const deleteAppraisalForm = async (req, res) => {
                 return { employeeId: empId, message: 'No appraisal found for this employee in the specified time period.' };
             }
 
-            // Delete the appraisal
             await Appraisal.deleteOne({ _id: existingAppraisal._id });
 
             return { employeeId: empId, message: 'Appraisal deleted successfully' };
         });
 
-        // Wait for all deletion promises to resolve
         const results = await Promise.all(deletionPromises);
 
-        // Return the results for each employee
         return res.status(200).json({
             message: 'Appraisals processed for deletion',
             data: results,
@@ -605,27 +589,27 @@ const getApplicationNotification = async (req, res) => {
         }
 
        
-        const endDate = new Date(appraisal.timePeriod[1]);
+        // const endDate = new Date(appraisal.timePeriod[1]);
 
-      
-        const formattedStartDate = startDateTime.toISOString().split('T')[0];
-        const formattedEndDate = endDate.toISOString().split('T')[0];
+        const currentDate = new Date().toLocaleDateString();
+        const appraisalStartDate = new Date(appraisal.timePeriod[0]);
+        const appraisalEndDate = new Date(appraisal.timePeriod[1]);
 
         if (appraisal.status === 'Submitted') {
             return res.status(200).json({
                 success: true,
-                message: `Your appraisal has been submitted successfully on ${formattedStartDate}.`,
+                message: `Your appraisal has been submitted successfully on ${currentDate} for the year ${appraisalStartDate.toISOString().split('T')[0]} to ${appraisalEndDate.toISOString().split('T')[0]}.`,
                 employeeId,
             })
         }
-        else if (appraisal.status === 'Under HR Review'){
-            const managerName = appraisal.managerName || 'the manager';
-            return res.status(200).json({
-                sucess:true,
-                message:`Your Appraisal has been approved by ${managerName} on ${formattedStartDate}`,
-                employeeId,
-            })
-        }
+        // else if (appraisal.status === 'Under HR Review'){
+        //     const managerName = appraisal.managerName || 'the manager';
+        //     return res.status(200).json({
+        //         sucess:true,
+        //         message:`Your Appraisal has been approved by ${managerName} on ${currentDate} for the year ${appraisalEndDate.toISOString().split('T')[0]} to ${appraisalEndDate.toISOString().split('T')[0]}`,
+        //         employeeId,
+        //     })
+        // }
 
         return res.status(200).json({
             success: false,
@@ -639,10 +623,16 @@ const getApplicationNotification = async (req, res) => {
         console.error('Error fetching application notification:', error);
         return res.status(500).json({
             success: false,
-            message: 'Failed to fetch application notification.'
+            // message: 'Failed to fetch application notification.'
         });
     }
 };
+
+
+
+
+
+
 
 const getApplicationNotificationStarts = async (req, res) => {
     try {
@@ -795,7 +785,8 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
     }
 };
 
-const notifyGoalsAssaigned = async (req, res) => {
+
+const notifyGoalsAssaigned  = async (req, res) => {
     try {
         const { employeeId, managerName } = req.params;
 
@@ -814,13 +805,13 @@ const notifyGoalsAssaigned = async (req, res) => {
 
         const goal = await Goals.findOne({
             employeeId,
-            goalStatus: "Goals Submitted"
+            "goals.GoalStatus": "Goals Submitted" 
         });
 
         if (!goal) {
             return res.status(404).json({
                 success: false,
-                // message: "Goals not submitted for this employee"
+                message: "Goals not submitted for this employee"
             });
         }
 
@@ -838,18 +829,21 @@ const notifyGoalsAssaigned = async (req, res) => {
         const presentYear = new Date().getFullYear();
         const nextYear = presentYear + 1;
 
-       
-
         const notificationMessage = `Your manager ${managerName} has assigned you goals for the year ${presentYear} to ${nextYear}.`;
 
-        if (goal.goalStatus=== 'Goals Submitted') {
+        const hasSubmittedGoals = goal.goals.some(g => g.GoalStatus === "Goals Submitted");
+
+        if (hasSubmittedGoals) {
             return res.status(200).json({
                 success: true,
                 notificationMessage,
-            })
+            });
         }
 
-       
+        return res.status(404).json({
+            success: false,
+            message: "No goals with the status 'Goals Submitted' found",
+        });
 
     } catch (error) {
         res.status(500).json({
@@ -858,6 +852,66 @@ const notifyGoalsAssaigned = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
-module.exports = { notifyManagersOfSubmittedAppraisals, deleteAppraisalForm,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned}
+
+const notifyHRForUnderReviewAppraisals = async (req, res) => {
+    try {
+        const { empType } = req.params;
+
+        if (empType !== 'HR') {
+            return res.status(403).json({
+                success: false,
+                message: 'Unauthorized: Only HR can receive these notifications.'
+            });
+        }
+
+        const appraisals = await Appraisal.find({
+            status: 'Under HR Review'
+        });
+
+        if (appraisals.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No appraisals found under HR review.'
+            });
+        }
+
+        const notifications = [];
+
+        appraisals.forEach((appraisal) => {
+            const appraisalStartDate = new Date(appraisal.timePeriod[0]);
+            const appraisalEndDate = new Date(appraisal.timePeriod[1]);
+            const formattedStartDate = appraisalStartDate.toLocaleDateString();
+            const formattedEndDate = appraisalEndDate.toLocaleDateString();
+
+            const empName = appraisal.empName;  
+            const managerName = appraisal.managerName || 'the manager';  
+
+            notifications.push({
+                employeeId: appraisal.employeeId,
+                message: `Appraisal for ${empName} is approved by ${managerName} for the year ${formattedStartDate} to ${formattedEndDate}.`
+            });
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Appraisal notifications for HR under review have been sent.',
+            notifications
+        });
+
+    } catch (error) {
+        console.error('Error while notifying HR:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to notify HR. Please try again later.'
+        });
+    }
+};
+
+
+
+
+
+
+module.exports = { notifyHRForUnderReviewAppraisals,notifyManagersOfSubmittedAppraisals, deleteAppraisalForm,getApplicationNotificationStarts,getApplicationNotification,saveAppraisalDetails,updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal,createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned}

@@ -154,52 +154,6 @@ const EvaluationView = () => {
     setFormData(updatedFormData);
   };
 
-
-
-  // const handleSubmit = async () => {
-  //   if (!formData || !formData[0] || !formData[0].pageData) return;
-
-  //   try {
-  //     const email2 = { email }
-  //     console.log("email", email2);
-
-  //     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
-  //     console.log("Submitting form with employeeId:", employeeId, "and email:", email);
-
-  //     const submissionData = {
-  //       pageData: formData[0].pageData.map(item => ({
-  //         questionId: item.questionId,
-  //         answer: item.answer || '',
-  //         notes: item.notes || '',
-  //         weights: item.weights || '',
-  //         managerEvaluation: item.managerEvaluation || 0
-
-  //       }))
-  //     };
-
-
-  //     await axios.put(
-  //       `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-  //       submissionData,
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-  //     console.log("PUT request successful.");
-
-  //     await axios.post(
-  //       "http://localhost:3003/confirmationEmail/completedEmail",
-  //       { userId: employeeId, email: email },
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-  //     console.log("POST request for confirmation email successful.");
-
-  //     setIsModalVisible(true);
-  //   } catch (error) {
-  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-  //     setError("Error submitting evaluation");
-  //   }
-  // };
-
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
