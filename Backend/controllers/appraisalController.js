@@ -61,7 +61,7 @@ app.use(bodyParser.json())
 // };
 const saveAppraisalDetails = async (req, res) => {  
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData } = req.body; 
+    const { pageData  } = req.body; 
 
     const isExit = req.query.isExit === 'true';
 

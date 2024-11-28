@@ -60,7 +60,7 @@ const saveAdditionalDetails = async (req, res) => {
         // Check if a record for the given employeeId and timePeriod already exists
         const existingRecord = await AdditionalAreas.findOne({
             employeeId,
-            timePeriod, // This ensures both employeeId and timePeriod are matched
+            timePeriod, 
         });
 
         if (existingRecord) {
