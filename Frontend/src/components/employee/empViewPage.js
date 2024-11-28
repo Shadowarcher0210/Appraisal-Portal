@@ -110,6 +110,7 @@ const EmpViewPage = () => {
 
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
+  
 useEffect(()=>{
   
   if(empType === 'Manager'){
@@ -389,15 +390,25 @@ useEffect(() => {
                            {item.successMetric}
                          </span>
                        </td>
-                       <td className="p-2 text-sm text-gray-700 w-86">
-                         <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
-                           {item.weightage}%
+                       <td className="p-2 text-sm text-gray-600 text-center">
+                        {item.weights ? (
+                          <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                           {item.weights}%
                          </span>
+                        ):(<span className="px-2 text-blue-600 text-center  py-1 rounded">
+                          -
+                        </span>)}
+                       
                        </td>
                        <td className="p-2 text-sm text-gray-600 text-center">
-                       <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
+                        {item.attainments ? (
+                          <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
                            {item.attainments}%
                          </span>
+                        ):(<span className="px-2 text-blue-600 text-center  py-1 rounded">
+                          -
+                        </span>)}
+                       
                        </td>
  
                        <td className="border-l border-r text-center">

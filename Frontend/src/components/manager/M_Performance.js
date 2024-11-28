@@ -11,7 +11,6 @@ const M_Performance = () => {
 
     const managerName = localStorage.getItem('empName');
 
-    // Generate academic years and set default selected year
     useEffect(() => {
         const currentYear = new Date().getFullYear();
         const startYear = currentYear - 3;
@@ -26,7 +25,6 @@ const M_Performance = () => {
         setSelectedYear(`${defaultYear}-${defaultYear + 1}`);
     }, []);
 
-    // Fetch appraisals when selected year changes
 
 
     const fetchAllAppraisalDetails = async () => {
@@ -40,6 +38,7 @@ const M_Performance = () => {
             );
             console.log('Fetched Appraisals in Performance Page:', response.data);
             const allAppraisals = response.data.data
+            if(allAppraisals && allAppraisals.length>0){
             const sortedAppraisals = allAppraisals.sort((a, b) => {
                 if (a.status === "Submitted" || a.status === "Under Review") {
                     return -1; // Move to the top
@@ -49,19 +48,22 @@ const M_Performance = () => {
                 }
                 return 0; // No change
             });
-            setAppraisals(allAppraisals);
-            console.log("empname", allAppraisals)
+            setAppraisals(sortedAppraisals);
+        }else{
+            setAppraisals([])
+        }
         } catch (error) {
             console.error('Error fetching appraisals in Performance page:', error);
+            setAppraisals([])
         }
     };
-
+   
 
     useEffect(() => {
         if (selectedYear && managerName) {
             fetchAllAppraisalDetails();
         }
-    }, [selectedYear]);
+    }, [selectedYear,managerName]);
 
     // const handleViewClick = (appraisal) => {
     //     const { employeeId, timePeriod } = appraisal;
@@ -72,7 +74,6 @@ const M_Performance = () => {
     const handleViewClick = async (appraisal) => {
         const { employeeId, timePeriod, status } = appraisal;
 
-        // If the status is "Submitted", update it to "Under Review"
         if (status === "Submitted") {
             try {
                 const response = await axios.put(
@@ -175,7 +176,7 @@ const M_Performance = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="6" className="px-6 py-4 text-center text-gray-900">
-                                        No appraisals found for this user.
+                                        No appraisals found for this year.
                                     </td>
                                 </tr>
                             )}

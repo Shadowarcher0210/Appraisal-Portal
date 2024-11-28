@@ -4,10 +4,7 @@ import {
   User,
   Briefcase,
   TrendingUp,
-
   Award,
-
-
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
@@ -23,120 +20,118 @@ const EvaluationView2 = () => {
   const { timePeriod } = location.state || {};
   const [attainments, setAttainments] = useState(Array(5).fill(''));
   const [comments, setComments] = useState(Array(5).fill(''));
-
-  // Static questions and answers
   const AdditionalAreas = [
     {
       quality: "Setting Expectations",
       successMetric:
         "Setting Expectations ensures clarity on goals, responsibilities, and standards for effective team collaboration.",
       weightage: 5,
-      
+
     },
     {
       quality: "Promoting Best Use of Capabilities",
       successMetric: "Encouraging effective utilization of skills and tools to achieve optimal performance and desired outcomes.",
       weightage: 5,
-      
+
     },
     {
       quality: "Information Sharing",
       successMetric:
         "Facilitating seamless exchange of knowledge and updates to enhance collaboration and decision-making processes.",
       weightage: 5,
-     
+
     },
     {
       quality: "Promoting Team Culture",
       successMetric: "Promoting team culture involves fostering collaboration, communication, trust, and mutual respect to achieve shared goals.",
       weightage: 5,
-     
+
     },
     {
       quality: "Leading with Dignity and Respect",
       successMetric: "Leading with dignity and respect means treating others with fairness, kindness, and valuing their contributions.",
       weightage: 5,
-    
+
     },
     {
       quality: "Fostering Innovation",
       successMetric:
         "Fostering innovation involves encouraging creativity, collaboration, and risk-taking to develop new solutions and ideas.",
       weightage: 5,
-      
+
     },
     {
       quality: "Demonstrating Confidence",
       successMetric: "Demonstrating confidence means expressing belief in one's abilities, decisions, and actions with clarity and assurance.",
       weightage: 5,
-      
+
     },
     {
       quality: "Driving Initiative", successMetric: "Driving initiative refers to proactively leading projects, fostering innovation, and taking ownership of outcomes.", weightage: 5,
-      
+
     },
     {
       quality: "Completing Projects",
       successMetric:
         " Managing and delivering projects on time, ensuring quality, and meeting client expectations and requirements.",
       weightage: 5,
-      
+
     },
     {
       quality: "Meeting Deadlines",
       successMetric: "Meeting deadlines means completing tasks on time, ensuring project progress and maintaining team efficiency.",
       weightage: 5,
-     
+
     },
     {
       quality: "Communicating Expectations",
       successMetric:
         "Clearly outlining objectives, responsibilities, and timelines to ensure team alignment and successful outcomes.",
       weightage: 5,
-     
+
     },
     {
       quality: "Communicating Feedback",
       successMetric:
         "Providing constructive feedback to help employees understand their performance and grow.",
       weightage: 5,
-      
+
     },
     {
       quality: "Developing Talent",
       successMetric: "Developing talent focuses on identifying, nurturing, and enhancing employees' skills for future leadership roles.",
       weightage: 5,
-     
+
     },
     {
       quality: "Following Best Hiring Practices",
       successMetric: "Could you clarify which specific hiring practices quality you're referring to, so I can help?",
       weightage: 5,
-      
+
     },
     {
       quality: "Setting Goals",
       successMetric: "Setting goals involves defining clear, measurable objectives for employees to track progress and performance.",
       weightage: 5,
-      
+
     },
     {
       quality: "Efficiency",
       successMetric: "Efficiency refers to achieving maximum productivity with minimal wasted effort or resources in processes.",
       weightage: 5,
-    
+
     },
     {
       quality: "Recovering from Setbacks",
       successMetric: "Recovering from setbacks involves learning from mistakes, staying resilient, and adapting to challenges effectively.",
       weightage: 5,
-    
+
     },
     {
       quality: "Demonstrating Ability to Teach",
       successMetric: "Demonstrating the ability to teach involves explaining concepts clearly, engaging others, and fostering understanding.",
       weightage: 5,
-      
+
 
     },
     {
@@ -144,13 +139,13 @@ const EvaluationView2 = () => {
       successMetric: "Demonstrating ability to learn involves quickly adapting, acquiring new skills, and applying knowledge effectively.",
       weightage: 5,
 
-      
+
     },
     {
       quality: "Promoting the Brand and Best Business Practices",
       successMetric: "Promoting the brand and best business practices involves fostering trust, innovation, and ethical leadership consistently.",
       weightage: 5,
-      
+
     },
   ];
   const handleAttainmentChange = (index, event) => {
@@ -159,17 +154,11 @@ const EvaluationView2 = () => {
     setAttainments(newAttainments);
   };
 
-  // Handle changes in the comments textarea
   const handleCommentChange = (index, event) => {
     const newComments = [...comments];
     newComments[index] = event.target.value;
     setComments(newComments);
   };
-
-  const toggleHelpPopup = () => {
-    setShowHelpPopup(!showHelpPopup);
-  };
-
   useEffect(() => {
     fetchuserDetails();
   }, []);
@@ -189,23 +178,20 @@ const EvaluationView2 = () => {
       console.log("User ID not found in local storage.");
     }
   };
-
-
-
   const handleContinue = async () => {
     try {
       const payload = AdditionalAreas.map((area, index) => ({
         quality: area.quality,
         successMetric: area.successMetric,
         weightage: area.weightage,
-        attainments: attainments[index], 
-        comments: comments[index] 
+        attainments: attainments[index],
+        comments: comments[index]
       }));
       const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
-          
+
         },
         body: JSON.stringify({ payload }),
 
@@ -229,110 +215,41 @@ const EvaluationView2 = () => {
     }
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
-  const isContinueEnabled = attainments.every((attainment) => attainment.trim() !== "");
 
-  const questionsAndAnswers = [
-    { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-    { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-    { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-    { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-    { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-    { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-    { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-    { question: 'Time Management', answer: 'I complete my tasks on time. ' },
-    { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
-    { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-    { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-    { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
-    { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-    { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-];
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      console.log(employeeId);
-      if (!employeeId || !timePeriod) {
-        setError("Employee ID or time period not found");
-        setLoading(false);
-        return;
-      }
 
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        // Initialize the form data with the structure you need
-        const initialFormData = {
-          empName: response.data[0]?.empName || "",
-          designation: response.data[0]?.designation || "",
-          managerName: response.data[0]?.managerName || "",
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || "",
-          pageData: questionsAndAnswers.map((qa, index) => ({
-            questionId: (index + 1).toString(),
-            successMetric: response.data[0]?.pageData[index]?.successMetric || "",
-            notes: response.data[0]?.pageData[index]?.notes || "",
-            weights: response.data[0]?.pageData[index]?.weights || "",
-            managerEvaluation:
-              response.data[0]?.pageData[index]?.managerEvaluation || 0,
-          })),
-        };
-
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching appraisal details:", error);
-        setError("Error fetching appraisal details");
-        setLoading(false);
-      }
-    };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
 
   const handleBack = () => {
     navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
   };
   const handleSaveExit = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
 
     try {
-  
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          successMetric: item.successMetric || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
-
-        }))
-      };
-
+      const payload = AdditionalAreas.map((area, index) => ({
+        quality: area.quality,
+        successMetric: area.successMetric,
+        weightage: area.weightage,
+        attainments: attainments[index],
+        comments: comments[index]
+      }));
 
       await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
+        `http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ payload })
+        }
+
       );
       console.log("PUT request successful.");
 
-      await axios.post(
-        "http://localhost:3003/confirmationEmail/completedEmail",
-        { userId: employeeId, email: email },
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("POST request for confirmation email successful.");
 
-      
+
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
   };
-
-
-
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
       <div className="mb-2">
