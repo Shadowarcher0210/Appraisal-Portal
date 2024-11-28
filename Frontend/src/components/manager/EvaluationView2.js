@@ -4,10 +4,7 @@ import {
   User,
   Briefcase,
   TrendingUp,
-
   Award,
-
-
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
@@ -189,9 +186,7 @@ const EvaluationView2 = () => {
       console.log("User ID not found in local storage.");
     }
   };
-
-
-
+  
   const handleContinue = async () => {
     try {
       const payload = AdditionalAreas.map((area, index) => ({
@@ -219,13 +214,8 @@ const EvaluationView2 = () => {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
       }
-
-
-
     } catch (error) {
       console.error('Error updating status:', error);
-
-
     }
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
@@ -308,8 +298,6 @@ const EvaluationView2 = () => {
 
         }))
       };
-
-
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         submissionData,
@@ -330,8 +318,6 @@ const EvaluationView2 = () => {
       setError("Error submitting evaluation");
     }
   };
-
-
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -428,8 +414,6 @@ const EvaluationView2 = () => {
             <Award size={20} className="text-blue-600" />
             Additional Areas Of Assessment
           </h2>
-
-
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>

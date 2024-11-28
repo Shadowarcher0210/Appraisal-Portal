@@ -60,7 +60,7 @@ app.use(bodyParser.json())
 // };
 const saveAppraisalDetails = async (req, res) => {  
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData } = req.body; 
+    const { pageData , overallScore} = req.body; 
 
     const isExit = req.query.isExit === 'true';
 
@@ -121,6 +121,7 @@ const saveAppraisalDetails = async (req, res) => {
             { 
                 pageData: updatedPageData, 
                 // status: newStatus,
+                overallScore,
                 lastModified: new Date()
             },
             { new: true }
@@ -214,7 +215,6 @@ const getAppraisals = async (req, res) => {
         }
 
         console.log('Retrieved Appraisals:', appraisals);
-        //checking dep
         console.log("dep,", appraisals[0].department)
         if (appraisals.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });

@@ -67,7 +67,7 @@ const EvaluationView = () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
   
     try {
-     
+      const overallScore = calculateOverallScore();
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
@@ -76,7 +76,8 @@ const EvaluationView = () => {
           weights: item.weights || '',
           managerEvaluation: item.managerEvaluation|| 0
           
-        }))
+        })),
+        overallScore: parseFloat(overallScore),
       };
       
   
@@ -154,52 +155,6 @@ const EvaluationView = () => {
     setFormData(updatedFormData);
   };
 
-
-
-  // const handleSubmit = async () => {
-  //   if (!formData || !formData[0] || !formData[0].pageData) return;
-
-  //   try {
-  //     const email2 = { email }
-  //     console.log("email", email2);
-
-  //     // const email3 = formData[0]?.email || "default-email@example.com"; // Replace this with the actual email
-  //     console.log("Submitting form with employeeId:", employeeId, "and email:", email);
-
-  //     const submissionData = {
-  //       pageData: formData[0].pageData.map(item => ({
-  //         questionId: item.questionId,
-  //         answer: item.answer || '',
-  //         notes: item.notes || '',
-  //         weights: item.weights || '',
-  //         managerEvaluation: item.managerEvaluation || 0
-
-  //       }))
-  //     };
-
-
-  //     await axios.put(
-  //       `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-  //       submissionData,
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-  //     console.log("PUT request successful.");
-
-  //     await axios.post(
-  //       "http://localhost:3003/confirmationEmail/completedEmail",
-  //       { userId: employeeId, email: email },
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-  //     console.log("POST request for confirmation email successful.");
-
-  //     setIsModalVisible(true);
-  //   } catch (error) {
-  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-  //     setError("Error submitting evaluation");
-  //   }
-  // };
-
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
@@ -223,6 +178,20 @@ const EvaluationView = () => {
       </div>
     );
   }
+
+  const calculateOverallScore = () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return 0;
+  
+    const totalQuestions = formData[0].pageData.length;
+    const totalPercentage = totalQuestions * 100;
+  
+    const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
+      return sum + (item.managerEvaluation || 0); 
+    }, 0);
+  
+    const overallScore = (totalManagerEvaluation / totalPercentage) * 10; 
+    return overallScore.toFixed(2); 
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -317,7 +286,6 @@ const EvaluationView = () => {
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
-
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
                   
                 </tr>
@@ -325,7 +293,6 @@ const EvaluationView = () => {
               <tbody>
                 {questionsAndAnswers.map((item, index) => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-                  // console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
@@ -377,6 +344,12 @@ const EvaluationView = () => {
                   );
                 })}
               </tbody>
+              <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
+    {/* <h3 className="text-lg font-semibold text-gray-800 mb-3">Overall Manager Evaluation Score =  {calculateOverallScore()} </h3> */}
+    <p className="text-xl font-bold text-green-600">
+    Overall Manager Evaluation Score = {calculateOverallScore()} 
+    </p>
+  </div>
             </table>
           </div>
         </div>

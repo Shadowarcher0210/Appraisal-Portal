@@ -83,7 +83,11 @@ const appraisalSchema = new mongoose.Schema({
     submittedDate: {
         type: Date,
         default: null
-    }
+    },
+    overallScore: {
+        type: Number,
+        default: null
+    },
 });
 
 module.exports = mongoose.model('Appraisal', appraisalSchema);
