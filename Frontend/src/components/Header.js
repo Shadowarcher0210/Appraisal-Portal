@@ -90,6 +90,7 @@ const Header = () => {
     
     switch (empType) {
       case 'Employee':
+        // Employee-specific notification tracking
         if (currentNotifications.appraisalNotification) {
           newSeen.appraisal = currentNotifications.appraisalNotification;
         }
@@ -105,6 +106,7 @@ const Header = () => {
         break;
       
       case 'Manager':
+        // Manager-specific notification tracking
         if (currentNotifications.managerNotification && Array.isArray(currentNotifications.managerNotification)) {
           currentNotifications.managerNotification.forEach((message, index) => {
             newSeen[`managerNotification_${index}`] = message;
@@ -113,6 +115,7 @@ const Header = () => {
         break;
       
       case 'HR':
+        // HR-specific notification tracking
         if (currentNotifications.hrNotification && Array.isArray(currentNotifications.hrNotification)) {
           currentNotifications.hrNotification.forEach((message, index) => {
             newSeen[`hrNotification_${index}`] = message;
