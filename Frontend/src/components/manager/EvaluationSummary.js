@@ -28,6 +28,8 @@ const EvaluationSummary = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {}
   const { employeeId } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+ const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +54,8 @@ const EvaluationSummary = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem('token')
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -87,7 +91,7 @@ const EvaluationSummary = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+         ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
         const initialFormData = {
@@ -114,9 +118,7 @@ const EvaluationSummary = () => {
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
 
-  const handleContinue = () => {
-    navigate(`/manager-performance`, { state: { timePeriod } });
-  }
+  
 
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
@@ -125,6 +127,57 @@ const EvaluationSummary = () => {
   if (error) {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
+
+  const handleConfirmSubmit = async () => {
+    setIsModalOpen(false);
+    setIsThankYouModalOpen(true);
+    if (!token) {
+      console.log("No token found. Please log in.");
+      return;
+    }
+    try {
+      const employeeId = localStorage.getItem('employeeId');
+      const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+        method: 'PUT',
+        headers: {
+          "content-Type": "application/json",
+          "Authorization":` Bearer ${token}`,
+        },
+        // body: JSON.stringify({ pageData })
+      })
+      if (response.ok) {
+        console.log('response', response); 
+  
+      } else {
+        const errorData = await response.json();
+        console.log(`Error: ${errorData.error}`);
+      }
+      const emailresponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email
+        }),
+      });
+      const emailData = await emailresponse.json();
+      console.log(emailData.message);
+  
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+    finally {
+      setIsModalOpen(false);
+    }
+  }
+  
+  const closeModal = () => setIsModalOpen(false);
+  const closeThankYouModal = () => {
+    setIsThankYouModalOpen(false);
+    navigate("/employee-dashboard");
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full">
@@ -281,15 +334,73 @@ const EvaluationSummary = () => {
 
             <div>
               <button
-                className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
+            className={`px-6 py-2 text-white bg-cyan-800 rounded-lg
+             `}
+            onClick={() => setIsModalOpen(true)}
+          //  disabled={!isFormComplete()}
+          >
+            Submit
+          </button>
+
             </div>
           </div>
         </form>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 text-center">
+                Submit Appraisal
+              </h2>
+
+              <p className="mt-3 text-gray-600 text-center">
+                Are you sure you want to submit your appraisal?
+              </p>
+              <div className="mt-6 flex justify-center space-x-4">
+                <button
+                  className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  onClick={() => handleConfirmSubmit()}
+                >
+                  Yes
+                </button>
+
+                <button
+                  className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                  onClick={closeModal}
+                >
+                  No
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      )}
+      {isThankYouModalOpen && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex p-4 justify-center items-center">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
+          <div className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 text-center">
+
+          Appraisal Submission Confirmation</h2>
+
+          <p className="my-3 text-gray-600 text-center">
+           Please check your email for further updates.
+            </p>
+            <div className="mt-6 flex justify-center">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"
+                onClick={closeThankYouModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

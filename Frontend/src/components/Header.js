@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from '../assets/logo.png';
 import nothing from '../assets/nothing.png';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Header = () => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'dashboard');
+  const [activeTab, setActiveTab] = useState(() => 'dashboard'|| localStorage.getItem('activeTab'));
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [GoalNotification, setGoalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);
@@ -48,10 +48,10 @@ const Header = () => {
   };
 
   const handleTabClick = (tabName, path) => {
-        setActiveTab(tabName);
-        localStorage.setItem('activeTab', tabName);
-        navigate(path);
-      };
+    setActiveTab(tabName);
+    localStorage.setItem('activeTab', tabName);
+    navigate(path);
+  };
 
   const compareNotifications = (current, seen) => {
     if (empType === 'Manager') {
@@ -63,8 +63,8 @@ const Header = () => {
         submit: current?.submitNotification,
         notiStarts: current?.notiStartsNotification
       };
-      
-      return Object.entries(notifications).some(([key, value]) => 
+
+      return Object.entries(notifications).some(([key, value]) =>
         value && (!seen[key] || seen[key] !== value)
       );
     }
@@ -72,7 +72,7 @@ const Header = () => {
 
   const updateSeenNotifications = (currentNotifications) => {
     const newSeen = { ...seenNotifications };
-    
+
     if (empType === 'Manager') {
       currentNotifications?.managerNotification?.forEach(msg => {
         newSeen[msg] = true;
@@ -87,7 +87,7 @@ const Header = () => {
       if (currentNotifications.notiStartsNotification) {
         newSeen.notiStarts = currentNotifications.notiStartsNotification;
       }
-      if(currentNotifications.GoalNotification){
+      if (currentNotifications.GoalNotification) {
         newSeen.notifyGoalsResponse = currentNotifications.notifyGoalsResponse
       }
     }
@@ -96,106 +96,106 @@ const Header = () => {
     localStorage.setItem('seenNotifications', JSON.stringify(newSeen));
   };
 
-  
+
 
   const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
-  
+
     if (!employeeId) {
       console.warn('No employeeId found in localStorage');
       return;
     }
-  
+
     setIsLoading(true);
     setError(null);
-  
-  
-  
-  try {
-    let currentNotifications = {
-      managerNotifications: {},
-      employeeNotifications: {
-        submitNotification: '',
-        goalNotification: '',
-        appraisalNotification: '',
-        notiStartsNotification: ''
+
+
+
+    try {
+      let currentNotifications = {
+        managerNotifications: {},
+        employeeNotifications: {
+          submitNotification: '',
+          goalNotification: '',
+          appraisalNotification: '',
+          notiStartsNotification: ''
+        }
+      };
+
+      if (empType === 'Manager') {
+        const managerName = localStorage.getItem('empName');
+        try {
+          const notifyManagerResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
+          const notifications = notifyManagerResponse.data.notifications;
+          setManagerNotification(notifications.map(notification => notification.message));
+          currentNotifications.managerNotifications = notifications.map(notification => notification.message);
+          console.log("Manager Notifications:", currentNotifications.managerNotifications);
+        } catch (error) {
+          console.error("Error fetching manager notifications:", error);
+        }
+      } else if (empType === "Employee") {
+        try {
+          const managerName = localStorage.getItem('managerName');
+          console.log('Fetching employee notifications for:', managerName);
+
+          const responses = await Promise.all([
+            axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`).catch(error => error),
+            axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`).catch(error => error),
+            axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`).catch(error => error),
+            axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`).catch(error => error)
+          ]);
+
+          const [expiryResponse, notiStartsResponse, submitResponse, notifyGoalsResponse] = responses;
+
+          if (expiryResponse instanceof Error) {
+            console.error('Error fetching appraisal notification:', expiryResponse);
+          } else {
+            setAppraisalNotification(expiryResponse.data?.data?.message);
+            currentNotifications.employeeNotifications.appraisalNotification = expiryResponse.data?.data?.message;
+          }
+
+          if (notiStartsResponse instanceof Error) {
+            console.error('Error fetching notification start:', notiStartsResponse);
+          } else {
+            setNotiStartsNotification(notiStartsResponse.data?.message);
+            currentNotifications.employeeNotifications.notiStartsNotification = notiStartsResponse.data?.message;
+          }
+
+          if (submitResponse instanceof Error) {
+            console.error('Error fetching submit notification:', submitResponse);
+          } else {
+            setSubmitNotification(submitResponse.data?.message);
+            currentNotifications.employeeNotifications.submitNotification = submitResponse.data?.message;
+          }
+
+          if (notifyGoalsResponse instanceof Error) {
+            console.error('Error fetching goal notification:', notifyGoalsResponse);
+          } else {
+            setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
+            currentNotifications.employeeNotifications.goalNotification = notifyGoalsResponse.data?.notificationMessage;
+          }
+
+          console.log("Employee Notifications:", currentNotifications.employeeNotifications);
+
+        } catch (error) {
+          console.error("Error fetching employee notifications:", error);
+        }
       }
-    };
-  
-    if (empType === 'Manager') {
-      const managerName = localStorage.getItem('empName');
-      try {
-        const notifyManagerResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
-        const notifications = notifyManagerResponse.data.notifications;
-        setManagerNotification(notifications.map(notification => notification.message));
-        currentNotifications.managerNotifications = notifications.map(notification => notification.message);
-        console.log("Manager Notifications:", currentNotifications.managerNotifications);
-      } catch (error) {
-        console.error("Error fetching manager notifications:", error);
+
+      const hasNew = compareNotifications(currentNotifications, seenNotifications);
+      setHasNewNotifications(hasNew);
+
+      if (showNotificationDropdown) {
+        updateSeenNotifications(currentNotifications);
       }
-    } else if (empType === "Employee") {
-      try {
-        const managerName = localStorage.getItem('managerName');
-        console.log('Fetching employee notifications for:', managerName);
-  
-        const responses = await Promise.all([
-          axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`).catch(error => error), 
-          axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`).catch(error => error),
-          axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`).catch(error => error),
-          axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`).catch(error => error)
-        ]);
-  
-        const [expiryResponse, notiStartsResponse, submitResponse, notifyGoalsResponse] = responses;
-  
-        if (expiryResponse instanceof Error) {
-          console.error('Error fetching appraisal notification:', expiryResponse);
-        } else {
-          setAppraisalNotification(expiryResponse.data?.data?.message);
-          currentNotifications.employeeNotifications.appraisalNotification = expiryResponse.data?.data?.message;
-        }
-  
-        if (notiStartsResponse instanceof Error) {
-          console.error('Error fetching notification start:', notiStartsResponse);
-        } else {
-          setNotiStartsNotification(notiStartsResponse.data?.message);
-          currentNotifications.employeeNotifications.notiStartsNotification = notiStartsResponse.data?.message;
-        }
-  
-        if (submitResponse instanceof Error) {
-          console.error('Error fetching submit notification:', submitResponse);
-        } else {
-          setSubmitNotification(submitResponse.data?.message);
-          currentNotifications.employeeNotifications.submitNotification = submitResponse.data?.message;
-        }
-  
-        if (notifyGoalsResponse instanceof Error) {
-          console.error('Error fetching goal notification:', notifyGoalsResponse);
-        } else {
-          setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
-          currentNotifications.employeeNotifications.goalNotification = notifyGoalsResponse.data?.notificationMessage;
-        }
-  
-        console.log("Employee Notifications:", currentNotifications.employeeNotifications);
-  
-      } catch (error) {
-        console.error("Error fetching employee notifications:", error);
-      }
+
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setError(error.response?.data?.message);
+    } finally {
+      setIsLoading(false);
     }
-  
-    const hasNew = compareNotifications(currentNotifications, seenNotifications);
-    setHasNewNotifications(hasNew);
-  
-    if (showNotificationDropdown) {
-      updateSeenNotifications(currentNotifications);
-    }
-  
-  } catch (error) {
-    console.error('Error fetching notifications:', error);
-    setError(error.response?.data?.message);
-  } finally {
-    setIsLoading(false);
   }
-  }  
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
@@ -250,7 +250,7 @@ const Header = () => {
           </div>
         </div>
       )}
-      
+
       {empType === 'Manager' && (
         <div className="fixed ml-36 left-0 flex space-x-8">
           <div
@@ -279,7 +279,7 @@ const Header = () => {
           </div>
         </div>
       )}
-      
+
       {empType === 'HR' && (
         <div className="fixed ml-36 left-0 flex space-x-8">
           <div
@@ -331,7 +331,7 @@ const Header = () => {
           {showNotificationDropdown && (
             <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border border-gray-200 mt-3 rounded-md overflow-y-auto">
               <h2 className="text-xl font-semibold mb-2 text-gray-800">Notifications</h2>
-              <hr className="border-b-2 border-gray-200" /><br/>
+              <hr className="border-b-2 border-gray-200" /><br />
 
               {isLoading && (
                 <div className="text-center py-4">
@@ -358,7 +358,7 @@ const Header = () => {
                         <p className="text-md">{appraisalNotification}</p>
                       </div>
                     )}
-                    
+
                     {submitNotification && (
                       <div className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
                         <p className="text-md">{submitNotification}</p>
@@ -370,8 +370,8 @@ const Header = () => {
                         <p className="text-md">{notiStartsNotification}</p>
                       </div>
                     )}
-                    
-                     {GoalNotification && (
+
+                    {GoalNotification && (
                       <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
                         <p className="text-md">{GoalNotification}</p>
                       </div>
@@ -400,24 +400,24 @@ const Header = () => {
                       ))
                     ) : (
                       <div className="text-center">
-          <p className="text-gray-600 mb-6">No notifications to display</p>
-          <div className="flex items-center justify-center h-full">
-            <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
-          </div>
+                        <p className="text-gray-600 mb-6">No notifications to display</p>
+                        <div className="flex items-center justify-center h-full">
+                          <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p>Loading notifications...</p>
+                )
+              )}
+
+
+            </div>
+          )}
         </div>
-      )}
-    </>
-  ) : (
-    <p>Loading notifications...</p>
-  )
-)}
 
 
-          </div>
-        )}
-      </div>
-   
-          
         <div className="relative" ref={userRef}>
           <button
             className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-400"
