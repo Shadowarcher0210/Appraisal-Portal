@@ -92,7 +92,6 @@ const Header = () => {
     
     switch (empType) {
       case 'Employee':
-        // Employee-specific notification tracking
         if (currentNotifications.appraisalNotification) {
           newSeen.appraisal = currentNotifications.appraisalNotification;
         }
@@ -108,7 +107,6 @@ const Header = () => {
         break;
       
       case 'Manager':
-        // Manager-specific notification tracking
         if (currentNotifications.managerNotification && Array.isArray(currentNotifications.managerNotification)) {
           currentNotifications.managerNotification.forEach((message, index) => {
             newSeen[`managerNotification_${index}`] = message;
@@ -117,7 +115,6 @@ const Header = () => {
         break;
       
       case 'HR':
-        // HR-specific notification tracking
         if (currentNotifications.hrNotification && Array.isArray(currentNotifications.hrNotification)) {
           currentNotifications.hrNotification.forEach((message, index) => {
             newSeen[`hrNotification_${index}`] = message;
@@ -135,7 +132,7 @@ const Header = () => {
 
 
 
-  const fetchNotifications = async () => {
+   const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
 
     if (!employeeId) {
@@ -156,70 +153,75 @@ const Header = () => {
         hrNotification: []
       };
   
-      if (empType === 'Manager') {
-        const managerName = localStorage.getItem('empName');
-        try {
-          const notifyManagerResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
-          const notifications = notifyManagerResponse.data.notifications;
-          setManagerNotification(notifications.map(notification => notification.message));
-          currentNotifications.managerNotification = notifications.map(notification => notification.message);
-        } catch (error) {
-          console.error("Error fetching manager notifications:", error);
+      try {
+        const submitResponse = await axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`);
+        if (submitResponse && submitResponse.data) {
+          const submitNotificationMessage = submitResponse.data.message || '';
+          setSubmitNotification(submitNotificationMessage);
+          currentNotifications.submitNotification = submitNotificationMessage;
         }
-      } else if (empType === "Employee") {
-        try {
-          const managerName = localStorage.getItem('managerName');
-          console.log('Fetching employee notifications for:', managerName);
+      } catch (error) {
+        console.error("Error fetching general notifications:", error);
+      }
   
-          const responses = await Promise.all([ 
-            axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`).catch(error => error), 
-            axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`).catch(error => error),
-            axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`).catch(error => error),
-            axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`).catch(error => error)
-          ]);
-  
-          const [expiryResponse, notiStartsResponse, submitResponse, notifyGoalsResponse] = responses;
-  
-          if (expiryResponse instanceof Error) {
-            console.error('Error fetching appraisal notification:', expiryResponse);
-          } else {
-            setAppraisalNotification(expiryResponse.data?.data?.message);
-            currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
+      switch (empType) {
+        case 'Manager':
+          try {
+            const managerName = localStorage.getItem('empName');
+            const managerNotifyResponse = await axios.get(`http://localhost:3003/form/notify/${managerName}`);
+            const notifications = managerNotifyResponse.data.notifications || [];
+            
+            setManagerNotification(notifications.map(notification => notification.message));
+            currentNotifications.managerNotification = notifications.map(notification => notification.message);
+          } catch (error) {
+            console.error("Error fetching manager-specific notifications:", error);
           }
+          break;
   
-          if (notiStartsResponse instanceof Error) {
-            console.error('Error fetching notification start:', notiStartsResponse);
-          } else {
-            setNotiStartsNotification(notiStartsResponse.data?.message);
-            currentNotifications.notiStartsNotification = notiStartsResponse.data?.message;
+        case 'Employee':
+          try {
+            const managerName = localStorage.getItem('managerName');
+            const responses = await Promise.all([
+              axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`),
+              axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`),
+              axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`)
+            ]);
+  
+            const [expiryResponse, notiStartsResponse, notifyGoalsResponse] = responses;
+  
+            if (expiryResponse && expiryResponse.data) {
+              setAppraisalNotification(expiryResponse.data?.data?.message);
+              currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
+            }
+  
+            if (notiStartsResponse && notiStartsResponse.data) {
+              setNotiStartsNotification(notiStartsResponse.data?.message);
+              currentNotifications.notiStartsNotification = notiStartsResponse.data?.message;
+            }
+  
+            if (notifyGoalsResponse && notifyGoalsResponse.data) {
+              setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
+              currentNotifications.GoalNotification = notifyGoalsResponse.data?.notificationMessage;
+            }
+          } catch (error) {
+            console.error("Error fetching employee-specific notifications:", error);
           }
+          break;
   
-          if (submitResponse instanceof Error) {
-            console.error('Error fetching submit notification:', submitResponse);
-          } else {
-            setSubmitNotification(submitResponse.data?.message);
-            currentNotifications.submitNotification = submitResponse.data?.message;
+        case 'HR':
+          try {
+            const hrNotifyResponse = await axios.get(`http://localhost:3003/form/notifyHR/${empType}`);
+            const hrNotifications = hrNotifyResponse.data.notifications || [];
+            
+            setHRNotification(hrNotifications.map(notification => notification.message));
+            currentNotifications.hrNotification = hrNotifications.map(notification => notification.message);
+          } catch (error) {
+            console.error("Error fetching HR-specific notifications:", error);
           }
+          break;
   
-          if (notifyGoalsResponse instanceof Error) {
-            console.error('Error fetching goal notification:', notifyGoalsResponse);
-          } else {
-            setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
-            currentNotifications.GoalNotification = notifyGoalsResponse.data?.notificationMessage;
-          }
-  
-        } catch (error) {
-          console.error("Error fetching employee notifications:", error);
-        }
-      } else if (empType === 'HR') {
-        try {
-          const notifyHRResponse = await axios.get(`http://localhost:3003/form/notifyHR/${empType}`);
-          const hrNotifications = notifyHRResponse.data.notifications;
-          setHRNotification(hrNotifications.map(notification => notification.message));  
-          currentNotifications.hrNotification = hrNotifications.map(notification => notification.message);
-        } catch (error) {
-          console.error("Error fetching HR notifications:", error);
-        }
+        default:
+          console.warn('Unknown employee type');
       }
   
       const hasNew = compareNotifications(currentNotifications, seenNotifications);
@@ -228,10 +230,9 @@ const Header = () => {
       if (showNotificationDropdown) {
         updateSeenNotifications(currentNotifications);
       }
-  
     } catch (error) {
       console.error('Error fetching notifications:', error);
-      setError(error.response?.data?.message);
+      setError(error.response?.data?.message || 'An error occurred while fetching notifications');
     } finally {
       setIsLoading(false);
     }
@@ -348,143 +349,139 @@ const Header = () => {
       )}
 
       <div className="header-right flex items-center ml-5">
-        <div className="relative mr-4" ref={notificationRef}>
-          <button
-            className="text-lg flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 relative"
-            onClick={toggleDropdown}
-          >
-            <div className="h-8 w-10 rounded-full bg-transparent hover:bg-[#E9F2FF] transition duration-300 ease-in-out flex items-center justify-center">
-              <svg
-                width="22"
-                height="20"
-                viewBox="0 0 24 24"
-                className="h-6 w-auto transition-colors duration-300 ease-in-out"
-                xmlns="http://www.w3.org/2000/svg"
-                fill={isHovered ? "#0C66E4" : "#44546F"}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <path d="M6.49 17.67a2 2 0 0 0 2.83 0l-2.83-2.83a2 2 0 0 0 0 2.83m4.89-12.19-.72.73c-.78.78-2.21 1.81-3.21 2.31l-3.02 1.51c-.49.25-.58.77-.19 1.17l8.56 8.56c.4.4.92.31 1.17-.19l1.51-3.02c.49-.99 1.53-2.42 2.31-3.21l.73-.73a5.05 5.05 0 0 0 .64-6.36 1.01 1.01 0 1 0-1.35-1.49q-.04.04-.07.08A5.04 5.04 0 0 0 14.95 4a5.04 5.04 0 0 0-3.57 1.48" />
-              </svg>
+       
+
+<div className="header-right flex items-center ml-5">
+  <div className="relative mr-4" ref={notificationRef}>
+    <button
+      className="text-lg flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 relative"
+      onClick={toggleDropdown}
+    >
+      <div className="h-8 w-10 rounded-full bg-transparent hover:bg-[#E9F2FF] transition duration-300 ease-in-out flex items-center justify-center">
+        <svg
+          width="22"
+          height="20"
+          viewBox="0 0 24 24"
+          className="h-6 w-auto transition-colors duration-300 ease-in-out"
+          xmlns="http://www.w3.org/2000/svg"
+          fill={isHovered ? "#0C66E4" : "#44546F"}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <path d="M6.49 17.67a2 2 0 0 0 2.83 0l-2.83-2.83a2 2 0 0 0 0 2.83m4.89-12.19-.72.73c-.78.78-2.21 1.81-3.21 2.31l-3.02 1.51c-.49.25-.58.77-.19 1.17l8.56 8.56c.4.4.92.31 1.17-.19l1.51-3.02c.49-.99 1.53-2.42 2.31-3.21l.73-.73a5.05 5.05 0 0 0 .64-6.36 1.01 1.01 0 1 0-1.35-1.49q-.04.04-.07.08A5.04 5.04 0 0 0 14.95 4a5.04 5.04 0 0 0-3.57 1.48" />
+        </svg>
+      </div>
+      {hasNewNotifications && (
+        <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+      )}
+    </button>
+
+    {showNotificationDropdown && (
+      <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border border-gray-200 mt-3 rounded-md overflow-y-auto">
+        <h2 className="text-xl font-semibold mb-2 text-gray-800">Notifications</h2>
+        <hr className="border-b-2 border-gray-200" /><br/>
+
+        {isLoading && (
+          <div className="text-center py-4">
+            <p className="text-gray-600">Loading notifications...</p>
+          </div>
+        )}
+
+        {error && (
+          <div>
+            <div className="bg-red-50 p-4 rounded-md mb-4 border-l-4 border-red-400">
+              <p className="text-sm text-red-800">{error}</p>
             </div>
-            {hasNewNotifications && (
-              <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-            )}
-          </button>
+            <div className="flex items-center justify-center h-full">
+              <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
+            </div>
+          </div>
+        )}
 
-          {showNotificationDropdown && (
-            <div className="w-80 bg-white p-4 absolute top-full right-0 shadow-xl border border-gray-200 mt-3 rounded-md overflow-y-auto">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">Notifications</h2>
-              <hr className="border-b-2 border-gray-200" /><br />
+        {['Employee', 'Manager', 'HR'].map((type) => (
+          empType === type && !isLoading && !error ? (
+            <>
+              {type === 'Employee' && (
+                <>
+                  {appraisalNotification && (
+                    <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-500 text-amber-950 font-normal">
+                      <p className="text-md">{appraisalNotification}</p>
+                    </div>
+                  )}
 
-              {isLoading && (
-                <div className="text-center py-4">
-                  <p className="text-gray-600">Loading notifications...</p>
-                </div>
+                  {submitNotification && (
+                    <div className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                      <p className="text-md">{submitNotification}</p>
+                    </div>
+                  )}
+
+                  {notiStartsNotification && (
+                    <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
+                      <p className="text-md">{notiStartsNotification}</p>
+                    </div>
+                  )}
+
+                  {GoalNotification && (
+                    <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
+                      <p className="text-md">{GoalNotification}</p>
+                    </div>
+                  )}
+                </>
               )}
 
-              {error && (
-                <div>
-                  <div className="bg-red-50 p-4 rounded-md mb-4 border-l-4 border-red-400">
-                    <p className="text-sm text-red-800">{error}</p>
-                  </div>
+              {type === 'Manager' && (
+                <>
+                  {submitNotification && (
+                    <div className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                      <p className="text-md">{submitNotification}</p>
+                    </div>
+                  )}
+
+                  {managerNotification && managerNotification.length > 0 ? (
+                    managerNotification.map((message, index) => (
+                      <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                        <p className="text-md">{message}</p>
+                      </div>
+                    ))
+                  ) : null}
+                </>
+              )}
+
+              {type === 'HR' && (
+                <>
+                  {submitNotification && (
+                    <div className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
+                      <p className="text-md">{submitNotification}</p>
+                    </div>
+                  )}
+
+                  {hrNotification && hrNotification.length > 0 ? (
+                    hrNotification.map((message, index) => (
+                      <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-purple-500 text-purple-900 font-normal">
+                        <p className="text-md">{message}</p>
+                      </div>
+                    ))
+                  ) : null}
+                </>
+              )}
+
+              {!appraisalNotification && !submitNotification && !notiStartsNotification && !GoalNotification && !managerNotification && !hrNotification && (
+                <div className="text-center">
+                  <p className="text-gray-600 mb-6">No notifications to display</p>
                   <div className="flex items-center justify-center h-full">
                     <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
                   </div>
                 </div>
               )}
+            </>
+          ) : null
+        ))}
+      </div>
+    )}
+  </div>
+</div>
 
-              {empType === 'Employee' && (
-                !isLoading && !error ? (
-                  <>
-                    {appraisalNotification && (
-                      <div className="bg-yellow-50 p-4 rounded-md mb-4 border-l-4 border-yellow-500 text-amber-950 font-normal">
-                        <p className="text-md">{appraisalNotification}</p>
-                      </div>
-                    )}
-
-                    {submitNotification && (
-                      <div className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
-                        <p className="text-md">{submitNotification}</p>
-                      </div>
-                    )}
-
-                    {notiStartsNotification && (
-                      <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
-                        <p className="text-md">{notiStartsNotification}</p>
-                      </div>
-                    )}
-
-                    {GoalNotification && (
-                      <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
-                        <p className="text-md">{GoalNotification}</p>
-                      </div>
-                    )}
-
-                    {!appraisalNotification && !submitNotification && !notiStartsNotification && !GoalNotification && (
-                      <div className="text-center">
-                        <p className="text-gray-600 mb-6">No notifications to display</p>
-                        <div className="flex items-center justify-center h-full">
-                          <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : null
-              )}
-
-              {empType === 'Manager' && (
-                !isLoading && !error ? (
-                  <>
-                    {managerNotification && managerNotification.length > 0 ? (
-                      managerNotification.map((message, index) => (
-                        <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-green-500 text-green-950 font-normal">
-                          <p className="text-md">{message}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center">
-          <p className="text-gray-600 mb-6">No notifications to display</p>
-          <div className="flex items-center justify-center h-full">
-            <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
-          </div>
-        </div>
-      )}
-    </>
-  ) : (
-    <p>Loading notifications...</p>
-  )
-)}
-
-{empType === 'HR' && (
-                !isLoading && !error ? (
-                  <>
-                    {hrNotification && hrNotification.length > 0 ? (
-                      hrNotification.map((message, index) => (
-                        <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-purple-500 text-purple-900 font-normal">
-                          <p className="text-md">{message}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center">
-          <p className="text-gray-600 mb-6">No notifications to display</p>
-          <div className="flex items-center justify-center h-full">
-            <img src={nothing} alt="Nothing to show" className="h-32 w-auto" />
-          </div>
-        </div>
-      )}
-    </>
-  ) : (
-    <p>Loading notifications...</p>
-  )
-)}
-
-
-            </div>
-          )}
-        </div>
-
-
+          
         <div className="relative" ref={userRef}>
           <button
             className="text-lg flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-400"

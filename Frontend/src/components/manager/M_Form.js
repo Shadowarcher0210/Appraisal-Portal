@@ -167,13 +167,7 @@ const M_Form = () => {
       notes: notes[13],
       weights: weights[13]
     },
-    // ...goalsResponse.map((goal, index) => ({
-    //   questionId: goal.questionId,
-    //   question: goal.question,
-    //   answer: goalAnswers[index]?.answer || "No Response",
-    //   notes: notes[index + 13],
-    // })),
-
+   
   ];
 
 
