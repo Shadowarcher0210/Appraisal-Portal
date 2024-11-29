@@ -8,25 +8,27 @@ const E_PerformancePage = () => {
   const [academicYears, setAcademicYears] = useState([]);
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [appraisals, setAppraisals] = useState(null);
-  const [expandedSection, setExpandedSection] = useState('manager');
+  const [expandedSection, setExpandedSection] = useState('employee');
+
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   const employeeId = localStorage.getItem('employeeId');
-  const categoryIcons = {
-    development: <Target className="w-5 h-5" />,
-    leadership: <Users className="w-5 h-5" />,
-    technical: <BarChart className="w-5 h-5" />,
-    'soft-skills': <Award className="w-5 h-5" />
-  };
+
   const employeeName = localStorage.getItem('empName');
+  const categoryIcons = {
+    Development: <Target className="w-5 h-5" />,
+    Leadership: <Users className="w-5 h-5" />,
+    Technical: <BarChart className="w-5 h-5" />,
+    SoftSkills: <Award className="w-5 h-5" />
+  };
   const navigate = useNavigate();
-  const menuRef = useRef();
 
 
   const currentYear = new Date().getFullYear();
-  const previousYear = currentYear - 1;
+  const nextYear = currentYear + 1;
 
 
   const toggleSection = (section) => {
@@ -54,10 +56,6 @@ const E_PerformancePage = () => {
       fetchAppraisalDetails(selectedYear);
     }
   }, [selectedYear]);
-
-  const handleMenuClick = (index) => {
-    setOpenMenuIndex(openMenuIndex === index ? null : index);
-  };
 
   const handleCloseMenu = () => {
     setOpenMenuIndex(null);
@@ -91,18 +89,15 @@ const E_PerformancePage = () => {
     return date.toISOString().split('T')[0];
   };
 
-  const recentActivities = [
-    { action: "Goals approved by manager", type: "success" },
-    { action: "Self-assessment submitted", type: "info" },
-    { action: "Review meeting scheduled", type: "warning" },
-  ];
-
   useEffect(() => {
     const fetchEmployeeGoals = async () => {
+      
+        const startDate = `${currentYear}-04-01`;
+        const endDate = `${parseInt(currentYear) + 1}-03-31`;
       try {
-        const response = await axios.get(`http://localhost:3003/goals/${employeeId}`);
-        setEmployeeGoals(response.data.data || []);
-        console.log("goals", response.data)
+        const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
+        setEmployeeGoals(response.data.data[0].goals || []);
+        console.log("goals", response.data.data[0].goals)
 
         setLoading(false);
       } catch (err) {
@@ -182,84 +177,28 @@ const E_PerformancePage = () => {
           <div className="flex justify-between mt-5 ml-2 mr-8">
             {/* Previous Year Goals Section */}
             <div className="w-full p-3 bg-white border shadow-md rounded-md">
-              <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Goals for {previousYear}-{currentYear} </h2>
+              <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Goals for {currentYear}-{nextYear} </h2>
 
-
-              {/* Manager Goals */}
-              {/* <div className="mb-2">
-                <button
-                  onClick={() => toggleSection('manager')}
-                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Target className="h-6 w-6 text-blue-500" />
-                    <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
-                  </div>
-                  {expandedSection === 'manager' ? (
-                    <ChevronUp className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-500" />
-                  )}
-                </button>
-
-                {expandedSection === 'manager' && (
-                  employeeGoals.map((goal, index) => (
-                    <div className="p-6" key={goal._id}> 
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center space-x-2">
-                                <div className="p-2 bg-blue-50 rounded-lg">
-                                    {categoryIcons[goal.category]}
-                                </div>
-                                <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
-                                    {goal.category}
-                                </span>
-                            </div>
-                        </div>
-                
-                        <h4 className="text-lg font-medium text-gray-900 mb-3">
-                            {goal.description}
-                        </h4>
-                
-                        <div className="flex flex-wrap gap-4 mt-4">
-                            <div className="flex items-center">
-                                <BarChart className="w-4 h-4 text-gray-400 mr-2" />
-                                <span className="text-sm font-medium text-gray-900">
-                                    Weight: {goal.weightage}%
-                                </span>
-                            </div>
-                
-                            <div className="flex items-center">
-                                <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                                <span className="text-sm text-gray-600">
-                                    Due: {new Date(goal.deadline).toLocaleDateString()}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                ))
-                
-                )}
-              </div> */}
               <div className="mb-2">
                 <button
-                  onClick={() => toggleSection('manager')}
+                  onClick={() => toggleSection('employee')}
                   className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
                 >
                   <div className="flex items-center space-x-3">
                     <Target className="h-6 w-6 text-blue-500" />
                     <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
                   </div>
-                  {expandedSection === 'manager' ? (
+                  {expandedSection === 'employee' ? (
                     <ChevronUp className="h-5 w-5 text-gray-500" />
                   ) : (
                     <ChevronDown className="h-5 w-5 text-gray-500" />
                   )}
                 </button>
 
-                {expandedSection === 'manager' && (
+                {expandedSection === 'employee' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-                    {employeeGoals.map((goal, index) => (
-                      <div className="bg-white p-6 rounded-lg shadow-md" key={goal._id}>
+                    {employeeGoals.length>0 && employeeGoals.map((goal, index) => (
+                      <div className="bg-white p-6 rounded-lg shadow-md" key={index}>
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-2">
                             <div className="p-2 bg-blue-50 rounded-lg">

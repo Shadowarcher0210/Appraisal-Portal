@@ -16,10 +16,10 @@ const EvaluationView1 = () => {
     const [employeeGoals, setEmployeeGoals] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
     const categoryIcons = {
-        development: <Target className="w-5 h-5" />,
-        leadership: <Users className="w-5 h-5" />,
-        technical: <BarChart className="w-5 h-5" />,
-        'soft-skills': <Award className="w-5 h-5" />
+        Development: <Target className="w-5 h-5" />,
+        Leadership: <Users className="w-5 h-5" />,
+        Technical: <BarChart className="w-5 h-5" />,
+        'Soft-skills': <Award className="w-5 h-5" />
     };
    const handleSaveExit = () => {
 
