@@ -25,7 +25,7 @@ const goalContent = new mongoose.Schema(
     managerWeightage:{
       type: Number
     },
-    goalStatus: {
+    GoalStatus: {
       type: String,
       require: [true, 'GoalStatus is required'],
   },

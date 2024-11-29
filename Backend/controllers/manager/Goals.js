@@ -44,7 +44,7 @@ const postEmployeeGoal = async (req, res) => {
         weightage: goal.weightage,  
         deadline: new Date(goal.deadline).toISOString().split('T')[0],
         otherText: goal.category === 'Others' ? goal.otherText : undefined,
-        goalStatus: "Goals Submitted", 
+        GoalStatus: "Goals Submitted", 
       }));
       console.log("Goal Content Array:", goalContentArray);
 
@@ -74,7 +74,7 @@ const postEmployeeGoal = async (req, res) => {
           weightage: goal.weightage,
           deadline: goal.deadline,
           otherText: goal.otherText,
-          goalStatus: "Goals submitted"
+          GoalStatus:  goal.GoalStatus,
         })),
       });
   
@@ -434,7 +434,7 @@ const updateManagerGoalWeight = async (req, res) => {
             weightage: g.weightage,
             deadline: g.deadline,
             otherText: g.otherText,
-            goalStatus: g.goalStatus || "Goals Submitted",
+            GoalStatus: g.GoalStatus || "Goals Submitted",
             managerWeightage: g.managerWeightage, 
           })),
         },
