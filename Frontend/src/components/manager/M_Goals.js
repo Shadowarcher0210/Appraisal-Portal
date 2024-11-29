@@ -230,7 +230,6 @@ const M_Goals = () => {
       });
       localStorage.setItem(`goalsSubmitted_${employeeToSubmit}`, 'true'); 
 
-      // Clear goals for this employee after successful submission
       setGoals((prev) => {
         const newGoals = { ...prev };
         delete newGoals[employeeToSubmit];
@@ -330,46 +329,63 @@ const M_Goals = () => {
                       <ChevronDown className="w-5 h-5 text-gray-400" />
                     }
                   </div> */}
-                  <div className="flex items-center space-x-4">
-                    {!submittedEmployees.includes(employee.employeeId) && (
-                      <>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddGoalClick(employee.employeeId);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Goal
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSubmitConfirm(employee.employeeId);
-                          }}
-                          disabled={submitting[employee.employeeId]}
-                          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
-                        >
-                          <Send className="w-4 h-4 mr-2" />
-                          Submit Goals
-                        </button>
-                      </>
-                    )}
+                  
 
-                    {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
-                      <span className="text-green-600 font-medium flex items-center">
-                        <Award className="w-4 h-4 mr-2" />
-                        {goals[employee.employeeId]?.[0]?.GoalStatus || 'Goals Submitted'}
-                      </span>
-                    )}
 
-                    {expandedEmployees[employee.employeeId] ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
+                  <div className="flex flex-col items-start space-y-2">
+  {!submittedEmployees.includes(employee.employeeId) && (
+    <>
+    
+      <div className="flex items-center space-x-4">
+        
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddGoalClick(employee.employeeId);
+          }}
+          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Add Goal
+        </button>
+
+       
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSubmitConfirm(employee.employeeId);
+          }}
+          disabled={submitting[employee.employeeId]}
+          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
+        >
+          <Send className="w-4 h-4 mr-2" />
+          Submit Goals
+        </button>
+
+        {expandedEmployees[employee.employeeId] ? (
+          <ChevronUp className="w-5 h-5 text-gray-400" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-400" />
+        )}
+      </div>
+      {goals[employee.employeeId]?.length > 0 && (
+          <span className="font-semibold text-sm text-red-950 ml-2" >
+            {goals[employee.employeeId]?.length} Goal{goals[employee.employeeId]?.length !== 1 && 's'} Added
+          </span>
+        )}
+    </>
+  )}
+
+  {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
+    <span className="text-green-600 font-medium flex items-center">
+      <Award className="w-4 h-4 mr-2" />
+      {goals[employee.employeeId]?.[0]?.GoalStatus || 'Goals Submitted'}
+    </span>
+  )}
+</div>
+
+
 
                 </div>
 
