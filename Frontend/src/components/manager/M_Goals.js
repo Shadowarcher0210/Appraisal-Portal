@@ -67,6 +67,13 @@ const M_Goals = () => {
   };
 
   const handleAddGoal = () => {
+    const today = new Date();
+    const deadline = new Date(goalFormData.deadline);
+  
+    if (deadline < today) {
+      alert("Deadline cannot be in the past");
+      return;
+    }
     if (
       !selectedEmployee ||
       !goalFormData.description ||
@@ -113,7 +120,6 @@ const M_Goals = () => {
     });
     setShowGoalForm(false);
   };
-
 
 
   const [empType, setEmpType] = useState("Employee"); 
@@ -558,22 +564,24 @@ const M_Goals = () => {
                       placeholder="Enter weightage..."
                     />
                   </div>
+                 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Deadline
-                    </label>
-                    <input
-                      type="date"
-                      className="w-full p-2 border rounded-lg"
-                      value={goalFormData.deadline}
-                      onChange={(e) =>
-                        setGoalFormData({
-                          ...goalFormData,
-                          deadline: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Deadline
+  </label>
+  <input
+    type="date"
+    className="w-full p-2 border rounded-lg"
+    value={goalFormData.deadline}
+    min={new Date().toISOString().split('T')[0]} 
+    onChange={(e) =>
+      setGoalFormData({
+        ...goalFormData,
+        deadline: e.target.value,
+      })
+    }
+  />
+</div>
                 </div>
               </div>
               <div className="mt-6 flex justify-end space-x-3">

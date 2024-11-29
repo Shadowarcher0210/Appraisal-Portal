@@ -93,18 +93,14 @@ const FormHR = () => {
   const handleSave = async () => {
     try {
       const employeeId = localStorage.getItem('employeeId');
-      const updatedPageData = {
-        ...pageData,
-        weights: weights,
-        notes: notes
-      };
+     
       const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`, {
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ updatedPageData }),
+        body: JSON.stringify({ pageData }),
         status: "In Progress"
       })
 
