@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from '../assets/logo.png';
 import nothing from '../assets/nothing.png';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Header = () => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'dashboard');
+  const [activeTab, setActiveTab] = useState(() => 'dashboard'|| localStorage.getItem('activeTab'));
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [GoalNotification, setGoalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);
@@ -54,6 +54,8 @@ const Header = () => {
     localStorage.setItem('activeTab', tabName);
     navigate(path);
   };
+ 
+  
 
   const compareNotifications = (current, seen) => {
     switch (empType) {
@@ -128,14 +130,16 @@ const Header = () => {
     localStorage.setItem('seenNotifications', JSON.stringify(newSeen));
   };
 
+
+
    const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
-  
+
     if (!employeeId) {
       console.warn('No employeeId found in localStorage');
       return;
     }
-  
+
     setIsLoading(true);
     setError(null);
   
@@ -291,7 +295,7 @@ const Header = () => {
           </div>
         </div>
       )}
-      
+
       {empType === 'Manager' && (
         <div className="fixed ml-36 left-0 flex space-x-8">
           <div
@@ -320,7 +324,7 @@ const Header = () => {
           </div>
         </div>
       )}
-      
+
       {empType === 'HR' && (
         <div className="fixed ml-36 left-0 flex space-x-8">
           <div
@@ -513,6 +517,6 @@ const Header = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Header;
