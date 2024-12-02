@@ -19,6 +19,7 @@ const EvaluationView2 = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [attainments, setAttainments] = useState(Array(5).fill(''));
+  const [overallScore, setOverallScore] = useState(0);
   const [comments, setComments] = useState(Array(5).fill(''));
   const AdditionalAreas = [
     {
@@ -206,13 +207,8 @@ const EvaluationView2 = () => {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
       }
-
-
-
     } catch (error) {
       console.error('Error updating status:', error);
-
-
     }
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
@@ -224,16 +220,20 @@ const EvaluationView2 = () => {
   };
   
   const handleSaveExit = async () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return;
 
     try {
-      const payload = AdditionalAreas.map((area, index) => ({
-        quality: area.quality,
-        successMetric: area.successMetric,
-        weightage: area.weightage,
-        attainments: attainments[index],
-        comments: comments[index]
-      }));
+  
+      const payload = {
+        pageData: formData[0].pageData.map(item => ({
+          questionId: item.questionId,
+          successMetric: item.successMetric || '',
+          notes: item.notes || '',
+          weights: item.weights || '',
+          managerEvaluation: item.managerEvaluation || 0
 
+        }))
+      };
       await axios.put(
         `http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         payload,
@@ -252,6 +252,41 @@ const EvaluationView2 = () => {
       setError("Error submitting evaluation");
     }
   };
+
+  // const calculateOverallScore = () => {
+  //   if (!formData || !formData[0] || !formData[0].pageData) return 0;
+  
+  //   const totalQuestions = formData[0].pageData.length;
+  //   const totalPercentage = totalQuestions * 100;
+  
+  //   const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
+  //     return sum + (item.managerEvaluation || 0); 
+  //   }, 0);
+  
+  //   const overallScore = (totalManagerEvaluation / totalPercentage) * 25; 
+  //   return overallScore.toFixed(2); 
+  // };
+  
+  const calculateOverallScore = () => {
+    if (!attainments || attainments.length === 0) return 0;
+  
+    const totalQuestions = attainments.length;
+    const totalPercentage = totalQuestions * 100;
+  
+    const totalManagerEvaluation = attainments.reduce((sum, attainment) => {
+      return sum + (parseFloat(attainment) || 0);
+    }, 0);
+  
+    const score = (totalManagerEvaluation / totalPercentage) * 25;
+    return parseFloat(score.toFixed(2)); // Ensure score is a number
+  };
+  
+  useEffect(() => {
+    const score = calculateOverallScore();
+    setOverallScore(score);
+  }, [attainments]); // Dependency on attainments
+  
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
       <div className="mb-2">
@@ -347,8 +382,6 @@ const EvaluationView2 = () => {
             <Award size={20} className="text-blue-600" />
             Additional Areas Of Assessment
           </h2>
-
-
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
@@ -418,6 +451,11 @@ const EvaluationView2 = () => {
                   );
                 })}
               </tbody>
+              <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
+    <p className="text-xl font-bold text-blue-600">
+    Overall Manager Evaluation Score = {calculateOverallScore()} 
+    </p>
+  </div>
             </table>
           </div>
         </div>

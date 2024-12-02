@@ -46,6 +46,10 @@ const AdditionalAreaSchema = new mongoose.Schema({
     type: [AdditionalSchema],  // Store quality questions in an array
     required: [true, 'Areas are required'],
   },
+  overallScore: {
+    type: Number,
+    default: null
+},
 });
 
 module.exports = mongoose.model('AdditionalAreas', AdditionalAreaSchema);

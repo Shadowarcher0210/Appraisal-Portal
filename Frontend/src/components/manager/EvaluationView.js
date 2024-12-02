@@ -6,7 +6,7 @@ import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); // If you're using a state to store the email
+  const [email, setEmail] = useState(""); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +68,7 @@ const EvaluationView = () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
   
     try {
-     
+      const overallScore = calculateOverallScore();
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
@@ -77,7 +77,8 @@ const EvaluationView = () => {
           weights: item.weights || '',
           managerEvaluation: item.managerEvaluation|| 0
           
-        }))
+        })),
+        overallScore: parseFloat(overallScore),
       };
       
   
@@ -216,6 +217,20 @@ const EvaluationView = () => {
     );
   }
 
+  const calculateOverallScore = () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return 0;
+  
+    const totalQuestions = formData[0].pageData.length;
+    const totalPercentage = totalQuestions * 100;
+  
+    const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
+      return sum + (item.managerEvaluation || 0); 
+    }, 0);
+  
+    const overallScore = (totalManagerEvaluation / totalPercentage) * 10; 
+    return overallScore.toFixed(2); 
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
@@ -309,7 +324,6 @@ const EvaluationView = () => {
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
-
                   <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
                   
                 </tr>
@@ -317,7 +331,6 @@ const EvaluationView = () => {
               <tbody>
                 {questionsAndAnswers.map((item, index) => {
                   const previousAnswer = formData ? formData[0].pageData[index]?.answer : null;
-                  // console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
@@ -369,6 +382,12 @@ const EvaluationView = () => {
                   );
                 })}
               </tbody>
+              <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
+    {/* <h3 className="text-lg font-semibold text-gray-800 mb-3">Overall Manager Evaluation Score =  {calculateOverallScore()} </h3> */}
+    <p className="text-xl font-bold text-green-600">
+    Overall Manager Evaluation Score = {calculateOverallScore()} 
+    </p>
+  </div>
             </table>
           </div>
         </div>
