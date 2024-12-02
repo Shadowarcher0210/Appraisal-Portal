@@ -90,11 +90,12 @@ const Dashboard = () => {
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-    
-    const navigatePath = ["Submitted", "Under Review", "Under HR Review","Completed"].includes(status)
+  
+    const navigatePath = ["Submitted", "Under Review", "Under HR Review", "Completed"].includes(status)
       ? `/empview/${employeeId}`  
       : "/form"; 
-    if (!["Submitted", "Under Review", "Under HR Review","Completed"].includes(status)) {
+  
+    if (status === "To Do") {
       try {
         const response = await axios.put(
           `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -112,7 +113,6 @@ const Dashboard = () => {
       }
     }
   
-    // Navigate to the appropriate page (either to "form" or "empview/:employeeId")
     navigate(navigatePath, { state: { timePeriod } });
   };
   

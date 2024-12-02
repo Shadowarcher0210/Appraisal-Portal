@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); // If you're using a state to store the email
+  const [email, setEmail] = useState(""); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,6 +14,7 @@ const EvaluationView = () => {
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
   const currentYear = new Date().getFullYear() + 1;
+  const token = localStorage.getItem('token')
   const location = useLocation();
   const { timePeriod } = location.state || {}
 
@@ -82,7 +83,7 @@ const EvaluationView = () => {
       
   
       await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
         submissionData,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -154,6 +155,43 @@ const EvaluationView = () => {
     updatedFormData[0].pageData[index].managerEvaluation = value;
     setFormData(updatedFormData);
   };
+
+
+
+  const handleSaveExit = async () => {
+    try {
+     
+      const submissionData = {
+        pageData: formData[0].pageData.map(item => ({
+          questionId: item.questionId,
+          answer: item.answer || '',
+          notes: item.notes || '',
+          weights: item.weights || '',
+          managerEvaluation: item.managerEvaluation|| 0
+          
+        }))
+      };
+      
+  
+      await axios.put(
+        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
+        submissionData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("PUT request successful.");
+  
+     
+    } catch (error) {
+      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+      setError("Error submitting evaluation");
+    }
+  
+  
+    navigate('/manager-dashboard'); 
+   
+    
+  };
+
 
   if (loading) {
     return (
@@ -366,7 +404,7 @@ const EvaluationView = () => {
           <div  className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleContinue}
+              onClick={handleSaveExit}
             >
              Save & Exit
             </button>

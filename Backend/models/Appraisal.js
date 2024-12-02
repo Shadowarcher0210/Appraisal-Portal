@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const pageDataSchema = new mongoose.Schema(
     {
         questionId: {
-            type: String,
+            type: Number,
             required: true
         },
         answer: {

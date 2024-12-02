@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const ViewHR = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState(null);
 
-  const employeeId = localStorage.getItem('employeeId');
+   const {employeeId} = useParams(); 
   const currentYear = new Date().getFullYear() + 1;
   const nextYear = currentYear + 1;
   const location = useLocation();
@@ -35,8 +35,9 @@ const ViewHR = () => {
     setShowHelpPopup(!showHelpPopup);
   };
 
-  useEffect(() => {
+  useEffect((appraisal) => {
     const appraisalDetails = async () => {
+    
       if (employeeId) {
         try {
           const response = await axios.get(`http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
@@ -160,6 +161,7 @@ const ViewHR = () => {
                   console.log("prev ans", previousAnswer)
                   const notes = formData ? formData[0].pageData[index]?.notes : null;
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
+                  const managerEvaluation = formData ? formData[0].pageData[index].managerEvaluation:null;
 
                   return (
                     <tr key={index} className="border-b border-gray-200 ">
@@ -188,17 +190,17 @@ const ViewHR = () => {
                       </td>
                       )}
                     {weights ? (
-                        <td className="p-2 text-sm text-gray-700 w-32">
-                          <span className="text-gray-600">{weights}</span>
+                        <td className="p-2 text-sm text-gray-700 w-32 text-ce">
+                          <span className="text-gray-600">{weights}%</span>
                         </td>
                       ) : (
                       <td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">Nothing to show</span>
                       </td>
                       )}
-                           {weights ? (
-                        <td className="p-2 text-sm text-gray-700 w-36 ">
-                          <span className="text-gray-600">{weights}</span>
+                           {managerEvaluation ? (
+                        <td className="p-2 text-sm text-gray-700 w-36 text-center ">
+                          <span className="text-gray-600">{managerEvaluation}%</span>
                         </td>
                       ) : (
                       <td className="p-2 text-sm text-gray-700">

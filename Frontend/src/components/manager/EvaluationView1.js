@@ -175,40 +175,95 @@ const EvaluationView1 = () => {
     fetchuserDetails();
   }, []);
 
-  const fetchuserDetails = async () => {
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
+    const fetchuserDetails = async () => {
+        if (employeeId) {
+            try {
+                const response = await axios.get(
+                    `http://localhost:3003/all/details/${employeeId}`
+                );
+            } catch (error) {
+                console.error("Error fetching user details:", error);
+            }
+        } else {
+            console.log("User ID not found in local storage.");
+        }
+    };
 
-        setEmail(response.data.user.email);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
+    const handleBack = () => {
+        navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+    };
+const handleSaveExit=()=>{
+}
 
-  const handleBack = () => {
-    navigate(`/evaluationView/${employeeId}, { state: { timePeriod } }`);
-  };
+  // const handleContinue = async () => {
+  //   setLoading(true);
+  //   const payload = {
+  //     goals: Object.keys(managerWeightages).map((goalId) => ({
+  //       managerWeightage: managerWeightages[goalId],
+  //     })),
+  //   };
+  //   console.log("Payload being sent:", payload);
+  //   try {
+  //     const response = await axios.put(
+  //       `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+  //       payload
+  //     );
+
+  //     if (response.data && response.data.length > 0) {
+  //       const failedResults = response.data.filter(
+  //         (result) => result.status === "Failed"
+  //       );
+  //       if (failedResults.length > 0) {
+  //         setError(failedResults.map((result) => result.message).join(", "));
+  //       } else {
+  //         setSuccessMessage("Manager weightages updated successfully!");
+  //       }
+  //     }
+  //     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
+  //   } catch (error) {
+  //     console.error("Error updating manager weightage:", error);
+  //     setError("An error occurred while updating manager weightage.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleContinue = async () => {
     setLoading(true);
+    const totalPossibleWeight = employeeGoals.reduce(
+      (sum, goal) => sum + goal.weightage,
+      0
+    );
+    const totalManagerWeight = Object.values(managerWeightages).reduce(
+      (sum, weight) => {
+        const numericWeight = parseFloat(weight);
+        return isNaN(numericWeight) ? sum : sum + numericWeight;
+      },
+      0
+    );
+  
+    let overallScore = 0;
+    if (totalManagerWeight <= totalPossibleWeight) {
+      const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+      overallScore = (percentageOutOf100 / 100) * 35;
+    }
+  
     const payload = {
       goals: Object.keys(managerWeightages).map((goalId) => ({
+        goalId, // Include the goal ID for backend reference
         managerWeightage: managerWeightages[goalId],
       })),
+      overallScore, // Add the calculated overall score
     };
+  
     console.log("Payload being sent:", payload);
+  
     try {
       const response = await axios.put(
         `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         payload
       );
-
+  
       if (response.data && response.data.length > 0) {
         const failedResults = response.data.filter(
           (result) => result.status === "Failed"
@@ -227,7 +282,7 @@ const EvaluationView1 = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     const fetchEmployeeGoals = async () => {
       try {
@@ -305,13 +360,8 @@ const EvaluationView1 = () => {
     );
   }
 
-  if (!formData || !formData[0]) {
-    return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
-        <div className="text-lg">No data available</div>
-      </div>
-    );
-  }
+   
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -427,144 +477,124 @@ const EvaluationView1 = () => {
                   {goal.description}
                 </h4>
 
-                {/* Footer Section */}
-                <div className="flex items-center justify-between pt-4 border-t border-purple-100">
-                  <div className="flex items-center space-x-2">
-                    <BarChart className="w-5 h-5 text-fuchsia-500" />
-                    <span className="text-sm font-semibold text-gray-700">
-                      Weight: {goal.weightage}%
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="w-5 h-5 text-fuchsia-500" />
-                    <span className="text-sm text-gray-600">
-                      Due: {new Date(goal.deadline).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-                <br></br>
-                <hr></hr>
-                <br></br>
-                <div>
-                  <div className="-mb-2">
-                    <h className="font-semibold text-md ">Managers Review</h>
-                  </div>
-                  <br></br>
-                  <div>
-                    <div className="flex items-center gap-4 w-full">
-                      <label className="text-sm font-medium text-gray-700 -mt-4">
-                        Weight (%)
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          className="w-32 p-2 border rounded mb-4"
-                          value={managerWeightages[goal._id] || ""}
-                          onChange={(e) =>
-                            handleWeightageChange(goal._id, e.target.value)
-                          }
-                          min="1"
-                          max={goal.weightage}
-                          placeholder={`Max ${goal.weightage}%`}
-                          // onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
-                        />
+                                {/* Footer Section */}
+                                <div className="flex items-center justify-between pt-4 border-t border-purple-100">
+                                    <div className="flex items-center space-x-2">
+                                        <BarChart className="w-5 h-5 text-fuchsia-500" />
+                                        <span className="text-sm font-semibold text-gray-700">
+                                            Weight: {goal.weightage}%
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Calendar className="w-5 h-5 text-fuchsia-500" />
+                                        <span className="text-sm text-gray-600">
+                                            Due: {new Date(goal.deadline).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <br></br>
+                                <hr></hr>
+                                <br></br>
+                                <div>
+                                    <div className='-mb-2'>
+                                        <h className="font-semibold text-md ">Managers Review</h>
+                                    </div>
+                                    <br></br>
+                                    <div>
+                                        <div className="flex items-center gap-4 w-full">
+                                            <label className="text-sm font-medium text-gray-700 -mt-4">Weight (%)</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    className="w-32 p-2 border rounded mb-4"
+                                                    value={managerWeightages[goal._id] || ''} onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
+                                                    min="1"
+                                                    max={goal.weightage}
+                                                    placeholder={`Max ${goal.weightage}%`}
+                                                // onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
+                                                />
 
-                        {Number(managerWeightages[goal._id]) >
-                          goal.weightage && (
-                          <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
-                            Cannot exceed {goal.weightage}%
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-500 -mt-4">
-                        Maximum allowed: {goal.weightage}%
-                      </div>
+
+                                                {Number(managerWeightages[goal._id]) > goal.weightage && (
+                                                    <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
+                                                        Cannot exceed {goal.weightage}%
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-sm text-gray-500 -mt-4">
+                                                Maximum allowed: {goal.weightage}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 bg-white p-4 w-3/12 rounded-lg shadow-md">
-            <div className=" items-center justify-between">
-              <div className="flex items-center space-x-2 mb-4">
+{/* Total Weight Section */}
+{employeeGoals.length > 0 && (
+    <div className="mt-6 bg-white p-4 w-3/12 rounded-lg shadow-md">
+        <div className=" items-center justify-between">
+            <div className="flex items-center space-x-2 mb-4">
                 <Calculator className="w-6 h-6 text-cyan-800" />
-                <span className="font-semibold text-gray-800">
-                  Total Weight
-                </span>
-              </div>
-              <div className=" flex">
+                <span className="font-semibold text-gray-800">Total Weight</span>
+            </div>
+            <div className=' flex'>
                 <button
-                  className={`px-4 py-2 rounded-lg ${
-                    isWeightCalculationReady
-                      ? "bg-cyan-800 text-white hover:bg-cyan-700"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                  onClick={calculateTotalWeight}
-                  disabled={!isWeightCalculationReady}
+                    className={`px-4 py-2 rounded-lg ${isWeightCalculationReady
+                        ? 'bg-cyan-800 text-white hover:bg-cyan-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    onClick={calculateTotalWeight}
+                    disabled={!isWeightCalculationReady}
                 >
-                  Calculate Total Weight
+                    Calculate Total Weight
                 </button>
                 <div className="text-lg font-bold text-cyan-800 ml-4 mt-1">
-                  {totalWeight.toFixed(2)}%
+                    {totalWeight.toFixed(2)}%
                 </div>
-              </div>
             </div>
-
-            {employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0) <
-              totalWeight && null}
-          </div>
         </div>
-
-        <div className="mt-6 flex justify-end">
-          <div className="mr-auto">
-            <button
-              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
-              onClick={handleBack}
-            >
-              Back
-            </button>
-          </div>
-          <div className="mr-2">
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleContinue}
-            >
-              Save & Exit
-            </button>
-          </div>
-          <div>
-            <button
-              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
-              onClick={handleContinue}
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-        {isModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-              <div className="p-6">
-                <p className="mt-3 text-gray-600 text-center">
-                  Thank you for submitting
-                </p>
-                <div className="mt-6 flex justify-center space-x-4">
-                  <button
-                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    onClick={() => handleBack()}
-                  >
-                    back
-                  </button>
-                </div>
-              </div>
+        {employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0) < totalWeight && (
+            <div className="text-red-500 mt-2 text-sm">
+                Total weight cannot exceed the sum of all goal weightages
             </div>
-          </div>
         )}
-      </div>
     </div>
-  );
+)}
+
+
+                </div>
+
+                <div className="mt-auto flex justify-end space-x-4 mb-4">
+                    <div className='mr-auto'>
+                        <button
+                            className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </button>
+                    </div>
+                    <div className='mr-2'>
+                        <button
+                            className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+                            onClick={handleSaveExit}
+                        >
+                            Save & Exit
+                        </button>
+                    </div>
+                    <div >
+                        <button
+                            className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+                            onClick={handleContinue}
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    );
 };
 
 export default EvaluationView1;

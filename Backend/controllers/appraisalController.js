@@ -102,9 +102,8 @@ const saveAppraisalDetails = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        // Determine status based on manager evaluation
-        // const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        // const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+        const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -120,7 +119,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             { 
                 pageData: updatedPageData, 
-                // status: newStatus,
+                status: newStatus,
                 overallScore,
                 lastModified: new Date()
             },
