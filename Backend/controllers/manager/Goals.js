@@ -110,38 +110,41 @@ const getEmployeeGoals = async (req, res) => {
 };
 
 const getGoalCategories = async (req, res) => {
-    try {
-        const { empType } = req.params;
+  try {
+      const { empType } = req.params;
 
-        const categoryMappings = {
-            Employee: ["Development", "Technical", "Soft Skills", "Leadership"],
-            Manager: ["Team Management", "Strategic Planning", "Conflict Resolution", "Leadership"],
-            HR: ["Recruitment", "Employee Engagement", "Policy Development", "Training"],
-        };
+      const categoryMappings = {
+          Employee: ["Development", "Technical", "Soft Skills", "Leadership"],
+          Manager: ["Team Management", "Strategic Planning", "Conflict Resolution", "Leadership"],
+          HR: ["Recruitment", "Employee Engagement", "Policy Development", "Training"],
+      };
 
-        const predefinedCategories = categoryMappings[empType] || ["General"];
+      const predefinedCategories = categoryMappings[empType] || ["General"];
 
-        const employeeGoals = await Goals.find({ empType });
+      const employeeGoals = await Goals.find({ empType });
 
-        const employeeOtherTexts = employeeGoals
-            .filter(goal => goal.category === 'Others' && goal.otherText)
-            .map(goal => goal.otherText);
+      const employeeOtherTexts = employeeGoals.flatMap(goalDoc => 
+        goalDoc.goals
+          .filter(goal => goal.category === 'Others' && goal.otherText)
+          .map(goal => goal.otherText));
 
-        let categories = [...new Set([...predefinedCategories, ...employeeOtherTexts])];
+      let categories = [...new Set([...predefinedCategories, ...employeeOtherTexts])];
 
-        if (!categories.includes('Others')) {
-            categories.push('Others');
-        }
+      if (!categories.includes('Others')) {
+          categories.push('Others');
+      }
 
-        res.status(200).json({
-            message: 'Categories retrieved successfully',
-            empType,
-            data: categories,
-        });
-    } catch (error) {
-        console.error('Error in fetching categories:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+      console.log("categories", categories);
+
+      res.status(200).json({
+          message: 'Categories retrieved successfully',
+          empType,
+          data: categories,
+      });
+  } catch (error) {
+      console.error('Error in fetching categories:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 

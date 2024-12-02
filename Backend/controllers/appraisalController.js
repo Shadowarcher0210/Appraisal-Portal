@@ -594,6 +594,9 @@ const getApplicationNotification = async (req, res) => {
         const currentDate = new Date().toLocaleDateString();
         const appraisalStartDate = new Date(appraisal.timePeriod[0]);
         const appraisalEndDate = new Date(appraisal.timePeriod[1]);
+        
+        const formattedStartDate = appraisalStartDate.toISOString().split('T')[0];
+        const formattedEndDate = appraisalEndDate.toISOString().split('T')[0];
 
         if (appraisal.status === 'Submitted') {
             return res.status(200).json({
