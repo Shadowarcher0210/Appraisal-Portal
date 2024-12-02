@@ -7,7 +7,7 @@ const EvaluationView1 = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [formData, setFormData] = useState([]);
+  const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
@@ -18,14 +18,17 @@ const EvaluationView1 = () => {
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const categoryIcons = {
-    Development: <Target className="w-5 h-5" />,
-    Leadership: <Users className="w-5 h-5" />,
-    Technical: <BarChart className="w-5 h-5" />,
+    "Development": <Target className="w-5 h-5" />,
+    "Leadership": <Users className="w-5 h-5" />,
+    "Technical": <BarChart className="w-5 h-5" />,
     "Soft Skills": <Award className="w-5 h-5" />,
+    "Others": <Target className="w-5 h-5" />,  
   };
 
   const [totalWeight, setTotalWeight] = useState(0);
-  const [isWeightCalculationReady, setIsWeightCalculationReady] = useState(false);
+  const [isWeightCalculationReady, setIsWeightCalculationReady] =
+    useState(false);
+
   const [managerWeightages, setManagerWeightages] = useState({});
 
   const handleWeightageChange = (goalId, value) => {
@@ -47,6 +50,10 @@ const EvaluationView1 = () => {
       const weight = managerWeightages[goal._id];
       return sum + (weight !== null && !isNaN(weight) ? weight : 0);
     }, 0);
+    const totalPossibleWeight = employeeGoals.reduce(
+      (sum, goal) => sum + goal.weightage,
+      0
+    );
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
@@ -62,15 +69,18 @@ const EvaluationView1 = () => {
 
   const calculateTotalWeight = () => {
     const totalPossibleWeight = employeeGoals.reduce(
-      (sum, goal) => sum + goal.weightage,0
-    );
-    const total = Object.values(managerWeightages).reduce((sum, weight) => {
-      const numericWeight = parseFloat(weight);
-      return isNaN(numericWeight) ? sum : sum + numericWeight;
-    }, 0);
+      (sum, goal) => sum + goal.weightage, 0);
 
-    if (total <= totalPossibleWeight) {
-      setTotalWeight(total);
+    const totalManagerWeight = Object.values(managerWeightages).reduce(
+      (sum, weight) => {
+        const numericWeight = parseFloat(weight);
+        return isNaN(numericWeight) ? sum : sum + numericWeight;
+      },0);
+    if (totalManagerWeight <= totalPossibleWeight) {
+      const percentageOutOf100 =
+        (totalManagerWeight / totalPossibleWeight) * 100;
+      const percentageOutOf35 = (percentageOutOf100 / 100) * 35;
+      setTotalWeight(percentageOutOf35);
     } else {
       setTotalWeight(0);
     }
@@ -215,67 +225,150 @@ useEffect(() => {
     };
 
     fetchAppraisalDetails();
-}, [employeeId, timePeriod]);
+}, [employeeId, timePeriod]);const handleSaveExit=()=>{
+}
+
+  // const handleContinue = async () => {
+  //   setLoading(true);
+  //   const payload = {
+  //     goals: Object.keys(managerWeightages).map((goalId) => ({
+  //       managerWeightage: managerWeightages[goalId],
+  //     })),
+  //   };
+  //   console.log("Payload being sent:", payload);
+  //   try {
+  //     const response = await axios.put(
+  //       `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+  //       payload
+  //     );
+
+  //     if (response.data && response.data.length > 0) {
+  //       const failedResults = response.data.filter(
+  //         (result) => result.status === "Failed"
+  //       );
+  //       if (failedResults.length > 0) {
+  //         setError(failedResults.map((result) => result.message).join(", "));
+  //       } else {
+  //         setSuccessMessage("Manager weightages updated successfully!");
+  //       }
+  //     }
+  //     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
+  //   } catch (error) {
+  //     console.error("Error updating manager weightage:", error);
+  //     setError("An error occurred while updating manager weightage.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleContinue = async () => {
-    setLoading(true);  // Set loading state to true when the request starts
+    setLoading(true);
+    const totalPossibleWeight = employeeGoals.reduce(
+      (sum, goal) => sum + goal.weightage,
+      0
+    );
+    const totalManagerWeight = Object.values(managerWeightages).reduce(
+      (sum, weight) => {
+        const numericWeight = parseFloat(weight);
+        return isNaN(numericWeight) ? sum : sum + numericWeight;
+      },
+      0
+    );
+  
+    let overallScore = 0;
+    if (totalManagerWeight <= totalPossibleWeight) {
+      const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+      overallScore = (percentageOutOf100 / 100) * 35;
+    }
+  
     const payload = {
-        goals: Object.keys(managerWeightages).map(goalId => ({
-            managerWeightage: managerWeightages[goalId],
-        }))
+      goals: Object.keys(managerWeightages).map((goalId) => ({
+        goalId, // Include the goal ID for backend reference
+        managerWeightage: managerWeightages[goalId],
+      })),
+      overallScore, // Add the calculated overall score
     };
+  
     console.log("Payload being sent:", payload);
-    try {
-        const response = await axios.put(
-            `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-            payload
-        );
-        if (response.data && response.data.length > 0) {
-            const failedResults = response.data.filter(result => result.status === 'Failed');
-            if (failedResults.length > 0) {
-                setError(failedResults.map(result => result.message).join(', '));
-            } else {
-                setSuccessMessage('Manager weightages updated successfully!');
-            }
-        }
-    } catch (error) {
-        console.error('Error updating manager weightage:', error);
-        setError('An error occurred while updating manager weightage.');
-    } finally {
-        setLoading(false);  // Set loading to false when the request finishes
-    }
-    navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
-};
-
-  const handleSaveExit = async () => {
-    try {
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-            goalId: item.goalId ,
-        managerWeightages: item.managerWeightages || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
-        }))
-      };
-      
   
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
+    try {
+      const response = await axios.put(
+        `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        payload
       );
-      console.log("PUT request successful.");
+  
+      if (response.data && response.data.length > 0) {
+        const failedResults = response.data.filter(
+          (result) => result.status === "Failed"
+        );
+        if (failedResults.length > 0) {
+          setError(failedResults.map((result) => result.message).join(", "));
+        } else {
+          setSuccessMessage("Manager weightages updated successfully!");
+        }
+      }
+      navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
     } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
+      console.error("Error updating manager weightage:", error);
+      setError("An error occurred while updating manager weightage.");
+    } finally {
+      setLoading(false);
     }
-  
-  
-    navigate('/manager-performance'); 
-   
-    
   };
+  
+  useEffect(() => {
+    const fetchEmployeeGoals = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+        setEmployeeGoals(response.data.data[0].goals || []);
+        console.log("goals response", response.data.data[0].goals);
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching goals:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchEmployeeGoals();
+  }, []);
+
+  useEffect(() => {
+    const fetchAppraisalDetails = async () => {
+      if (!employeeId || !timePeriod) {
+        setError("Employee ID or time period not found");
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await axios.get(
+          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+
+        const initialFormData = {
+          empName: response.data[0]?.empName || "",
+          designation: response.data[0]?.designation || "",
+          managerName: response.data[0]?.managerName || "",
+          timePeriod: response.data[0]?.timePeriod || timePeriod,
+          status: response.data[0]?.status || "",
+          pageData: employeeGoals.map((employeeGoals, index) => ({
+            managerWeightages : response.data[0]?.pageData[index]?.managerWeightages || '',
+        })),
+        };
+
+        setFormData([initialFormData]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching appraisal details:", error);
+        setError("Error fetching appraisal details");
+        setLoading(false);
+      }
+    };
+
+    fetchAppraisalDetails();
+  }, [employeeId, timePeriod]);
 
   const previousYear = currentYear - 1;
 
