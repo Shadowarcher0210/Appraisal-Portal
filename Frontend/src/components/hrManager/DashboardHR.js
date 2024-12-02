@@ -97,7 +97,7 @@ const DashboardHR = () => {
                 console.error('Failed to update status:', response.statusText);
             }
         } catch (error) {
-            console.error(`Error updating status to ${newStatus}:`, error);
+            console.error(`Error updating status to ${newStatus}:, error`);
         }
 
         navigate(navigatePath, { state: { timePeriod } });

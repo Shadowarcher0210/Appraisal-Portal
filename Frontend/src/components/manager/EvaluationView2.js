@@ -179,7 +179,7 @@ const EvaluationView2 = () => {
       console.log("User ID not found in local storage.");
     }
   };
-  
+
   const handleContinue = async () => {
     try {
       const payload = AdditionalAreas.map((area, index) => ({
@@ -218,6 +218,7 @@ const EvaluationView2 = () => {
   const handleBack = () => {
     navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
   };
+  
   const handleSaveExit = async () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
 
