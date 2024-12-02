@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import { ChevronDown, ChevronUp, Target } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -5,11 +6,14 @@ import { useNavigate } from 'react-router-dom';
 
 const PerformanceHR = () => {
     const [selectedYear, setSelectedYear] = useState('');
+    const [selectedManager, setSelectedManager] = useState('');
     const [academicYears, setAcademicYears] = useState([]);
     const [appraisals, setAppraisals] = useState([]);
+    const [uniqueManagers, setUniqueManagers] = useState([]);
     const navigate = useNavigate();
 
     const managerName = localStorage.getItem('empName');
+
     useEffect(() => {
         const currentYear = new Date().getFullYear();
         const startYear = currentYear - 3;
@@ -24,9 +28,6 @@ const PerformanceHR = () => {
         setSelectedYear(`${defaultYear}-${defaultYear + 1}`);
     }, []);
 
-    // Fetch appraisals when selected year changes
-
-
     const fetchAllAppraisalDetails = async () => {
         const [yearStart] = selectedYear.split('-');
         const startDate = `${yearStart}-04-01`;
@@ -34,10 +35,22 @@ const PerformanceHR = () => {
 
         try {
             const response = await axios.get(
-               ` http://localhost:3003/appraisal/allAppraisals/${startDate}/${endDate}`
+               `http://localhost:3003/appraisal/allAppraisals/${startDate}/${endDate}`
             );
-            console.log('Fetched Appraisals in Performance Page:', response.data);
-            const allAppraisals = response.data.data
+            
+            let allAppraisals = response.data.data;
+
+            // Extract unique managers
+            const managers = [...new Set(allAppraisals.map(appraisal => appraisal.managerName))];
+            setUniqueManagers(managers);
+
+            // Filter by manager if selected
+            if (selectedManager) {
+                allAppraisals = allAppraisals.filter(
+                    appraisal => appraisal.managerName === selectedManager
+                );
+            }
+
             const sortedAppraisals = allAppraisals.sort((a, b) => {
                 if (a.status === "Submitted" || a.status === "Under Review") {
                     return -1; // Move to the top
@@ -47,30 +60,22 @@ const PerformanceHR = () => {
                 }
                 return 0; // No change
             });
+            
             setAppraisals(allAppraisals);
-            console.log("empname", allAppraisals)
         } catch (error) {
             console.error('Error fetching appraisals in Performance page:', error);
         }
     };
 
-
     useEffect(() => {
         if (selectedYear && managerName) {
             fetchAllAppraisalDetails();
         }
-    }, [selectedYear]);
-    
-    // const handleViewClick = (appraisal) => {
-    //     const { employeeId, timePeriod } = appraisal;
-    //     console.log('Employee Id :',employeeId)
-    //     navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
-    // };
+    }, [selectedYear, selectedManager]);
 
     const handleViewClick = async (appraisal) => {
         const { employeeId, timePeriod, status } = appraisal;
 
-        // If the status is "Submitted", update it to "Under Review"
         if (status === "Under HR Review") {
             try {
                 const response = await axios.put(
@@ -90,18 +95,11 @@ const PerformanceHR = () => {
         }
 
         if (status === "Under HR Review") {
-           
-            navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
+            navigate(`/empview/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Completed") {
-            // Navigate to employee view if status is "Completed"
             navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
         }
     };
-
- 
-    useEffect(() => {
-        console.log('Updated appraisals:', appraisals);
-    }, [appraisals]);
 
     const formatDate = (isoString) => new Date(isoString).toISOString().split('T')[0];
 
@@ -112,7 +110,7 @@ const PerformanceHR = () => {
                 <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your Team progress.</p>
             </div>
 
-            <div className='mt-2 ml-2'>
+            <div className='mt-2 ml-2 flex space-x-4'>
                 <label className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
                     <label htmlFor="time-period">Time Period:</label>
                     <select
@@ -120,7 +118,6 @@ const PerformanceHR = () => {
                         value={selectedYear || ''}
                         onChange={(e) => setSelectedYear(e.target.value)}
                     >
-
                         {academicYears.map((year) => (
                             <option key={year} value={year}>
                                 {year}
@@ -128,6 +125,23 @@ const PerformanceHR = () => {
                         ))}
                     </select>
                 </label>
+
+                <label className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
+                    <label htmlFor="reporting-manager">Reporting Manager:</label>
+                    <select
+                        id="reporting-manager"
+                        value={selectedManager || ''}
+                        onChange={(e) => setSelectedManager(e.target.value)}
+                    >
+                        <option value="">Select Manager</option>
+                        {uniqueManagers.map((manager) => (
+                            <option key={manager} value={manager}>
+                                {manager}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                        
             </div>
 
             <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
@@ -156,12 +170,13 @@ const PerformanceHR = () => {
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                                             {appraisal.managerName}
                                         </td>
-                                        <td className="px-6 py-4  whitespace-nowrap">
-                                            <span className='inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>{appraisal.status}</span>
-                                            
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className='inline-flex items-center py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>
+                                                {appraisal.status}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
-                                        <button
+                                            <button
                                                 className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 ${appraisal.status === "Under HR Review" ? '' : 'cursor-pointer'}`}
                                                 onClick={() => handleViewClick(appraisal)}
                                             >
