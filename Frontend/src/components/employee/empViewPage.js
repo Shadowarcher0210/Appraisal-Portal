@@ -351,7 +351,7 @@ useEffect(() => {
           </div>
         </div>
 
-       { employeeType==="Manager"&&(
+       { employeeType==="Manager" || employeeType==="HR" && additionalAreas.length>0 &&(
            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
            <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
              <Award size={20} className="text-blue-600" />

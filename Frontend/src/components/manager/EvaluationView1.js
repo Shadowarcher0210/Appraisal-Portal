@@ -164,7 +164,7 @@ const EvaluationView1 = () => {
   };
 
   const handleBack = () => {
-    navigate(`/evaluationView/${employeeId}, { state: { timePeriod } }`);
+    navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
   };
 
   useEffect(() => {

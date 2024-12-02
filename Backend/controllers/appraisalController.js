@@ -216,7 +216,6 @@ const getAppraisals = async (req, res) => {
 
         console.log('Retrieved Appraisals:', appraisals);
         //checking dep
-        console.log("dep,", appraisals[0].department)
         if (appraisals.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });
         }
