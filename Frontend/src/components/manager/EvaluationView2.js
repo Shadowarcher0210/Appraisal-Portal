@@ -282,20 +282,17 @@ const EvaluationView2 = () => {
   };
   
   const handleSaveExit = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
 
     try {
   
-      const payload = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          successMetric: item.successMetric || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation || 0
-
-        }))
-      };
+      const payload = AdditionalAreas.map((area, index) => ({
+        quality: area.quality,
+        successMetric: area.successMetric,
+        weightage: area.weightage,
+        attainments: attainments[index],
+        comments: comments[index]
+      }));
+      
       await axios.put(
         `http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         payload,

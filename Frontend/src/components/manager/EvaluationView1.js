@@ -349,13 +349,14 @@ const handleSaveExit= async ()=>{
           setSuccessMessage("Manager weightages updated successfully!");
         }
       }
-      navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
+    
     } catch (error) {
       console.error("Error updating manager weightage:", error);
       setError("An error occurred while updating manager weightage.");
     } finally {
       setLoading(false);
     }
+    navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
   };
 
 
