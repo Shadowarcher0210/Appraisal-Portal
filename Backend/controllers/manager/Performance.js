@@ -34,7 +34,7 @@ const getEmployeeAppraisals = async (req, res) => {
 
 const saveAdditionalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
-    const { payload } = req.body;
+    const { payload, overallScore} = req.body;
 
     if (!employeeId) {
         return res.status(400).json({ error: 'Employee ID is required.' });
@@ -45,7 +45,6 @@ const saveAdditionalDetails = async (req, res) => {
         new Date(endDate).toISOString().split('T')[0],
     ];
 
-    // Check if startDate is before endDate
     if (timePeriod[0] > timePeriod[1]) {
         return res.status(400).json({ error: 'Start date cannot be later than end date.' });
     }
@@ -56,27 +55,32 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 
+    if (typeof overallScore !== 'number') {
+        return res.status(400).json({
+            error: 'Overall score is required and must be a number.',
+        });
+    }
+
     try {
-        // Check if a record for the given employeeId and timePeriod already exists
         const existingRecord = await AdditionalAreas.findOne({
             employeeId,
             timePeriod, 
         });
 
         if (existingRecord) {
-            // If the record exists, update it by replacing the areas array with the new answers
             existingRecord.areas = payload;
+            existingRecord.overallScore = overallScore;
             await existingRecord.save();
             return res.status(200).json({
                 message: 'Additional details updated successfully!',
                 data: existingRecord,
             });
         } else {
-            // If no record exists, create a new one
             const newAdditional = new AdditionalAreas({
                 employeeId,
                 timePeriod,
-                areas: payload,  // Store all the quality answers in one array
+                areas: payload, 
+                overallScore,
             });
             await newAdditional.save();
             return res.status(201).json({
@@ -92,6 +96,7 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 };
+
 const getAdditionalDetails = async (req,res)=>{
     const { employeeId, startDate, endDate } = req.params;
     if (!employeeId || !startDate || !endDate) {

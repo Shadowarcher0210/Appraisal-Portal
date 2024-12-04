@@ -314,6 +314,7 @@ const fetchManagerGoalWeight = async (req, res) => {
         empName: employeeData.empName,
         empType: employeeData.empType,
         timePeriod: employeeData.timePeriod,
+        overallScore: employeeData.overallScore,
         goals: goalData,
       },
     });

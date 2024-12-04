@@ -12,16 +12,12 @@ const EvaluationView3 = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
 
-  const [reviewData, setReviewData] = useState({
-    overallRating: '',
-    additionalComments: ''
-  });
+  const [reviewData, setReviewData] = useState({overallRating: '',additionalComments: ''});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
     if (name === 'overallRating') {
-      // Only allow numbers
       const numericValue = value.replace(/[^0-9]/g, '');
       if (numericValue === '' || (parseInt(numericValue) <= 100)) {
         setReviewData(prev => ({
@@ -157,7 +153,7 @@ const EvaluationView3 = () => {
             <input
               type="text"
               name="overallrating"
-              value={reviewData.overallRating}
+              value={reviewData.overallrating}
               onChange={handleInputChange}
               className=" p-2 border border-gray-300  rounded-md  transition-all"
               placeholder="Enter your rating"

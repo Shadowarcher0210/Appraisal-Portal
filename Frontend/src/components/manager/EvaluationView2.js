@@ -189,13 +189,14 @@ const EvaluationView2 = () => {
         attainments: attainments[index],
         comments: comments[index]
       }));
+      const overallScore = calculateOverallScore();
       const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
 
         },
-        body: JSON.stringify({ payload }),
+        body: JSON.stringify({ payload, overallScore }),
 
       })
       if (response.ok) {
@@ -252,21 +253,7 @@ const EvaluationView2 = () => {
       setError("Error submitting evaluation");
     }
   };
-
-  // const calculateOverallScore = () => {
-  //   if (!formData || !formData[0] || !formData[0].pageData) return 0;
-  
-  //   const totalQuestions = formData[0].pageData.length;
-  //   const totalPercentage = totalQuestions * 100;
-  
-  //   const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
-  //     return sum + (item.managerEvaluation || 0); 
-  //   }, 0);
-  
-  //   const overallScore = (totalManagerEvaluation / totalPercentage) * 25; 
-  //   return overallScore.toFixed(2); 
-  // };
-  
+ 
   const calculateOverallScore = () => {
     if (!attainments || attainments.length === 0) return 0;
   
@@ -278,13 +265,13 @@ const EvaluationView2 = () => {
     }, 0);
   
     const score = (totalManagerEvaluation / totalPercentage) * 25;
-    return parseFloat(score.toFixed(2)); // Ensure score is a number
+    return parseFloat(score.toFixed(2)); 
   };
   
   useEffect(() => {
     const score = calculateOverallScore();
     setOverallScore(score);
-  }, [attainments]); // Dependency on attainments
+  }, [attainments]); 
   
 
   return (
