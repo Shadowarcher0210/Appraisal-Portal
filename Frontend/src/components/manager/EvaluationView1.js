@@ -305,7 +305,7 @@ useEffect(() => {
           setError(failedResults.map((result) => result.message).join(", "));
         } else {
           setSuccessMessage("Manager weightages updated successfully!");
-        }
+        }  
       }
       navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
     } catch (error) {

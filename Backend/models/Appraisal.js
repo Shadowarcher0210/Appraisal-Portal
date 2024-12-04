@@ -88,6 +88,7 @@ const appraisalSchema = new mongoose.Schema({
         type: Number,
         default: null
     },
+    
 });
 
 module.exports = mongoose.model('Appraisal', appraisalSchema);

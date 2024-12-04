@@ -13,6 +13,8 @@ const EvaluationView2 = () => {
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [additionalAreaData, setadditionalAreaData] = useState(null);
+  const [additionalAreas, setadditionalAreas] = useState(null);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
@@ -21,6 +23,43 @@ const EvaluationView2 = () => {
   const [attainments, setAttainments] = useState(Array(5).fill(''));
   const [overallScore, setOverallScore] = useState(0);
   const [comments, setComments] = useState(Array(5).fill(''));
+  
+
+  useEffect(() =>{
+
+    const fetchAdditioalAreas = async () =>{
+      if (!employeeId || !timePeriod){
+        setError('Employee ID or time period not found');
+        return;
+      }
+       
+      try{
+        const response =await axios.get(
+          `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        )
+
+        const initialFormdata ={
+          attainments : response.data.data.areas[0]?.attainments || "",
+
+        }
+
+        // setFormData([initialFormdata]);
+        // setLoading(false);
+
+        setadditionalAreaData(initialFormdata)
+        console.log('Additional Data',response.data.data.areas)
+      }
+      catch(error){ 
+        console.error('Error fetching appraisal details:', error);
+        setError('Error fetching appraisal details');
+        setLoading(false);
+      }
+    }
+    fetchAdditioalAreas();
+
+  } ,
+  [employeeId]);
+
   const AdditionalAreas = [
     {
       quality: "Setting Expectations",
@@ -433,7 +472,7 @@ const EvaluationView2 = () => {
                       <td className="p-2 text-sm text-gray-600 text-center">
                         <input
                           className="w-20 p-1 border border-gray-300 rounded"
-                          value={attainments[index]}
+                          value={additionalAreaData.attainments}
                           onChange={(e) => handleAttainmentChange(index, e)}
                         />
                       </td>
