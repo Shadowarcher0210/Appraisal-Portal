@@ -187,7 +187,7 @@ const EvaluationView = () => {
     }
   
   
-    navigate('/manager-dashboard'); 
+    navigate('/manager-performance'); 
    
     
   };
@@ -233,12 +233,7 @@ const EvaluationView = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
-
-
-      {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
       <div className="mb-2">
-
-        {/* Header Section */}
         <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Self Appraisal</h1>
@@ -299,26 +294,25 @@ const EvaluationView = () => {
                 <TrendingUp className="text-orange-600" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="text-sm text-gray-400 mb-1">Self Appraisal Evaluation</p>
+                <p className="font-medium text-gray-900">{calculateOverallScore()}</p>
               </div>
             </div>
           </div>) : (<div />)}
       </div>
 
       {/* Main Content - Vertical Layout */}
-      <div className="space-y-4 mx-2 rounded-lg shadow-sm">
+      <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <Award size={20} className="text-blue-600" />
+          <h2 className="text-xl font-semibold text-cyan-800 border-b mb-6  pb-2 flex items-center gap-2">
             Self Appraisal & Competencies
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              <thead>
-                <tr>
+            <thead className="bg-gray-50">
+            <tr>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Requirement</th>
                   <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
@@ -373,9 +367,7 @@ const EvaluationView = () => {
                         <input
                           className="w-20 p-1 border border-gray-300 rounded  "
                           value={formData[0].pageData[index].managerEvaluation || ''}
-                         
-                          onInput={(e) => handleManagerEvaluationChange(e, index)}
-                          
+                          onInput={(e) => handleManagerEvaluationChange(e, index)}  
                         />
                       </td>
                     </tr>
@@ -383,16 +375,13 @@ const EvaluationView = () => {
                 })}
               </tbody>
               <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
-    {/* <h3 className="text-lg font-semibold text-gray-800 mb-3">Overall Manager Evaluation Score =  {calculateOverallScore()} </h3> */}
-    <p className="text-xl font-bold text-green-600">
-    Overall Manager Evaluation Score = {calculateOverallScore()} 
-    </p>
+   
   </div>
             </table>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
               className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"

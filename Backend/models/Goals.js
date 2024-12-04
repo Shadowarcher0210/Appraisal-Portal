@@ -64,7 +64,7 @@ const goalContent = new mongoose.Schema(
         type: [goalContent],
         default: []
     },
-    overallScore: {
+    overallGoalScore: {
         type: Number,
         default: null
     },

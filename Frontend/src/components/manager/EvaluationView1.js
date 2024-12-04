@@ -16,6 +16,7 @@ const EvaluationView1 = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [employeeGoals, setEmployeeGoals] = useState([]);
+  const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
@@ -45,15 +46,17 @@ const EvaluationView1 = () => {
       ...prev,
       [goalId]: numericValue,
     }));
+    console.log("manager weight", managerWeightages)
 
-    const assignedWeights = employeeGoals.reduce((sum, goal) => {
-      const weight = managerWeightages[goal._id];
-      return sum + (weight !== null && !isNaN(weight) ? weight : 0);
-    }, 0);
-    const totalPossibleWeight = employeeGoals.reduce(
-      (sum, goal) => sum + goal.weightage,
-      0
-    );
+    // const assignedWeights = employeeGoals.reduce((sum, goal) => {
+    //   const weight = managerWeightages[goal._id];
+    //   return sum + (weight !== null && !isNaN(weight) ? weight : 0);
+    // }, 0);
+
+    // const totalPossibleWeight = employeeGoals.reduce(
+    //   (sum, goal) => sum + goal.weightage,
+    //   0
+    // );
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
@@ -66,6 +69,21 @@ const EvaluationView1 = () => {
     });
     setIsWeightCalculationReady(allWeightsAssigned);
   };
+  
+
+  useEffect(() => {
+    const assignedWeights = employeeGoals.reduce((sum, goal) => {
+      const weight = managerEval[goal._id];
+      return sum + (weight !== null && !isNaN(weight) ? weight : 0);
+    }, 0);
+
+    const totalPossibleWeight = employeeGoals.reduce(
+      (sum, goal) => sum + goal.weightage,
+      0
+    );
+
+    setTotalWeight((assignedWeights / totalPossibleWeight) * 100);
+  }, [managerEval, employeeGoals]);
 
   const calculateTotalWeight = () => {
     const totalPossibleWeight = employeeGoals.reduce(
@@ -87,13 +105,17 @@ const EvaluationView1 = () => {
   };
 
   useEffect(() => {
+    calculateTotalWeight();
+  }, [employeeGoals, managerWeightages]);
+
+
+  useEffect(() => {
     const initialWeightages = employeeGoals.reduce((acc, goal) => {
-        acc[goal._id] = null;
+     //   acc[goal._id] = null;
+     acc[goal._id] = managerEval[goal._id] || null;
         return acc;
     }, {});
     setManagerWeightages(initialWeightages);
-    
-    // Reset weight calculation readiness
     setIsWeightCalculationReady(false);
 }, [employeeGoals]);
 
@@ -142,8 +164,8 @@ const EvaluationView1 = () => {
 
   useEffect(() => {
     fetchUserDetails();
-    fetchEmployeeGoals();
   }, []);
+
 
   const fetchUserDetails = async () => {
     if (employeeId) {
@@ -160,38 +182,36 @@ const EvaluationView1 = () => {
     }
   };
 
+  useEffect(() => {
   const fetchEmployeeGoals = async () => {
     try {
       const response = await axios.get(
         `http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
       );
-      setEmployeeGoals(response.data.data[0]?.goals || []);
+      const goals = response.data.data[0].goals; 
+      setEmployeeGoals(goals || []);   
+
+      const managerEvalData = {};
+      goals.forEach((goal) => {
+        managerEvalData[goal._id] = goal.managerWeightage; 
+      });
+
+      setManagerEval(managerEvalData);
+      setManagerWeightages(managerEvalData); 
+      console.log("checking manager eval", managerEval)
       setLoading(false);
     } catch (err) {
       console.error("Error fetching goals:", err);
       setLoading(false);
     }
   };
+  fetchEmployeeGoals();
+}, [employeeId, timePeriod]);
 
   const handleBack = () => {
-    navigate(`/evaluationView/${employeeId}, { state: { timePeriod } }`);
+    navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
   };
 
-  useEffect(() => {
-    const fetchEmployeeGoals = async () => {
-        try {
-            const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`);
-            setEmployeeGoals(response.data.data[0].goals || []);
-            console.log("goals response", response.data.data[0].goals)
-            setLoading(false);
-        } catch (err) {
-            console.error('Error fetching goals:', err);
-            setLoading(false);
-        }
-    };
-
-    fetchEmployeeGoals();
-}, []);
 
 useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -225,41 +245,63 @@ useEffect(() => {
     };
 
     fetchAppraisalDetails();
-}, [employeeId, timePeriod]);const handleSaveExit=()=>{
+}, [employeeId, timePeriod]);
+
+const handleSaveExit= async ()=>{
+  setLoading(true);
+  const totalPossibleWeight = employeeGoals.reduce(
+    (sum, goal) => sum + goal.weightage,
+    0
+  );
+  const totalManagerWeight = Object.values(managerWeightages).reduce(
+    (sum, weight) => {
+      const numericWeight = parseFloat(weight);
+      return isNaN(numericWeight) ? sum : sum + numericWeight;
+    },
+    0
+  );
+
+  let overallScore = 0;
+  if (totalManagerWeight <= totalPossibleWeight) {
+    const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+    overallScore = (percentageOutOf100 / 100) * 35;
+  }
+
+  const payload = {
+    goals: Object.keys(managerWeightages).map((goalId) => ({
+      goalId, 
+      managerWeightage: managerWeightages[goalId],
+    })),
+    overallScore, 
+  };
+
+  console.log("Payload being sent:", payload);
+
+  try {
+    const response = await axios.put(
+      `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
+      payload
+    );
+
+    if (response.data && response.data.length > 0) {
+      const failedResults = response.data.filter(
+        (result) => result.status === "Failed"
+      );
+      if (failedResults.length > 0) {
+        setError(failedResults.map((result) => result.message).join(", "));
+      } else {
+        setSuccessMessage("Manager weightages updated successfully!");
+      }
+    }
+    navigate("/manager-performance", { state: { timePeriod } });
+  } catch (error) {
+    console.error("Error updating manager weightage:", error);
+    setError("An error occurred while updating manager weightage.");
+  } finally {
+    setLoading(false);
+  }
 }
 
-  // const handleContinue = async () => {
-  //   setLoading(true);
-  //   const payload = {
-  //     goals: Object.keys(managerWeightages).map((goalId) => ({
-  //       managerWeightage: managerWeightages[goalId],
-  //     })),
-  //   };
-  //   console.log("Payload being sent:", payload);
-  //   try {
-  //     const response = await axios.put(
-  //       `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-  //       payload
-  //     );
-
-  //     if (response.data && response.data.length > 0) {
-  //       const failedResults = response.data.filter(
-  //         (result) => result.status === "Failed"
-  //       );
-  //       if (failedResults.length > 0) {
-  //         setError(failedResults.map((result) => result.message).join(", "));
-  //       } else {
-  //         setSuccessMessage("Manager weightages updated successfully!");
-  //       }
-  //     }
-  //     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
-  //   } catch (error) {
-  //     console.error("Error updating manager weightage:", error);
-  //     setError("An error occurred while updating manager weightage.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleContinue = async () => {
     setLoading(true);
@@ -315,60 +357,7 @@ useEffect(() => {
       setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    const fetchEmployeeGoals = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-        setEmployeeGoals(response.data.data[0].goals || []);
-        console.log("goals response", response.data.data[0].goals);
 
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching goals:", err);
-        setLoading(false);
-      }
-    };
-
-    fetchEmployeeGoals();
-  }, []);
-
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError("Employee ID or time period not found");
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        const initialFormData = {
-          empName: response.data[0]?.empName || "",
-          designation: response.data[0]?.designation || "",
-          managerName: response.data[0]?.managerName || "",
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || "",
-          pageData: employeeGoals.map((employeeGoals, index) => ({
-            managerWeightages : response.data[0]?.pageData[index]?.managerWeightages || '',
-        })),
-        };
-
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching appraisal details:", error);
-        setError("Error fetching appraisal details");
-        setLoading(false);
-      }
-    };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
 
   const previousYear = currentYear - 1;
 
@@ -457,7 +446,7 @@ useEffect(() => {
                         </div>
                         <div>
                             <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                            <p className="font-medium text-gray-900">-</p>
+                            <p className="font-medium text-gray-900"> {totalWeight.toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
@@ -470,7 +459,7 @@ useEffect(() => {
 
         {/* Goals Section */}
         {employeeGoals.length > 0 ? (
-            <div className="space-y-4 mx-2 rounded-lg shadow-sm">
+            <div className="space-y-4 mx-2 ">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                     {employeeGoals.map((goal, index) => (
                         <div
@@ -520,7 +509,8 @@ useEffect(() => {
                                             <input
                                                 type="number"
                                                 className="w-32 p-2 border rounded mb-4"
-                                                value={managerWeightages[goal._id] || ''}                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)}
+                                                value={managerWeightages[goal._id] || ''}                                                
+                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} // Update managerWeightage for this goal
                                                 min="1"
                                                 max={goal.weightage}
                                                 placeholder={`Max ${goal.weightage}%`}
@@ -544,35 +534,7 @@ useEffect(() => {
                             </div>
                         ))}
                 </div>
-                <div className="mt-6 bg-white p-4 w-3/12 rounded-lg shadow-md">
-                        <div className=" items-center justify-between">
-                            <div className="flex items-center space-x-2 mb-4">
-                                <Calculator className="w-6 h-6 text-cyan-800" />
-                                <span className="font-semibold text-gray-800">Total Weight</span>
-                            </div>
-                            <div className=' flex'>
-                                <button
-                                    className={`px-4 py-2 rounded-lg ${isWeightCalculationReady
-                                        ? 'bg-cyan-800 text-white hover:bg-cyan-700'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        }`}
-                                    onClick={calculateTotalWeight}
-                                    disabled={!isWeightCalculationReady}
-                                >
-                                    Calculate Total Weight
-                                </button>
-                                <div className="text-lg font-bold text-cyan-800 ml-4 mt-1">
-                                    {totalWeight.toFixed(2)}%
-                                </div>
-                            </div>
-
-                        </div>
-                        {employeeGoals.reduce((sum, goal) => sum + goal.weightage, 0) < totalWeight && (
-                            <div className="text-red-500 mt-2 text-sm">
-                                Total weight cannot exceed the sum of all goal weightages
-                            </div>
-                        )}
-                    </div>
+                
 
             </div>
             
@@ -583,7 +545,7 @@ useEffect(() => {
         )}
 
         {/* Action Buttons */}
-        <div className="mt-6 flex justify-end">
+        <div className="sticky mt-20 flex justify-end">
             <div className="mr-auto">
                 <button
                     className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
