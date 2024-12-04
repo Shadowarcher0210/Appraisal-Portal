@@ -84,6 +84,7 @@ const EvaluationView3 = () => {
   const handleContinue = () => {
     navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
   };
+  const handleSaveExit =  () => {}
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full">
@@ -149,7 +150,7 @@ const EvaluationView3 = () => {
         )}
       </div>
 
-      <div className="bg-white p-4  rounded-md shadow-md mx-2">
+      <div className="bg-white p-4  rounded-lg shadow-md mx-2">
         {/* <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3> */}
         <div className="space-y-4 ">
           <div>
@@ -179,7 +180,7 @@ const EvaluationView3 = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-36 sticky flex justify-end">
         <div className="mr-auto">
           <button
             className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"
@@ -188,6 +189,14 @@ const EvaluationView3 = () => {
             Back
           </button>
         </div>
+        <div className='mr-2'>
+            <button
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+              onClick={handleSaveExit}
+            >
+              Save & Exit
+            </button>
+          </div>
         <div>
           <button
             className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
