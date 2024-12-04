@@ -305,20 +305,26 @@ const EvaluationView = () => {
       <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
           <h2 className="text-xl font-semibold text-cyan-800 border-b mb-6  pb-2 flex items-center gap-2">
             Self Appraisal & Competencies
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
             <thead className="bg-gray-50">
-            <tr>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Areas of Self Assessment</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Requirement</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Response</th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">Notes</th>
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Attainment</th>
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">Manager Evaluation</th>
+            <tr className="bg-gray-50">
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Areas of Self Assessment</th>
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Requirement</th>
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Response</th>
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Notes</th>
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Attainment</th>
+            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Manager Evaluation</th>
                   
                 </tr>
               </thead>
@@ -329,16 +335,19 @@ const EvaluationView = () => {
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   return (
-                    <tr key={index} className="border-b border-gray-200 ">
-                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
-                      <td className="p-2 text-sm text-gray-700 w-86">
-                        <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">{item.answer}</span>
+                    <tr 
+                    key={index} 
+                    className="hover:bg-gray-50 transition-colors duration-200 group border-b"
+                  >                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
+              <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+                        <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
                         <td className="p-2 text-sm text-gray-700 w-48">
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
-                            <span className="text-gray-600 px-2 py-1 rounded">{previousAnswer}</span>
+                            <span className="bg-blue-50 text-cyan-700 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
+                            {previousAnswer}</span>
                           </div>
                         </td>
                       ) : (
@@ -356,7 +365,8 @@ const EvaluationView = () => {
                       )}
                       {weights ? (
                         <td className="p-2 text-sm text-center text-gray-700 w-48">
-                          <span className="text-gray-600">{weights} %</span>
+                                       <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                                       {weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>

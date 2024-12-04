@@ -485,7 +485,7 @@ const EvaluationView2 = () => {
                 {item.quality}
               </td>
               <td className="p-2">
-                <span className="bg-blue-50 text-cyan-800 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
+                <span className="bg-blue-50 text-cyan-800 px-2.5 py-2 rounded-md text-sm font-semibold">
                   {item.successMetric}
                 </span>
               </td>
