@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp } from 'lucide-react';
-import useAutosave from '../AutoSave';
 import { useLocation, useNavigate } from "react-router-dom";
-import { questionsAndAnswers } from '../employee/appraisalQuestions';
 
 const SelfAppraisalTab = ({
   handlePreviousForm,
