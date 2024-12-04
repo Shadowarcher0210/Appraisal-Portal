@@ -183,7 +183,7 @@ const editGoal = async (req, res) => {
 
 const updateManagerGoalWeight = async (req, res) => {
   try {
-    const { goals, overallScore } = req.body;
+    const { goals, overallGoalScore } = req.body;
     const { employeeId, startDate, endDate } = req.params;
 
     if (!Array.isArray(goals) || goals.length === 0) {
@@ -240,10 +240,8 @@ const updateManagerGoalWeight = async (req, res) => {
       goalData.managerWeightage = managerWeightage;
     }
 
-    // Update the overallScore in the Goals document
-    existingGoals.overallScore = overallScore;
+    existingGoals.overallGoalScore = overallGoalScore;
 
-    // Save the updated goals document
     await existingGoals.save();
 
     results.push({
@@ -254,7 +252,7 @@ const updateManagerGoalWeight = async (req, res) => {
         empName: existingGoals.empName,
         empType: existingGoals.empType,
         timePeriod: existingGoals.timePeriod,
-        overallScore: existingGoals.overallScore,
+        overallGoalScore: existingGoals.overallGoalScore,
         goals: existingGoals.goals.map((g) => ({
           goalId: g._id,
           category: g.category,
@@ -269,7 +267,6 @@ const updateManagerGoalWeight = async (req, res) => {
     });
 
     res.status(200).json({
-      message: 'Manager weightages and overall score updated successfully',
       data: results,
     });
   } catch (error) {

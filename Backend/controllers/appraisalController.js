@@ -596,13 +596,16 @@ const getApplicationNotification = async (req, res) => {
         const appraisalStartDate = new Date(appraisal.timePeriod[0]);
         const appraisalEndDate = new Date(appraisal.timePeriod[1]);
 
+        const startYear = appraisalStartDate.getFullYear();
+        const endYear = appraisalEndDate.getFullYear();
+
         const formattedStartDate = appraisalStartDate.toISOString().split('T')[0];
         const formattedEndDate = appraisalEndDate.toISOString().split('T')[0];
 
         if (appraisal.status === 'Submitted') {
             return res.status(200).json({
                 success: true,
-                message: `Your appraisal has been submitted successfully on ${currentDate} for the year ${appraisalStartDate.toISOString().split('T')[0]} to ${appraisalEndDate.toISOString().split('T')[0]}.`,
+                message: `Your appraisal for the year ${startYear}-${endYear} has been successfully submitted on ${currentDate}. `,
                 employeeId,
             })
         }
