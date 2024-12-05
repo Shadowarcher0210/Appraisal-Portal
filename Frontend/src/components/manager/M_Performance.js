@@ -77,7 +77,7 @@ const M_Performance = () => {
         if (status === "Submitted") {
             try {
                 const response = await axios.put(
-                    `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+                  `  http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
                     { status: "Under Review" }
                 );
 
@@ -154,7 +154,7 @@ const M_Performance = () => {
                                             {appraisal.empName}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                            {appraisal.timePeriod ? `${formatDate(appraisal.timePeriod[0])} to ${formatDate(appraisal.timePeriod[1])}` : 'N/A'}
+                                            {appraisal.timePeriod ?` ${formatDate(appraisal.timePeriod[0])} to ${formatDate(appraisal.timePeriod[1])} `: 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                                             {appraisal.managerName}
