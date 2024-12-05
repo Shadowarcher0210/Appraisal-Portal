@@ -5,10 +5,17 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const EvaluationView3 = () => {
   const [formData, setFormData] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [managerRating, setManagerRating] = useState(null);
+  const [additionalComments, setAdditionalComments] = useState(null);
+  const [managerName, setManagerName] = useState(''); 
+
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
   const { timePeriod } = location.state || {};
+
   const { employeeId } = useParams();
   const navigate = useNavigate();
 
@@ -21,7 +28,6 @@ const EvaluationView3 = () => {
     const { name, value } = e.target;
     
     if (name === 'overallRating') {
-      // Only allow numbers
       const numericValue = value.replace(/[^0-9]/g, '');
       if (numericValue === '' || (parseInt(numericValue) <= 100)) {
         setReviewData(prev => ({
@@ -37,37 +43,69 @@ const EvaluationView3 = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError('Employee ID or time period not found');
-        setLoading(false);
-        return;
-      }
 
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
 
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-        };
 
-        setFormData(initialFormData);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching appraisal details:', error);
-        setError('Error fetching appraisal details');
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchUserDetails = async () => {
+    if (!employeeId || !timePeriod) {
+      setError('Employee ID or time period not found');
+      setLoading(false);
+      return;
+    }
 
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
+    try {
+      const detailsResponse = await axios.get(
+        `http://localhost:3003/all/details/${employeeId}`
+      );
+      
+      const userData = detailsResponse.data.user || {};
+      setUserData(userData);
+      setManagerName(userData.managerName || '');
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      setError('Error fetching user details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (employeeId && timePeriod) {
+    fetchUserDetails();
+  }
+}, [employeeId, timePeriod]);
+
+useEffect(() => {
+  const fetchAppraisalEvaluation = async () => {
+    if (!userData || !employeeId || !timePeriod || !managerName) {
+      return; 
+    }
+
+    try {
+      const evaluationResponse = await axios.get(
+        `http://localhost:3003/appraisal/Evaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${userData.managerName}`
+      );
+
+      const evaluationData = evaluationResponse.data || {};
+      const initialFormData = {
+        empName: userData.empName || '',
+        designation: userData.designation || '',
+        managerName: userData.managerName || '',
+        timePeriod: userData.timePeriod || timePeriod,
+        evaluationDetails: evaluationData.data || '',
+      };
+
+      setFormData(initialFormData);
+      setManagerRating(evaluationData.data?.managerRating || ''); 
+      setAdditionalComments(evaluationData.data?.additionalComments || ''); 
+      console.log("Evaluation manager", initialFormData);
+    } catch (error) {
+      console.error('Error fetching appraisal evaluation:', error);
+    }
+  };
+
+  fetchAppraisalEvaluation();
+}, [userData, employeeId, timePeriod, managerName]); 
 
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
@@ -81,9 +119,31 @@ const EvaluationView3 = () => {
     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
   };
 
-  const handleContinue = () => {
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+ 
+
+  const handleContinue = async () => {
+    const { overallrating, additionalComments } = reviewData;
+   const managerName = userData.managerName
+  
+    try {
+      const response = await axios.put(
+        `http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
+        {
+          managerRating: overallrating, 
+          additionalComments,
+
+        }
+      );
+  
+      console.log('Evaluation submitted successfully:', response.data);
+      navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  
+    } catch (error) {
+      console.error('Error submitting evaluation:', error.response ? error.response.data : error.message);
+    }
   };
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full">
@@ -104,7 +164,7 @@ const EvaluationView3 = () => {
       </div>
 
       <div className="mb-6">
-        {formData && (
+        {userData && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
@@ -112,7 +172,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Employee Name</p>
-                <p className="font-medium text-gray-900">{formData.empName}</p>
+                <p className="font-medium text-gray-900">{userData.empName}</p>
               </div>
             </div>
 
@@ -122,7 +182,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Designation</p>
-                <p className="font-medium text-gray-900">{formData.designation}</p>
+                <p className="font-medium text-gray-900">{userData.designation}</p>
               </div>
             </div>
 
@@ -132,7 +192,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager Name</p>
-                <p className="font-medium text-gray-900">{formData.managerName}</p>
+                <p className="font-medium text-gray-900">{userData.managerName}</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
@@ -141,13 +201,14 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="font-medium text-gray-900">{managerRating}</p>
               </div>
             </div>
 
           </div>
         )}
       </div>
+      
 
       <div className="bg-white p-4  rounded-md shadow-md mx-2">
         {/* <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3> */}
@@ -157,7 +218,7 @@ const EvaluationView3 = () => {
             <input
               type="text"
               name="overallrating"
-              value={reviewData.overallRating}
+              value={managerRating}
               onChange={handleInputChange}
               className=" p-2 border border-gray-300  rounded-md  transition-all"
               placeholder="Enter your rating"
@@ -170,14 +231,14 @@ const EvaluationView3 = () => {
             <label className="block text-sm font-medium mb-4 text-gray-700">Additional Comments</label>
             <textarea
               name="additionalComments"
-              value={reviewData.additionalComments}
+              value={additionalComments}
               onChange={handleInputChange}
               className="w-full p-3 border border-gray-300 rounded-md transition-all h-24 resize-none"
               placeholder="Enter additional comments here..."
             />
           </div>
         </div>
-      </div>
+      </div> 
 
       <div className="mt-6 flex justify-end">
         <div className="mr-auto">

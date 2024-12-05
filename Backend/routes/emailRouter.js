@@ -1,11 +1,12 @@
 const express = require('express');
-const { sendConfirmationEmails, sendCompletedEmails, sendGoalsAddedEmails } = require('../controllers/mailController');
+const { sendConfirmationEmails, sendCompletedEmails, sendGoalsAddedEmails, sendFinalHREmails } = require('../controllers/mailController');
 
 
 const router = express.Router();
 
 router.post('/email',sendConfirmationEmails);
-router.post('/completedEmail',sendCompletedEmails);
+router.post('/managerSubmitEmail',sendCompletedEmails);
 router.post('/goalSubmitEmail',sendGoalsAddedEmails);
+router.post('/HRSubmitEmail',sendFinalHREmails);
 
 module.exports = router;

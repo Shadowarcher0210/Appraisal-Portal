@@ -123,9 +123,11 @@ const getGoalCategories = async (req, res) => {
 
         const employeeGoals = await Goals.find({ empType });
 
-        const employeeOtherTexts = employeeGoals
+        const employeeOtherTexts = employeeGoals.flatMap(goalDoc => 
+          goalDoc.goals
             .filter(goal => goal.category === 'Others' && goal.otherText)
-            .map(goal => goal.otherText);
+            .map(goal => goal.otherText)
+        );
 
         let categories = [...new Set([...predefinedCategories, ...employeeOtherTexts])];
 

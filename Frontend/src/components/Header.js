@@ -9,7 +9,7 @@ const Header = () => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeTab, setActiveTab] = useState(() => 'dashboard'|| localStorage.getItem('activeTab'));
   const [appraisalNotification, setAppraisalNotification] = useState(null);
-  const [GoalNotification, setGoalNotification] = useState(null);
+  const [goalNotification, setGoalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);
   const [notiStartsNotification, setNotiStartsNotification] = useState(null);
   const [managerNotification, setManagerNotification] = useState(null);
@@ -70,7 +70,7 @@ const Header = () => {
           appraisal: current?.appraisalNotification,
           submit: current?.submitNotification,
           notiStarts: current?.notiStartsNotification,
-          goals: current?.GoalNotification
+          goals: current?.goalNotification
         };
         return Object.entries(notifications).some(([key, value]) => 
           value && (!seen[key] || seen[key] !== value)
@@ -101,8 +101,8 @@ const Header = () => {
         if (currentNotifications.notiStartsNotification) {
           newSeen.notiStarts = currentNotifications.notiStartsNotification;
         }
-        if (currentNotifications.GoalNotification) {
-          newSeen.goals = currentNotifications.GoalNotification;
+        if (currentNotifications.goalNotification) {
+          newSeen.goals = currentNotifications.goalNotification;
         }
         break;
       
@@ -149,7 +149,7 @@ const Header = () => {
         appraisalNotification: '',
         submitNotification: '',
         notiStartsNotification: '',
-        GoalNotification: '',
+        goalNotification: '',
         hrNotification: []
       };
   
@@ -180,29 +180,57 @@ const Header = () => {
   
         case 'Employee':
           try {
+            console.log("Employee Type",empType)
             const managerName = localStorage.getItem('managerName');
-            const responses = await Promise.all([
-              axios.get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`),
-              axios.get(`http://localhost:3003/form/getNotiStarts/${employeeId}`),
-              axios.get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`)
-            ]);
+            const expiryResponse = await axios
+        .get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`)
+        .catch((error) => {
+            console.error("Error in expiry API:", error);
+            return null; // Return null to indicate failure
+        });
+
+    const notiStartsResponse = await axios
+        .get(`http://localhost:3003/form/getNotiStarts/${employeeId}`)
+        .catch((error) => {
+            console.error("Error in notiStarts API:", error);
+            return null; // Return null to indicate failure
+        });
+
+    const notifyGoalsResponse = await axios
+        .get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`)
+        .catch((error) => {
+            console.error("Error in notifyGoals API:", error);
+            return null; // Return null to indicate failure
+        });
+
+    // Process the responses only if they exist
+    if (expiryResponse && expiryResponse.data) {
+        setAppraisalNotification(expiryResponse.data?.data?.message);
+        currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
+    } else {
+        console.log("No data from expiry API");
+    }
+
+    console.log("Expiry Response processed");
   
-            const [expiryResponse, notiStartsResponse, notifyGoalsResponse] = responses;
-  
+           
+
             if (expiryResponse && expiryResponse.data) {
               setAppraisalNotification(expiryResponse.data?.data?.message);
               currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
             }
-  
+            console.log("Expiry Respone")
             if (notiStartsResponse && notiStartsResponse.data) {
               setNotiStartsNotification(notiStartsResponse.data?.message);
               currentNotifications.notiStartsNotification = notiStartsResponse.data?.message;
             }
-  
             if (notifyGoalsResponse && notifyGoalsResponse.data) {
-              setGoalNotification(notifyGoalsResponse.data?.notificationMessage);
-              currentNotifications.GoalNotification = notifyGoalsResponse.data?.notificationMessage;
+              setGoalNotification(notifyGoalsResponse.data.notificationMessage);
+              currentNotifications.goalNotification = notifyGoalsResponse.data?.notificationMessage;
             }
+
+            
+
           } catch (error) {
             console.error("Error fetching employee-specific notifications:", error);
           }
@@ -242,7 +270,7 @@ const Header = () => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, []);
+  },[]);
 
   useEffect(() => {
     if (showNotificationDropdown) {
@@ -251,12 +279,12 @@ const Header = () => {
         submitNotification,
         notiStartsNotification,
         managerNotification,
-        GoalNotification,
+        goalNotification,
         hrNotification
       };
       updateSeenNotifications(currentNotifications);
     }
-  }, [appraisalNotification, managerNotification, notiStartsNotification, submitNotification, showNotificationDropdown, hrNotification, GoalNotification]);
+  }, [appraisalNotification, managerNotification, notiStartsNotification, submitNotification, showNotificationDropdown, hrNotification, goalNotification]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -421,9 +449,9 @@ const Header = () => {
                     </div>
                   )}
 
-                  {GoalNotification && (
+                  {goalNotification && (
                     <div className="bg-blue-50 p-4 rounded-md mb-4 border-l-4 border-blue-500 text-blue-950 font-normal">
-                      <p className="text-md">{GoalNotification}</p>
+                      <p className="text-md">{goalNotification}</p>
                     </div>
                   )}
                 </>
@@ -465,7 +493,7 @@ const Header = () => {
                 </>
               )}
 
-              {!appraisalNotification && !submitNotification && !notiStartsNotification && !GoalNotification && !managerNotification && !hrNotification && (
+              {!appraisalNotification && !submitNotification && !notiStartsNotification && !goalNotification && !managerNotification && !hrNotification && (
                 <div className="text-center">
                   <p className="text-gray-600 mb-6">No notifications to display</p>
                   <div className="flex items-center justify-center h-full">

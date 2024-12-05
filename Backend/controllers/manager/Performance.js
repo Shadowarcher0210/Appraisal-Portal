@@ -1,5 +1,6 @@
 const AdditionalAreas = require("../../models/AdditionalAreas");
 const Appraisal = require("../../models/Appraisal");
+const ManagerEvaluation = require("../../models/ManagerEvalution");
 
 const getEmployeeAppraisals = async (req, res) => {
     const { managerName, startDate, endDate } = req.params;
@@ -134,5 +135,113 @@ const getAdditionalDetails = async (req,res)=>{
     }
 
 }
+const saveManagerEvaluation = async (req, res) => {
+    const { managerRating, additionalComments } = req.body;
+    const { employeeId, managerName, startDate, endDate } = req.params;
 
-module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails };
+    if (!employeeId || !managerName || !startDate || !endDate) {
+        return res.status(400).json({ error: 'Employee ID, managerName, startDate, and endDate are required.' });
+    }
+
+    try {
+        const timePeriodStart = new Date(startDate);
+        const timePeriodEnd = new Date(endDate);
+
+        if (isNaN(timePeriodStart.getTime()) || isNaN(timePeriodEnd.getTime())) {
+            return res.status(400).json({ error: 'Invalid startDate or endDate format. Please use YYYY-MM-DD format.' });
+        }
+
+        const timePeriod = [timePeriodStart, timePeriodEnd];
+
+        const newEvaluation = new ManagerEvaluation({
+            employeeId, 
+            managerName, 
+            timePeriod, 
+            managerRating, 
+            additionalComments, 
+        });
+
+    
+        await newEvaluation.save();
+
+        res.status(201).json({
+            message: "Overall rating saved successfully!",
+            data: {
+                employeeId,
+                managerName,
+                timePeriod,
+                managerRating,
+                additionalComments,
+            },
+        });
+    } catch (error) {
+        console.error('Error posting overall rating:', error);
+        return res.status(500).json({
+            error: 'Failed to post overall rating.',
+            details: error.message,
+        });
+    }
+};
+
+const getManagerEvaluation = async (req, res) => {
+    const { employeeId, startDate, endDate, managerName } = req.params;
+
+    if (!employeeId || !startDate || !endDate || !managerName) {
+        return res.status(400).json({ error: 'Employee ID, startDate, endDate, and managerName are required.' });
+    }
+
+    try {
+        const timePeriodStart = new Date(startDate);
+        const timePeriodEnd = new Date(endDate);
+
+        if (isNaN(timePeriodStart.getTime()) || isNaN(timePeriodEnd.getTime())) {
+            return res.status(400).json({ error: 'Invalid startDate or endDate format. Please use YYYY-MM-DD format.' });
+        }
+
+        const appraisals = await Appraisal.find({
+            managerName,
+            employeeId,
+            "timePeriod.0": { $lte: timePeriodEnd }, 
+            "timePeriod.1": { $gte: timePeriodStart }, 
+        });
+
+        if (appraisals.length === 0) {
+            return res.status(404).json({ error: 'No appraisals found for the specified time period and manager.' });
+        }
+
+        const timePeriod = appraisals[0].timePeriod;
+
+        const evaluation = await ManagerEvaluation.findOne({
+            employeeId,
+            managerName,
+            "timePeriod.0": { $lte: timePeriodEnd }, 
+            "timePeriod.1": { $gte: timePeriodStart }, 
+        });
+
+        if (!evaluation) {
+            return res.status(404).json({ error: 'No evaluation found for the specified employee and time period.' });
+        }
+
+        const { managerRating, additionalComments, _id } = evaluation;
+
+        res.status(200).json({
+            message: 'Manager evaluation retrieved successfully!',
+            data: {
+                managerRating,
+                additionalComments,
+                _id,
+                employeeId,
+                managerName,
+                timePeriod,
+            },
+        });
+    } catch (error) {
+        console.error('Error getting manager evaluation:', error);
+        return res.status(500).json({
+            error: 'Failed to get manager evaluation.',
+            details: error.message,
+        });
+    }
+};
+
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation };

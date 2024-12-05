@@ -201,7 +201,7 @@ const EvaluationView2 = () => {
         console.log('response', response);
         const data = await response.json();
         console.log("data", data);
-        navigate("/employee-dashboard");
+        
       } else {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
