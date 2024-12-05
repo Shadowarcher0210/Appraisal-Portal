@@ -20,30 +20,32 @@ const EvaluationView3 = () => {
   const navigate = useNavigate();
 
   const [reviewData, setReviewData] = useState({
-    overallRating: '',
+    managerRating: '',
     additionalComments: ''
   });
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    if (name === 'overallRating') {
+   
+    setReviewData(prev => ({
+      ...prev,
+      [name]: name === 'managerRating' 
+        ? value.replace(/[^0-9]/g, '')  
+        : value
+    }));
+  
+    
+    if (name === 'managerRating') {
       const numericValue = value.replace(/[^0-9]/g, '');
       if (numericValue === '' || (parseInt(numericValue) <= 100)) {
-        setReviewData(prev => ({
-          ...prev,
-          [name]: numericValue
-        }));
+        setManagerRating(numericValue);
       }
-    } else {
-      setReviewData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+    } else if (name === 'additionalComments') {
+      setAdditionalComments(value);
     }
   };
-
-
 
 
 useEffect(() => {
@@ -75,10 +77,11 @@ useEffect(() => {
   }
 }, [employeeId, timePeriod]);
 
+
 useEffect(() => {
   const fetchAppraisalEvaluation = async () => {
     if (!userData || !employeeId || !timePeriod || !managerName) {
-      return; 
+      return;
     }
 
     try {
@@ -87,25 +90,27 @@ useEffect(() => {
       );
 
       const evaluationData = evaluationResponse.data || {};
-      const initialFormData = {
-        empName: userData.empName || '',
-        designation: userData.designation || '',
-        managerName: userData.managerName || '',
-        timePeriod: userData.timePeriod || timePeriod,
-        evaluationDetails: evaluationData.data || '',
-      };
+      
+      const managerRatingValue = evaluationData.data?.managerRating || '';
+      const additionalCommentsValue = evaluationData.data?.additionalComments || '';
 
-      setFormData(initialFormData);
-      setManagerRating(evaluationData.data?.managerRating || ''); 
-      setAdditionalComments(evaluationData.data?.additionalComments || ''); 
-      console.log("Evaluation manager", initialFormData);
+      setReviewData({
+        managerRating: managerRatingValue,
+        additionalComments: additionalCommentsValue
+      });
+      
+      setManagerRating(managerRatingValue);
+      setAdditionalComments(additionalCommentsValue);
+
     } catch (error) {
       console.error('Error fetching appraisal evaluation:', error);
     }
   };
 
   fetchAppraisalEvaluation();
-}, [userData, employeeId, timePeriod, managerName]); 
+}, [userData, employeeId, timePeriod, managerName]);
+
+
 
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
@@ -120,18 +125,17 @@ useEffect(() => {
   };
 
  
-
-  const handleContinue = async () => {
-    const { overallrating, additionalComments } = reviewData;
-   const managerName = userData.managerName
   
+  const handleContinue = async () => {
+    const { managerRating, additionalComments } = reviewData;
+    const managerName = userData.managerName;
+   
     try {
       const response = await axios.put(
         `http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
         {
-          managerRating: overallrating, 
+          managerRating, 
           additionalComments,
-
         }
       );
   
@@ -143,6 +147,7 @@ useEffect(() => {
     }
   };
   
+
   const handleSaveExit = () =>{}  
 
   return (
@@ -211,13 +216,12 @@ useEffect(() => {
       
 
       <div className="bg-white p-4  rounded-md shadow-md mx-2">
-        {/* <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3> */}
         <div className="space-y-4 ">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-4">Manager Rating</label>
             <input
               type="text"
-              name="overallrating"
+              name="managerRating"
               value={managerRating}
               onChange={handleInputChange}
               className=" p-2 border border-gray-300  rounded-md  transition-all"
