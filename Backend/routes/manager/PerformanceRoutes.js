@@ -1,6 +1,5 @@
 const express = require('express');
 const { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails, saveManagerEvaluation, getManagerEvaluation} = require('../../controllers/manager/Performance');
-const { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails, saveManagerEvaluation, getManagerEvaluation} = require('../../controllers/manager/Performance');
 const router = express.Router()
 
 router.get('/allAppraisals/:managerName/:startDate/:endDate', getEmployeeAppraisals)
