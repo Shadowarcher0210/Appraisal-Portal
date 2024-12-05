@@ -39,6 +39,39 @@ const EvaluationView2 = () => {
     { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
     { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
   ];
+
+
+  useEffect(() => {
+    const fetchAdditionalAreas = async () => {
+      if (!employeeId || !timePeriod) {
+        setError("Employee ID or time period not found");
+        return;
+      }
+  
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+  
+        const areas = response.data.data.areas || [];
+        const fetchedAttainments = areas.map((area) => area.attainments || "");
+        setAttainments(fetchedAttainments);
+
+        const fetchedcomments = areas.map((area) => area.comments || "");
+        setComments(fetchedcomments);
+        console.log("Fetched attainments:", fetchedAttainments);
+        console.log("Fetched comments:", fetchedcomments);
+      } catch (error) {
+        console.error("Error fetching appraisal details:", error);
+        setError("Error fetching appraisal details");
+      }
+    };
+  
+    fetchAdditionalAreas();
+  }, [employeeId, timePeriod]);
+  
+
+  
   const AdditionalAreas = [
     {
       quality: "Setting Expectations",
@@ -293,16 +326,24 @@ const EvaluationView2 = () => {
         attainments: attainments[index],
         comments: comments[index]
       }));
-      
-      await axios.put(
-        `http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ payload })
-        }
+      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+        method: 'PUT',
+        headers: {
+          "content-Type": "application/json",
 
-      );
+        },
+        body: JSON.stringify({ payload }),
+
+      })
+      if (response.ok) {
+        console.log('response', response);
+        const data = await response.json();
+        console.log("data", data);
+        navigate("/employee-dashboard");
+      } else {
+        const errorData = await response.json();
+        console.log(`Error: ${errorData.error}`);
+      }
       console.log("PUT request successful.");
 
 
@@ -342,9 +383,13 @@ const EvaluationView2 = () => {
   };
   
   useEffect(() => {
-    const score = calculateOverallScore();
-    setOverallScore(score);
-  }, [attainments]); // Dependency on attainments
+    if (attainments.length < AdditionalAreas.length) {
+      setAttainments((prev) => [
+        ...prev,
+        ...Array(AdditionalAreas.length - prev.length).fill(""),
+      ]);
+    }
+  }, [attainments]);
   
 
   return (
