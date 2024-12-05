@@ -13,13 +13,65 @@ const EvaluationView2 = () => {
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [additionalAreaData, setadditionalAreaData] = useState(null);
+  const [additionalAreas, setadditionalAreas] = useState(null);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [attainments, setAttainments] = useState(Array(5).fill(''));
+  const [overallScore, setOverallScore] = useState(0);
   const [comments, setComments] = useState(Array(5).fill(''));
+  const questionsAndAnswers = [
+    { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
+    { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
+    { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
+    { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
+    { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
+    { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
+    { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
+    { question: 'Time Management', answer: 'I complete my tasks on time. ' },
+    { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
+    { question: 'Creativity', answer: 'I look for solutions outside the work.' },
+    { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
+    { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
+    { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
+    { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
+  ];
+
+
+  useEffect(() => {
+    const fetchAdditionalAreas = async () => {
+      if (!employeeId || !timePeriod) {
+        setError("Employee ID or time period not found");
+        return;
+      }
+  
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+  
+        const areas = response.data.data.areas || [];
+        const fetchedAttainments = areas.map((area) => area.attainments || "");
+        setAttainments(fetchedAttainments);
+
+        const fetchedcomments = areas.map((area) => area.comments || "");
+        setComments(fetchedcomments);
+        console.log("Fetched attainments:", fetchedAttainments);
+        console.log("Fetched comments:", fetchedcomments);
+      } catch (error) {
+        console.error("Error fetching appraisal details:", error);
+        setError("Error fetching appraisal details");
+      }
+    };
+  
+    fetchAdditionalAreas();
+  }, [employeeId, timePeriod]);
+  
+
+  
   const AdditionalAreas = [
     {
       quality: "Setting Expectations",
@@ -159,9 +211,54 @@ const EvaluationView2 = () => {
     newComments[index] = event.target.value;
     setComments(newComments);
   };
+
+  useEffect(() => {
+    const fetchAppraisalDetails = async () => {
+      if (!employeeId || !timePeriod) {
+        setError('Employee ID or time period not found');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+
+        // Initialize the form data with the structure you need
+        const initialFormData = {
+          empName: response.data[0]?.empName || '',
+          designation: response.data[0]?.designation || '',
+          managerName: response.data[0]?.managerName || '',
+          timePeriod: response.data[0]?.timePeriod || timePeriod,
+          status: response.data[0]?.status || '',
+          pageData: questionsAndAnswers.map((qa, index) => ({
+            questionId: (index + 1).toString(),
+            answer: response.data[0]?.pageData[index]?.answer || '',
+            notes: response.data[0]?.pageData[index]?.notes || '',
+            weights: response.data[0]?.pageData[index]?.weights || '',
+            managerEvaluation:
+              response.data[0]?.pageData[index]?.managerEvaluation || 0
+          }))
+        };
+
+        setFormData([initialFormData]);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching appraisal details:', error);
+        setError('Error fetching appraisal details');
+        setLoading(false);
+      }
+    };
+
+    fetchAppraisalDetails();
+  }, [employeeId, timePeriod]);
+
+
   useEffect(() => {
     fetchuserDetails();
   }, []);
+
 
   const fetchuserDetails = async () => {
     if (employeeId) {
@@ -206,13 +303,8 @@ const EvaluationView2 = () => {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
       }
-
-
-
     } catch (error) {
       console.error('Error updating status:', error);
-
-
     }
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
@@ -226,6 +318,7 @@ const EvaluationView2 = () => {
   const handleSaveExit = async () => {
 
     try {
+  
       const payload = AdditionalAreas.map((area, index) => ({
         quality: area.quality,
         successMetric: area.successMetric,
@@ -233,16 +326,24 @@ const EvaluationView2 = () => {
         attainments: attainments[index],
         comments: comments[index]
       }));
+      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+        method: 'PUT',
+        headers: {
+          "content-Type": "application/json",
 
-      await axios.put(
-        `http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ payload })
-        }
+        },
+        body: JSON.stringify({ payload }),
 
-      );
+      })
+      if (response.ok) {
+        console.log('response', response);
+        const data = await response.json();
+        console.log("data", data);
+        navigate("/employee-dashboard");
+      } else {
+        const errorData = await response.json();
+        console.log(`Error: ${errorData.error}`);
+      }
       console.log("PUT request successful.");
 
 
@@ -252,6 +353,45 @@ const EvaluationView2 = () => {
       setError("Error submitting evaluation");
     }
   };
+
+  // const calculateOverallScore = () => {
+  //   if (!formData || !formData[0] || !formData[0].pageData) return 0;
+  
+  //   const totalQuestions = formData[0].pageData.length;
+  //   const totalPercentage = totalQuestions * 100;
+  
+  //   const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
+  //     return sum + (item.managerEvaluation || 0); 
+  //   }, 0);
+  
+  //   const overallScore = (totalManagerEvaluation / totalPercentage) * 25; 
+  //   return overallScore.toFixed(2); 
+  // };
+  
+  const calculateOverallScore = () => {
+    if (!attainments || attainments.length === 0) return 0;
+  
+    const totalQuestions = attainments.length;
+    const totalPercentage = totalQuestions * 100;
+  
+    const totalManagerEvaluation = attainments.reduce((sum, attainment) => {
+      return sum + (parseFloat(attainment) || 0);
+    }, 0);
+  
+    const score = (totalManagerEvaluation / totalPercentage) * 25;
+    return parseFloat(score.toFixed(2)); // Ensure score is a number
+  };
+  
+  useEffect(() => {
+    if (attainments.length < AdditionalAreas.length) {
+      setAttainments((prev) => [
+        ...prev,
+        ...Array(AdditionalAreas.length - prev.length).fill(""),
+      ]);
+    }
+  }, [attainments]);
+  
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
       <div className="mb-2">
@@ -329,7 +469,7 @@ const EvaluationView2 = () => {
                 <p className="text-sm text-gray-400 mb-1">
                   Manager's Evaluation
                 </p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="font-medium text-gray-900">{calculateOverallScore()}</p>
               </div>
             </div>
           </div>
@@ -339,90 +479,101 @@ const EvaluationView2 = () => {
       </div>
 
       {/* Main Content - Vertical Layout */}
-      <div className="space-y-4 mx-2 rounded-lg shadow-sm">
+      <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <Award size={20} className="text-blue-600" />
-            Additional Areas Of Assessment
-          </h2>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6">
+        <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
+    Additional Areas of Assessment
+  </h2>
+  
+  <div className="overflow-x-auto">
+    <table className="w-full border-collapse">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Quality
+          </th>
+          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Success & Metric
+          </th>
+          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Weightage
+          </th>
+          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Attainment
+          </th>
+          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+            Comments
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {AdditionalAreas.map((item, index) => {
+          const previousAnswer = formData
+            ? formData[0].pageData[index]?.successMetric
+            : null;
+          const notes = formData
+            ? formData[0].pageData[index]?.notes
+            : null;
+          const weights = formData
+            ? formData[0].pageData[index]?.weights
+            : null;
 
+          return (
+            <tr 
+              key={index} 
+              className="hover:bg-gray-50 transition-colors duration-200 group border-b"
+            >
+              <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+                {item.quality}
+              </td>
+              <td className="p-2">
+                <span className="bg-blue-50 text-cyan-800 px-2.5 py-2 rounded-md text-sm font-semibold">
+                  {item.successMetric}
+                </span>
+              </td>
+              <td className="p-2 text-center">
+                <span className="bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                  {item.weightage}%
+                </span>
+              </td>
+              <td className="p-2 text-center ">
+                <input
+                  className="w-24 p-2 text-sm border border-gray-300 rounded-md  focus:border-transparent transition-all duration-300 text-center"
+                  value={attainments[index]}
+                  onChange={(e) => handleAttainmentChange(index, e)}
+                  placeholder="0%"
+                />
+              </td>
+              <td className="p-2">
+                <textarea
+                  className="w-full p-1 mt-1 text-sm border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                  value={comments[index]}
+                  onChange={(e) => handleCommentChange(index, e)}
+                  rows="2"
+                  placeholder="Add your insights."
+                />
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-                    Quality
-                  </th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-                    Success & Metric
-                  </th>
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
-                    weightage
-                  </th>
-                  <th className="p-2 border-b border-gray-200 text-center text-sm font-medium text-gray-800">
-                    Attainment
-                  </th>
-                  <th className="p-2 border-b border-gray-200 text-left text-sm font-medium text-gray-800">
-                    Comments
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {AdditionalAreas.map((item, index) => {
-                  const previousAnswer = formData
-                    ? formData[0].pageData[index]?.successMetric
-                    : null;
-                  const notes = formData
-                    ? formData[0].pageData[index]?.notes
-                    : null;
-                  const weights = formData
-                    ? formData[0].pageData[index]?.weights
-                    : null;
+  {/* Optional Score Display */}
+  {/* <div className="mt-4 bg-gray-50 rounded-lg p-3 flex justify-between items-center">
+    <span className="text-sm text-gray-600 font-medium">
+      Total Weighted Score
+    </span>
+    <span className="text-lg font-bold text-blue-600">
+      {calculateOverallScore()} %
+    </span>
+  </div> */}
+</div>
 
-                  return (
-                    <tr key={index} className="border-b border-gray-200 ">
-                      <td className="p-2 text-sm font-medium text-gray-500 ">
-                        {item.quality}
-                      </td>
-                      <td className="p-2 text-sm text-gray-700 w-86">
-                        <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
-                          {item.successMetric}
-                        </span>
-                      </td>
-                      <td className="p-2 text-sm text-gray-700 w-86">
-                        <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded">
-                          {item.weightage}%
-                        </span>
-                      </td>
-                      <td className="p-2 text-sm text-gray-600 text-center">
-                        <input
-                          className="w-20 p-1 border border-gray-300 rounded"
-                          value={attainments[index]}
-                          onChange={(e) => handleAttainmentChange(index, e)}
-                        />
-                      </td>
-
-                      <td className="border-l border-r">
-                        <textarea
-                          className="w-full p-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-md"
-                          value={comments[index]}
-                          onChange={(e) => handleCommentChange(index, e)}
-                          rows="2"
-                          placeholder="Add your comments..."
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="mt-6 flex justify-end">
+        <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
               className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"

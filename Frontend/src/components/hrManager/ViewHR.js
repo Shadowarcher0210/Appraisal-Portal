@@ -14,7 +14,6 @@ const ViewHR = () => {
   const nextYear = currentYear + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
-  // Static questions and answers
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
     { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },

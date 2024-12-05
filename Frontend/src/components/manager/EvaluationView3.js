@@ -240,7 +240,7 @@ useEffect(() => {
         </div>
       </div> 
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-36 sticky flex justify-end">
         <div className="mr-auto">
           <button
             className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"
@@ -249,6 +249,14 @@ useEffect(() => {
             Back
           </button>
         </div>
+        <div className='mr-2'>
+            <button
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+              onClick={handleSaveExit}
+            >
+              Save & Exit
+            </button>
+          </div>
         <div>
           <button
             className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
