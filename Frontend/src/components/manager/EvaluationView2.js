@@ -225,7 +225,6 @@ const EvaluationView2 = () => {
           ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
-        // Initialize the form data with the structure you need
         const initialFormData = {
           empName: response.data[0]?.empName || '',
           designation: response.data[0]?.designation || '',

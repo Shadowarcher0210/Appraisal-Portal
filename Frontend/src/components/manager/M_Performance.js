@@ -65,12 +65,6 @@ const M_Performance = () => {
         }
     }, [selectedYear,managerName]);
 
-    // const handleViewClick = (appraisal) => {
-    //     const { employeeId, timePeriod } = appraisal;
-    //     console.log('Employee Id :',employeeId)
-    //     navigate(/evaluationView/${employeeId}, { state: { timePeriod } });
-    // };
-
     const handleViewClick = async (appraisal) => {
         const { employeeId, timePeriod, status } = appraisal;
 
@@ -96,7 +90,6 @@ const M_Performance = () => {
            
             navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Under HR Review") {
-            // Navigate to employee view if status is "Completed"
             navigate(`/empview/${employeeId}`, { state: { timePeriod } });
         }
     };
