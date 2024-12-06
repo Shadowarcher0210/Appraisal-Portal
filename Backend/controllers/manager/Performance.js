@@ -154,35 +154,49 @@ const saveManagerEvaluation = async (req, res) => {
 
         const timePeriod = [timePeriodStart, timePeriodEnd];
 
-        const newEvaluation = new ManagerEvaluation({
-            employeeId, 
-            managerName, 
-            timePeriod, 
-            managerRating, 
-            additionalComments, 
+        // Check if an evaluation already exists
+        const existingEvaluation = await ManagerEvaluation.findOne({
+            employeeId,
+            managerName,
+            timePeriod,
         });
 
-    
+        if (existingEvaluation) {
+            // Update existing evaluation
+            existingEvaluation.managerRating = managerRating;
+            existingEvaluation.additionalComments = additionalComments;
+            await existingEvaluation.save();
+
+            return res.status(200).json({
+                message: "Overall rating updated successfully!",
+                data: existingEvaluation,
+            });
+        }
+
+        // Create new evaluation if not found
+        const newEvaluation = new ManagerEvaluation({
+            employeeId,
+            managerName,
+            timePeriod,
+            managerRating,
+            additionalComments,
+        });
+
         await newEvaluation.save();
 
         res.status(201).json({
             message: "Overall rating saved successfully!",
-            data: {
-                employeeId,
-                managerName,
-                timePeriod,
-                managerRating,
-                additionalComments,
-            },
+            data: newEvaluation,
         });
     } catch (error) {
-        console.error('Error posting overall rating:', error);
+        console.error('Error saving or updating overall rating:', error);
         return res.status(500).json({
-            error: 'Failed to post overall rating.',
+            error: 'Failed to save or update overall rating.',
             details: error.message,
         });
     }
 };
+
 
 const getManagerEvaluation = async (req, res) => {
     const { employeeId, startDate, endDate, managerName } = req.params;
