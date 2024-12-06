@@ -126,17 +126,21 @@ const EvaluationView1 = () => {
         setLoading(false);
         return;
       }
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || '',
-        };
+     
+        try {
+            const response = await axios.get(
+              `http://localhost:3003/all/details/${employeeId}`
+            );
+            const initialFormData = {
+                empName: response.data.user.empName || '',
+                designation: response.data.user.designation || '',
+                managerName: response.data.user.managerName || '',
+                timePeriod: response.data.user.timePeriod || timePeriod,
+                status: response.data[0]?.status || '',
+        
+              };
+      
+        
         console.log("res check for eval", initialFormData);
         setFormData([initialFormData]);
         setLoading(false);
@@ -347,7 +351,7 @@ const handleSaveExit= async ()=>{
           setError(failedResults.map((result) => result.message).join(", "));
         } else {
           setSuccessMessage("Manager weightages updated successfully!");
-        }
+        }  
       }
     
     } catch (error) {

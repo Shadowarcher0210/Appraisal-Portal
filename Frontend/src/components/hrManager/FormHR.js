@@ -53,7 +53,6 @@ const FormHR = () => {
 
       } else {
         const errorData = await response.json();
-        console.log(`Error: ${errorData.error}`);
 
       }
     }

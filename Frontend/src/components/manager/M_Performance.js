@@ -65,19 +65,13 @@ const M_Performance = () => {
         }
     }, [selectedYear,managerName]);
 
-    // const handleViewClick = (appraisal) => {
-    //     const { employeeId, timePeriod } = appraisal;
-    //     console.log('Employee Id :',employeeId)
-    //     navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
-    // };
-
     const handleViewClick = async (appraisal) => {
         const { employeeId, timePeriod, status } = appraisal;
 
         if (status === "Submitted") {
             try {
                 const response = await axios.put(
-                    `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+                  `  http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
                     { status: "Under Review" }
                 );
 
@@ -96,7 +90,6 @@ const M_Performance = () => {
            
             navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Under HR Review") {
-            // Navigate to employee view if status is "Completed"
             navigate(`/empview/${employeeId}`, { state: { timePeriod } });
         }
     };
@@ -154,7 +147,7 @@ const M_Performance = () => {
                                             {appraisal.empName}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                            {appraisal.timePeriod ? `${formatDate(appraisal.timePeriod[0])} to ${formatDate(appraisal.timePeriod[1])}` : 'N/A'}
+                                            {appraisal.timePeriod ?` ${formatDate(appraisal.timePeriod[0])} to ${formatDate(appraisal.timePeriod[1])} `: 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                                             {appraisal.managerName}
