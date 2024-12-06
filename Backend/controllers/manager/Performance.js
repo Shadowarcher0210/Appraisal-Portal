@@ -1,6 +1,7 @@
 const AdditionalAreas = require("../../models/AdditionalAreas");
 const Appraisal = require("../../models/Appraisal");
-const ManagerEvaluation = require("../../models/ManagerEvalution");
+const Goals = require("../../models/Goals");
+const ManagerEvaluation = require("../../models/ManagerEvaluation");
 
 const getEmployeeAppraisals = async (req, res) => {
     const { managerName, startDate, endDate } = req.params;
@@ -263,4 +264,97 @@ const getManagerEvaluation = async (req, res) => {
     }
 };
 
-module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation };
+const getOverallEvaluation = async (req, res) => {
+    const { employeeId, startDate, endDate } = req.params;
+
+    // Validate input
+    if (!employeeId || !startDate || !endDate) {
+        return res.status(400).json({ message: 'Employee ID, startDate, and endDate are required' });
+    }
+
+    try {
+        // Fetch self-assessment (only 'overallScore')
+        const selfAssesment = await Appraisal.findOne(
+            {
+                employeeId,
+                $expr: {
+                    $and: [
+                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+                    ]
+                }
+            },
+            { overallScore: 1, _id: 0 }
+        );
+
+        // Fetch other evaluations (only required fields)
+        const goalsOverAll = await Goals.findOne(
+            {
+                employeeId,
+                $expr: {
+                    $and: [
+                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+                    ]
+                }
+            },
+            { overallGoalScore: 1 }
+        );
+
+        const additionalAreasOverall = await AdditionalAreas.findOne(
+            {
+                employeeId,
+                $expr: {
+                    $and: [
+                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+                    ]
+                }
+            },
+            { overallScore: 1 }
+        );
+
+        const managerRating = await ManagerEvaluation.findOne(
+            {
+                employeeId,
+                $expr: {
+                    $and: [
+                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+                    ]
+                }
+            },
+            { managerRating: 1, _id: 0 }
+        );
+
+        const managerEvaluations = {};
+
+        if (selfAssesment && selfAssesment.overallScore) {
+            managerEvaluations.selfAssesment = selfAssesment.overallScore;
+        }
+
+        if (goalsOverAll && goalsOverAll.overallGoalScore !== undefined) {
+            managerEvaluations.goalsOverAll = goalsOverAll.overallGoalScore;
+        }
+
+        if (additionalAreasOverall && additionalAreasOverall.overallScore !== undefined) {
+            managerEvaluations.additionalAreasOverall = additionalAreasOverall.overallScore;
+        }
+
+        if (managerRating && managerRating.managerRating !== undefined) {
+            managerEvaluations.managerRating = managerRating.managerRating;
+        }
+
+        if (Object.keys(managerEvaluations).length === 0) {
+            return res.status(404).json({ message: 'No evaluations found for the given employee and time period' });
+        }
+
+        return res.status(200).json(managerEvaluations);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while fetching evaluations' });
+    }
+};
+
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation };
