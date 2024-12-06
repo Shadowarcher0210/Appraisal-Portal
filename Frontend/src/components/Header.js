@@ -28,8 +28,15 @@ const Header = () => {
       '/hr-performance': 'performance'
     };
 
-    return pathToTabMap[currentPath] || savedTab || 'dashboard';
+    return pathToTabMap[currentPath]  || savedTab || 'dashboard';
   });
+
+  useEffect(() => {
+    // This ensures that the current path is preserved on refresh
+    localStorage.setItem('currentPath', location.pathname);
+    localStorage.setItem('activeTab', activeTab);
+  }, [location.pathname, activeTab]);
+
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [goalNotification, setGoalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);

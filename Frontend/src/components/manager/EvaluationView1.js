@@ -18,6 +18,9 @@ const EvaluationView1 = () => {
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const startDate = new Date(`${currentYear -1}-04-01`).toLocaleDateString('en-CA');
+  const endDate = new Date(`${currentYear}-03-31`).toLocaleDateString('en-CA');
+
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
     "Leadership": <Users className="w-5 h-5" />,
@@ -188,9 +191,10 @@ const EvaluationView1 = () => {
 
   useEffect(() => {
   const fetchEmployeeGoals = async () => {
+ 
     try {
       const response = await axios.get(
-        `http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        `http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`
       );
       const goals = response.data.data[0].goals; 
       setEmployeeGoals(goals || []);   
@@ -283,7 +287,7 @@ const handleSaveExit= async ()=>{
 
   try {
     const response = await axios.put(
-      `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
+      `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}?isExit=true`,
       payload
     );
 
