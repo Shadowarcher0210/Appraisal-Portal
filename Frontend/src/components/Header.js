@@ -1,13 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import logo from '../assets/logo.png';
 import nothing from '../assets/nothing.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const Header = () => {
+  const location = useLocation();
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => 'dashboard'|| localStorage.getItem('activeTab'));
+  // const [activeTab, setActiveTab] = useState(() => 'dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    // First check localStorage for the saved tab
+    const savedTab = localStorage.getItem('activeTab');
+    // Then check the current path to validate/update the tab
+    const currentPath = location.pathname;
+
+    // Map paths to tabs for different employee types
+    const pathToTabMap = {
+      '/employee-dashboard': 'dashboard',
+      '/employee-performance': 'performance',
+      '/manager-dashboard': 'dashboard',
+      '/manager-my-performance': 'myPerformance',
+      '/manager-performance': 'performance',
+      '/manager-Goals': 'goals',
+      '/hr-dashboard': 'dashboard',
+      '/hr-myperformance': 'myPerformance',
+      '/hr-performance': 'performance'
+    };
+
+    return pathToTabMap[currentPath]  || savedTab || 'dashboard';
+  });
+
+  useEffect(() => {
+    // This ensures that the current path is preserved on refresh
+    localStorage.setItem('currentPath', location.pathname);
+    localStorage.setItem('activeTab', activeTab);
+  }, [location.pathname, activeTab]);
+
   const [appraisalNotification, setAppraisalNotification] = useState(null);
   const [goalNotification, setGoalNotification] = useState(null);
   const [submitNotification, setSubmitNotification] = useState(null);
@@ -52,9 +81,17 @@ const Header = () => {
   const handleTabClick = (tabName, path) => {
     setActiveTab(tabName);
     localStorage.setItem('activeTab', tabName);
+    localStorage.setItem('currentPath', path);
     navigate(path);
   };
  
+  useEffect(() => {
+    // Check if there's a saved path in localStorage
+    const savedPath = localStorage.getItem('currentPath');
+    if (savedPath && savedPath !== location.pathname) {
+      navigate(savedPath);
+    }
+  }, []);
   
 
   const compareNotifications = (current, seen) => {
