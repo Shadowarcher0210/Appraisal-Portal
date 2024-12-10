@@ -23,10 +23,14 @@ managerRating :{
     type: Number,
     required :[true,'managerRating is Required']
 },
+convertedRating :{
+    type: Number,
+    required :[true,'overallRating is Required']
+},
 additionalComments : {
     type : String,
-    required :[true,'managercomments is Required']
-
+    // required :[true,'managercomments is Required']
+    default: null,
 }
 
 })

@@ -14,12 +14,12 @@ const EvaluationView3 = () => {
   const [convertedRating, setConvertedRating] = useState('-');
 
 
-  const [reviewData, setReviewData] = useState({ overallRating: '', additionalComments: ''});
+  const [reviewData, setReviewData] = useState({ managerRating: '', additionalComments: ''});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    if (name === 'overallRating') {
+    if (name === 'managerRating') {
       const numericValue = value.replace(/[^0-9]/g, '');
       if (numericValue === '' || (parseInt(numericValue) <= 100)) {
         setReviewData(prev => ({
@@ -51,14 +51,26 @@ const EvaluationView3 = () => {
           `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
+        const evaluationResponse = await axios.get(
+          `http://localhost:3003/appraisal/Evaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${response.data[0]?.managerName}`
+        );
+
         const initialFormData = {
           empName: response.data[0]?.empName || '',
           designation: response.data[0]?.designation || '',
           managerName: response.data[0]?.managerName || '',
           timePeriod: response.data[0]?.timePeriod || timePeriod,
+          managerRating: evaluationResponse.data.data.managerRating || '',
+        convertedRating: evaluationResponse.data.data.convertedRating || '-',
+        additionalComments: evaluationResponse.data.data.additionalComments || '',
         };
 
         setFormData(initialFormData);
+        setReviewData({
+          managerRating: evaluationResponse.data.data.managerRating || '',
+          additionalComments: evaluationResponse.data.data.additionalComments || '',
+        });
+        setConvertedRating(evaluationResponse.data.data.convertedRating || '-');
         setLoading(false);
       } catch (error) {
         console.error('Error fetching appraisal details:', error);
@@ -82,8 +94,26 @@ const EvaluationView3 = () => {
     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
   };
 
-  const handleContinue = () => {
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  const handleContinue = async () => {
+    const { managerRating, additionalComments } = reviewData;
+    const managerName = formData.managerName;
+   
+    try {
+      const response = await axios.put(
+       ` http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
+        {
+          managerRating, 
+          convertedRating,
+          additionalComments,
+        }
+      );
+  
+      console.log('Evaluation submitted successfully:', response.data);
+      navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  
+    } catch (error) {
+      console.error('Error submitting evaluation:', error.response ? error.response.data : error.message);
+    }
   };
 
   return (
@@ -142,7 +172,6 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                {/* <p className="font-medium text-gray-900">-</p> */}
                 <p className="font-medium text-gray-900">{convertedRating !== '-' ? `${convertedRating}` : '-'}</p>
               </div>
             </div>
@@ -158,8 +187,8 @@ const EvaluationView3 = () => {
             <label className="block text-sm font-semibold text-gray-700 mb-4">Manager Rating</label>
             <input
               type="text"
-              name="overallRating"
-              value={reviewData.overallRating}
+              name="managerRating"
+              value={reviewData.managerRating}
               onChange={handleInputChange}
               className=" p-2 border border-gray-300  rounded-md  transition-all"
               placeholder="Enter your rating"

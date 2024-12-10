@@ -141,8 +141,9 @@ const getAdditionalDetails = async (req,res)=>{
     }
 
 }
+
 const saveManagerEvaluation = async (req, res) => {
-    const { managerRating, additionalComments } = req.body;
+    const { managerRating, convertedRating, additionalComments } = req.body;
     const { employeeId, managerName, startDate, endDate } = req.params;
 
     if (!employeeId || !managerName || !startDate || !endDate) {
@@ -169,11 +170,12 @@ const saveManagerEvaluation = async (req, res) => {
         if (existingEvaluation) {
             // Update existing evaluation
             existingEvaluation.managerRating = managerRating;
+            existingEvaluation.convertedRating = convertedRating;
             existingEvaluation.additionalComments = additionalComments;
             await existingEvaluation.save();
 
             return res.status(200).json({
-                message: "Overall rating updated successfully!",
+                message: "Converted rating updated successfully!",
                 data: existingEvaluation,
             });
         }
@@ -184,19 +186,20 @@ const saveManagerEvaluation = async (req, res) => {
             managerName,
             timePeriod,
             managerRating,
+            convertedRating,
             additionalComments,
         });
 
         await newEvaluation.save();
 
         res.status(201).json({
-            message: "Overall rating saved successfully!",
+            message: "Converted rating saved successfully!",
             data: newEvaluation,
         });
     } catch (error) {
-        console.error('Error saving or updating overall rating:', error);
+        console.error('Error saving or updating Converted rating:', error);
         return res.status(500).json({
-            error: 'Failed to save or update overall rating.',
+            error: 'Failed to save or update Converted rating.',
             details: error.message,
         });
     }
@@ -242,12 +245,13 @@ const getManagerEvaluation = async (req, res) => {
             return res.status(404).json({ error: 'No evaluation found for the specified employee and time period.' });
         }
 
-        const { managerRating, additionalComments, _id } = evaluation;
+        const { managerRating, convertedRating, additionalComments, _id } = evaluation;
 
         res.status(200).json({
             message: 'Manager evaluation retrieved successfully!',
             data: {
                 managerRating,
+                convertedRating,
                 additionalComments,
                 _id,
                 employeeId,
