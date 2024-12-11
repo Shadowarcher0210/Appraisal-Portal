@@ -57,6 +57,12 @@ const EvaluationSummary = () => {
     },
     { 
       id: 4, 
+      category: 'Manager Rating', 
+      weightage: '30%', 
+      attainment: 'N/A' 
+    },
+    { 
+      id: 4, 
       category: 'Overall Weightage', 
       weightage: '100%', 
       attainment: 'N/A' 

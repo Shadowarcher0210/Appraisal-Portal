@@ -36,7 +36,7 @@ const getEmployeeAppraisals = async (req, res) => {
 
 const saveAdditionalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
-    const { payload } = req.body;
+    const { payload, overallScore} = req.body;
 
     if (!employeeId) {
         return res.status(400).json({ error: 'Employee ID is required.' });
@@ -47,7 +47,6 @@ const saveAdditionalDetails = async (req, res) => {
         new Date(endDate).toISOString().split('T')[0],
     ];
 
-    // Check if startDate is before endDate
     if (timePeriod[0] > timePeriod[1]) {
         return res.status(400).json({ error: 'Start date cannot be later than end date.' });
     }
@@ -58,27 +57,32 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 
+    if (typeof overallScore !== 'number') {
+        return res.status(400).json({
+            error: 'Overall score is required and must be a number.',
+        });
+    }
+
     try {
-        // Check if a record for the given employeeId and timePeriod already exists
         const existingRecord = await AdditionalAreas.findOne({
             employeeId,
             timePeriod, 
         });
 
         if (existingRecord) {
-            // If the record exists, update it by replacing the areas array with the new answers
             existingRecord.areas = payload;
+            existingRecord.overallScore = overallScore;
             await existingRecord.save();
             return res.status(200).json({
                 message: 'Additional details updated successfully!',
                 data: existingRecord,
             });
         } else {
-            // If no record exists, create a new one
             const newAdditional = new AdditionalAreas({
                 employeeId,
                 timePeriod,
-                areas: payload,  // Store all the quality answers in one array
+                areas: payload, 
+                overallScore,
             });
             await newAdditional.save();
             return res.status(201).json({
@@ -94,6 +98,7 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 };
+
 const getAdditionalDetails = async (req,res)=>{
     const { employeeId, startDate, endDate } = req.params;
     if (!employeeId || !startDate || !endDate) {
@@ -136,8 +141,9 @@ const getAdditionalDetails = async (req,res)=>{
     }
 
 }
+
 const saveManagerEvaluation = async (req, res) => {
-    const { managerRating, additionalComments } = req.body;
+    const { managerRating, convertedRating, additionalComments } = req.body;
     const { employeeId, managerName, startDate, endDate } = req.params;
 
     if (!employeeId || !managerName || !startDate || !endDate) {
@@ -164,11 +170,12 @@ const saveManagerEvaluation = async (req, res) => {
         if (existingEvaluation) {
             // Update existing evaluation
             existingEvaluation.managerRating = managerRating;
+            existingEvaluation.convertedRating = convertedRating;
             existingEvaluation.additionalComments = additionalComments;
             await existingEvaluation.save();
 
             return res.status(200).json({
-                message: "Overall rating updated successfully!",
+                message: "Converted rating updated successfully!",
                 data: existingEvaluation,
             });
         }
@@ -179,19 +186,20 @@ const saveManagerEvaluation = async (req, res) => {
             managerName,
             timePeriod,
             managerRating,
+            convertedRating,
             additionalComments,
         });
 
         await newEvaluation.save();
 
         res.status(201).json({
-            message: "Overall rating saved successfully!",
+            message: "Converted rating saved successfully!",
             data: newEvaluation,
         });
     } catch (error) {
-        console.error('Error saving or updating overall rating:', error);
+        console.error('Error saving or updating Converted rating:', error);
         return res.status(500).json({
-            error: 'Failed to save or update overall rating.',
+            error: 'Failed to save or update Converted rating.',
             details: error.message,
         });
     }
@@ -237,12 +245,13 @@ const getManagerEvaluation = async (req, res) => {
             return res.status(404).json({ error: 'No evaluation found for the specified employee and time period.' });
         }
 
-        const { managerRating, additionalComments, _id } = evaluation;
+        const { managerRating, convertedRating, additionalComments, _id } = evaluation;
 
         res.status(200).json({
             message: 'Manager evaluation retrieved successfully!',
             data: {
                 managerRating,
+                convertedRating,
                 additionalComments,
                 _id,
                 employeeId,
@@ -259,72 +268,149 @@ const getManagerEvaluation = async (req, res) => {
     }
 };
 
+// const getOverallEvaluation = async (req, res) => {
+//     const { employeeId, startDate, endDate } = req.params;
+
+//     // Validate input
+//     if (!employeeId || !startDate || !endDate) {
+//         return res.status(400).json({ message: 'Employee ID, startDate, and endDate are required' });
+//     }
+
+//     try {
+//         // Fetch self-assessment (only 'overallScore')
+//         const selfAssesment = await Appraisal.findOne(
+//             {
+//                 employeeId,
+//                 $expr: {
+//                     $and: [
+//                         { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+//                         { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+//                     ]
+//                 }
+//             },
+//             { overallScore: 1, _id: 0 }
+//         );
+
+//         // Fetch other evaluations (only required fields)
+//         const goalsOverAll = await Goals.findOne(
+//             {
+//                 employeeId,
+//                 $expr: {
+//                     $and: [
+//                         { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+//                         { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+//                     ]
+//                 }
+//             },
+//             { overallGoalScore: 1 }
+//         );
+
+//         const additionalAreasOverall = await AdditionalAreas.findOne(
+//             {
+//                 employeeId,
+//                 $expr: {
+//                     $and: [
+//                         { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+//                         { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+//                     ]
+//                 }
+//             },
+//             { overallScore: 1 }
+//         );
+
+//         const managerRating = await ManagerEvaluation.findOne(
+//             {
+//                 employeeId,
+//                 $expr: {
+//                     $and: [
+//                         { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
+//                         { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
+//                     ]
+//                 }
+//             },
+//             { convertedRating: 1, _id: 0 }
+//         );
+
+//         const managerEvaluations = {};
+
+//         if (selfAssesment && selfAssesment.overallScore) {
+//             managerEvaluations.selfAssesment = selfAssesment.overallScore;
+//         }
+
+//         if (goalsOverAll && goalsOverAll.overallGoalScore !== undefined) {
+//             managerEvaluations.goalsOverAll = goalsOverAll.overallGoalScore;
+//         }
+
+//         if (additionalAreasOverall && additionalAreasOverall.overallScore !== undefined) {
+//             managerEvaluations.additionalAreasOverall = additionalAreasOverall.overallScore;
+//         }
+
+//         if (managerRating && managerRating.convertedRating !== undefined) {
+//             managerEvaluations.managerRating = managerRating.convertedRating;
+//         }
+
+//         if (Object.keys(managerEvaluations).length === 0) {
+//             return res.status(404).json({ message: 'No evaluations found for the given employee and time period' });
+//         }
+
+//         return res.status(200).json(managerEvaluations);
+
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ message: 'An error occurred while fetching evaluations' });
+//     }
+// };
+
 const getOverallEvaluation = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
 
-    // Validate input
     if (!employeeId || !startDate || !endDate) {
         return res.status(400).json({ message: 'Employee ID, startDate, and endDate are required' });
     }
 
     try {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
         // Fetch self-assessment (only 'overallScore')
         const selfAssesment = await Appraisal.findOne(
             {
                 employeeId,
-                $expr: {
-                    $and: [
-                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
-                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
-                    ]
-                }
+                timePeriod: { $all: [start, end] }, // Ensures exact match for timePeriod
             },
             { overallScore: 1, _id: 0 }
         );
 
-        // Fetch other evaluations (only required fields)
+        // Fetch Goals overall score
         const goalsOverAll = await Goals.findOne(
             {
                 employeeId,
-                $expr: {
-                    $and: [
-                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
-                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
-                    ]
-                }
+                timePeriod: { $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] }, // Match as ISO date strings
             },
             { overallGoalScore: 1 }
         );
 
+        // Fetch Additional Areas overall score
         const additionalAreasOverall = await AdditionalAreas.findOne(
             {
                 employeeId,
-                $expr: {
-                    $and: [
-                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
-                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
-                    ]
-                }
+                timePeriod: { $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] },
             },
             { overallScore: 1 }
         );
 
+        // Fetch Manager Evaluation converted rating
         const managerRating = await ManagerEvaluation.findOne(
             {
                 employeeId,
-                $expr: {
-                    $and: [
-                        { $gte: [{ $arrayElemAt: ["$timePeriod", 0] }, new Date(startDate)] },
-                        { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
-                    ]
-                }
+                timePeriod: { $all: [start, end] }, // Match directly as dates
             },
-            { managerRating: 1, _id: 0 }
+            { convertedRating: 1, _id: 0 }
         );
 
         const managerEvaluations = {};
 
-        if (selfAssesment && selfAssesment.overallScore) {
+        if (selfAssesment && selfAssesment.overallScore !== undefined) {
             managerEvaluations.selfAssesment = selfAssesment.overallScore;
         }
 
@@ -336,8 +422,8 @@ const getOverallEvaluation = async (req, res) => {
             managerEvaluations.additionalAreasOverall = additionalAreasOverall.overallScore;
         }
 
-        if (managerRating && managerRating.managerRating !== undefined) {
-            managerEvaluations.managerRating = managerRating.managerRating;
+        if (managerRating && managerRating.convertedRating !== undefined) {
+            managerEvaluations.managerRating = managerRating.convertedRating;
         }
 
         if (Object.keys(managerEvaluations).length === 0) {
@@ -347,9 +433,10 @@ const getOverallEvaluation = async (req, res) => {
         return res.status(200).json(managerEvaluations);
 
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching evaluations:', error);
         return res.status(500).json({ message: 'An error occurred while fetching evaluations' });
     }
 };
+
 
 module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation };
