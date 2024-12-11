@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Save, User, Briefcase, TrendingUp } from 'lucide-react';
+import {  User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import DeleteIcon from "../../assets/delete.svg"
 
@@ -34,6 +34,7 @@ const EvaluationSummary = () => {
   const [email, setEmail] = useState("");
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState('');
+  
 
   const [tableData, setTableData] = useState([
     { 
@@ -376,61 +377,42 @@ const EvaluationSummary = () => {
           </div>
         </div>
 
-        {/* {empType === 'HR' && (
-         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10 ">
-          
-              <label htmlFor="file-upload" className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center">
-           Upload file
-          </label>
-            <div className="overflow-x-auto">
-            <input
-              type="file"
-              id="file-upload"
-              name="file-upload"
-              className=" block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
-            />
-          </div>
-          </div>
-          
-        )} */}
-
 {empType === 'HR' && (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
-        <label
-          htmlFor="file-upload"
-          className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
-        >
-          Upload file
-        </label>
-        <div className="overflow-x-auto">
-      
-          <input
-            type="file"
-            id="file-upload"
-            name="file-upload"
-            className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
-            onChange={handleFileChange}
-          />  <img src={DeleteIcon} alt="delete" style={{width: "20px"}} />
-           
-       
+  <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
+    <label
+      htmlFor="file-upload"
+      className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
+    >
+      Upload file
+    </label>
+    <div className="overflow-x-auto">
+      <input
+        type="file"
+        id="file-upload"
+        name="file-upload"
+        className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+        onChange={handleFileChange}
+      />
+      {fileSelected && (
+        <div className="flex items-center border-gray-300 pt-2">
+           <div className="text-gray-800 text-sm">{fileSelected.name}</div>
+          
+          <button
+            onClick={handleFileDelete}
+            className="text-red-500 hover:text-red-700 items-end ml-96 -mt-14"
+            aria-label="Delete file"
+          >
+            <img src={DeleteIcon} alt="delete" style={{ width: "20px" }} />
+          </button>
+         
+         
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
-        {fileSelected && (
-          <div className="flex items-center  border-gray-300 pt-2">
-            {/* <span className="text-sm text-gray-700">{fileName}</span> */}
-            <button
-              onClick={handleFileDelete}
-              className="text-red-500 hover:text-red-700 p-1"
-              aria-label="Delete file"
-            >
-           
-            </button>
-          </div>
-        )}
-         </div>
-      </div>
-    )}
 
 
           <div className=" sticky flex justify-end">

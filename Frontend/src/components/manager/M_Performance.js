@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { ChevronDown, ChevronUp, Target } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

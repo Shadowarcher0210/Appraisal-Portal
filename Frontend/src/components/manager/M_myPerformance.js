@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronUp, Target, TrendingUp, Briefcase, Plus, Users, Send, Calendar, ArrowRight, Award, BarChart, Edit2 } from 'lucide-react';
+
 
 
 const M_myPerformance = () => {
@@ -10,7 +12,27 @@ const M_myPerformance = () => {
     const [appraisals, setAppraisals] = useState(null);
     const employeeName = localStorage.getItem('empName');
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [employeeGoals, setEmployeeGoals] = useState([]);
+    const [expandedSection, setExpandedSection] = useState('employee');
 
+
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+    const employeeId = localStorage.getItem('employeeId');
+    const categoryIcons = {
+        'Development': <Target className="w-5 h-5" />,
+        'Leadership': <Users className="w-5 h-5" />,
+        'Technical': <BarChart className="w-5 h-5" />,
+        'Soft Skills': <Award className="w-5 h-5" />,
+        "Others": <Target className="w-5 h-5" />,  
+    
+      };
+
+    const toggleSection = (section) => {
+        setExpandedSection(expandedSection === section ? null : section);
+      };
 
     useEffect(() => {
         const currentYear = new Date().getFullYear();
@@ -46,7 +68,29 @@ const M_myPerformance = () => {
         }
 
     }
+    
 
+    useEffect(() => {
+        const fetchEmployeeGoals = async () => {
+          
+            const startDate = `${currentYear}-04-01`;
+            const endDate = `${parseInt(currentYear) + 1}-03-31`;
+          try {
+            const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
+            setEmployeeGoals(response.data.data[0].goals || []);
+            console.log("goals", response.data.data[0].goals)
+    
+            setLoading(false);
+          } catch (err) {
+            console.error('Error fetching goals:', err);
+            setError('Error fetching employee goals');
+            setLoading(false);
+          }
+        };
+    
+        fetchEmployeeGoals();
+      }, []);
+    
 
     const handleViewClick = (appraisal) => {
         console.log("Navigating to view");
@@ -124,47 +168,69 @@ const M_myPerformance = () => {
                         </table>
                     </div>
 
+            <div className="flex justify-between mt-5 ml-2 mr-8">
+            {/* Previous Year Goals Section */}
+            <div className="w-full p-3 bg-white border shadow-md rounded-md">
+              <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-6">Goals for {currentYear}-{nextYear} </h2>
 
-                    {/* <div className="flex justify-between mt-5 ml-2 mr-8">
-                        {/* Previous Year Goals Section */}
-                        {/* <div className="w-full p-3 bg-white border shadow-md rounded-md">
-                            <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Team Goals for {previousYear}-{currentYear} </h2>
+              <div className="mb-2">
+                <button
+                  onClick={() => toggleSection('employee')}
+                  className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Target className="h-6 w-6 text-blue-500" />
+                    <h3 className="text-lg font-semibold text-gray-700"> View Goals</h3>
+                  </div>
+                  {expandedSection === 'employee' ? (
+                    <ChevronUp className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+
+                {expandedSection === 'employee' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+                    {employeeGoals.length>0 && employeeGoals.map((goal, index) => (
+                      <div className="bg-white p-6 rounded-lg shadow-md" key={index}>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-2">
+                            <div className="p-2 bg-blue-50 rounded-lg">
+                              {categoryIcons[goal.category]}
+                            </div>
+                            <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
+                              {goal.category}
+                            </span>
+                          </div>
+                        </div>
+
+                        <h4 className="text-lg font-medium text-gray-900 mb-3">
+                          {goal.description}
+                        </h4>
+
+                        <div className="flex items-center justify-between mt-4">
+                          <div className="flex items-center space-x-2">
+                            <BarChart className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm font-medium text-gray-900">
+                              Weight: {goal.weightage}%
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm text-gray-600">
+                              Due: {new Date(goal.deadline).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
 
-                            {/* Manager Goals */}
-                            {/* <div className="mb-2"> */}
-                                {/* <button
-                                    onClick={() => toggleSection('manager')}
-                                    className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <Target className="h-6 w-6 text-blue-500" />
-                                        <h3 className="text-lg font-semibold text-gray-700"> View Team Goals</h3>
-                                    </div>
-                                    {expandedSection === 'manager' ? (
-                                        <ChevronUp className="h-5 w-5 text-gray-500" />
-                                    ) : (
-                                        <ChevronDown className="h-5 w-5 text-gray-500" />
-                                    )}
-                                </button>
-
-                                {expandedSection === 'manager' && (
-                                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-                                        {[1, 2].map((goal) => (
-                                            <div key={goal} className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-                                                <h4 className="font-semibold text-gray-800 mb-2">Goal {goal}</h4>
-                                                <p className="text-gray-600 text-sm">Description of manager-assigned individual goal {goal}.</p>
-                                                <div className="mt-3 flex items-center justify-between">
-                                                    <span className="text-sm text-blue-500 font-medium">Status: Completed</span>
-                                                    <span className="text-sm text-gray-500">Weight: 30%</span>
-                                                </div>
-                                            </div>
-                                        ))} */}
-                                    {/* </div> */}
-                                {/* )} */}
-                            {/* </div> */}
-
-                        {/* </div> */} 
+            </div>
+            </div>
 
                         {/* Recent Activities Section */}
                         {/* <div className="w-1/4 ml-4 max-h-96 bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">

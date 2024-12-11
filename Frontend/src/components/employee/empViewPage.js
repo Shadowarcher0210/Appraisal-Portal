@@ -130,33 +130,33 @@ setAdditionalAreas(response.data.data.areas)
   
 getAdditionalDetails();
   }
-},[])
+},[empType, employeeId, error, timePeriod])
 
-useEffect(() => {
-  const getAdditionalDetails = async () => {
-    // Make sure formData is loaded and contains status
-    if (formData && formData[0]?.status === 'Completed') {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-        console.log('Getting Additional Areas', response.data);
-        setAdditionalAreas(response.data.data.areas);
-        console.log("Additional Areas in EMP view page :",response.data.data.areas)
-      } catch (error) {
-        console.error('Error in fetching Additional Areas:', error);
-      }
-    } else {
-      // Optionally handle the case when status is not 'Completed'
-      console.log('Appraisal status is not completed. Skipping fetching additional details.');
-    }
-  };
+// useEffect(() => {
+//   const getAdditionalDetails = async () => {
+//     // Make sure formData is loaded and contains status
+//     if (formData && formData[0]?.status === 'Completed') {
+//       try {
+//         const response = await axios.get(
+//           `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+//         );
+//         console.log('Getting Additional Areas', response.data);
+//         setAdditionalAreas(response.data.data.areas);
+//         console.log("Additional Areas in EMP view page :",response.data.data.areas)
+//       } catch (error) {
+//         console.error('Error in fetching Additional Areas:', error);
+//       }
+//     } else {
+//       // Optionally handle the case when status is not 'Completed'
+//       console.log('Appraisal status is not completed. Skipping fetching additional details.');
+//     }
+//   };
 
-  // Only run if formData is loaded
-  if (formData && formData[0]?.status) {
-    getAdditionalDetails();
-  }
-})
+//   // Only run if formData is loaded
+//   if (formData && formData[0]?.status) {
+//     getAdditionalDetails();
+//   }
+// })
   const goals = [
     { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
     { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },

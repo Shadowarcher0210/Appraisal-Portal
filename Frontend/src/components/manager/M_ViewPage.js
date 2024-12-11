@@ -49,11 +49,11 @@ const M_ViewPage = () => {
     appraisalDetails()
   }, [])
 
-  const goals = [
-    { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-    { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-    { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  ];
+  // const goals = [
+  //   { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
+  //   { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
+  //   { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
+  // ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -212,7 +212,7 @@ const M_ViewPage = () => {
 
 
         {/* Goals Section */}
-        <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
+        {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
           {formData ? (
             <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Target size={20} className="text-green-600" />
@@ -233,7 +233,7 @@ const M_ViewPage = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
     </div>
