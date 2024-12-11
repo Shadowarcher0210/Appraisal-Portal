@@ -17,6 +17,7 @@ const EmpViewPage = () => {
   const currentYear = new Date().getFullYear() + 1;
   const location = useLocation();
   const { timePeriod } = location.state || {}
+  const navigate = useNavigate();
 
   // Static questions and answers
   const questionsAndAnswers = [
@@ -157,11 +158,18 @@ getAdditionalDetails();
 //     getAdditionalDetails();
 //   }
 // })
-  const goals = [
-    { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-    { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-    { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  ];
+  // const goals = [
+  //   { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
+  //   { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
+  //   { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
+  // ];
+
+
+  const handleContinue = async () => {
+    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+
+
+  }
   const status = formData ? formData.status : null
 
   if (loading) {
@@ -428,6 +436,15 @@ getAdditionalDetails();
            </div>
          </div>
         )}
+        
+          <div>
+         <button
+            className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+            onClick={handleContinue}
+          >
+            Continue
+          </button>
+          </div>
 
 
       </div>

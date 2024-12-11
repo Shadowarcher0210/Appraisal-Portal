@@ -41,31 +41,31 @@ const EvaluationSummary = () => {
       id: 1, 
       category: 'Employee Self Appraisal', 
       weightage: '10%', 
-      attainment: 'N/A' 
+      attainment: '' 
     },
     { 
       id: 2, 
       category: 'Employee Goals', 
       weightage: '35%', 
-      attainment: 'N/A' 
+      attainment: '' 
     },
     { 
       id: 3, 
       category: 'Additional Areas of Assessment', 
       weightage: '25%', 
-      attainment: 'N/A' 
+      attainment: '' 
     },
     { 
       id: 4, 
       category: 'Manager Rating', 
       weightage: '30%', 
-      attainment: 'N/A' 
+      attainment: '' 
     },
     { 
       id: 4, 
       category: 'Overall Weightage', 
       weightage: '100%', 
-      attainment: 'N/A' 
+      attainment: '' 
     }
   ]);
 
@@ -94,6 +94,7 @@ const EvaluationSummary = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const empType = localStorage.getItem('empType');
+  const [overallEvaluationData, setOverallEvaluationData] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -118,20 +119,72 @@ const EvaluationSummary = () => {
       }
 
       try {
-        const response = await axios.get(
+        const formResponse = await axios.get(
           `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
+        console.log('Form Response Data:', formResponse.data);
 
         const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || '',
-          employeeId: response.data[0]?.employeeId || '',
+          empName: formResponse.data[0]?.empName || '',
+          designation: formResponse.data[0]?.designation || '',
+          managerName: formResponse.data[0]?.managerName || '',
+          timePeriod: formResponse.data[0]?.timePeriod || timePeriod,
+          status: formResponse.data[0]?.status || '',
+          employeeId: formResponse.data[0]?.employeeId || '',
+         
         };
 
         setFormData(initialFormData);
+
+        const overallEvaluationResponse = await axios.get(
+          `http://localhost:3003/appraisal/overAllEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        );
+        console.log('Overall Evaluation Response Data:', overallEvaluationResponse.data);
+
+        if (overallEvaluationResponse.data) {
+          const evaluationData = overallEvaluationResponse.data;
+        //  setOverallEvaluationData(evaluationData);
+          
+
+          const updatedTableData = [
+            { 
+              id: 1, 
+              category: 'Employee Self Appraisal', 
+              weightage: '10%', 
+              attainment: evaluationData.selfAssesment || 'N/A'
+            },
+            { 
+              id: 2, 
+              category: 'Employee Goals', 
+              weightage: '35%', 
+              attainment: 'N/A'
+            },
+            { 
+              id: 3, 
+              category: 'Additional Areas of Assessment', 
+              weightage: '25%', 
+              attainment: evaluationData.additionalAreasOverall || 'N/A'
+            },
+            { 
+              id: 4, 
+              category: 'Manager Rating', 
+              weightage: '30%', 
+              attainment: evaluationData.managerRating || 'N/A'
+            },
+            { 
+              id: 5, 
+              category: 'Overall Weightage', 
+              weightage: '100%', 
+              attainment:  'N/A'
+            }
+          ];
+
+          setTableData(updatedTableData);
+          console.log("table data", tableData[0])
+        } else {
+          console.log('No overall evaluation data found');
+        }
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching appraisal details:', error);
@@ -140,30 +193,9 @@ const EvaluationSummary = () => {
       }
     };
 
-    const fetchAttainmentData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/form/getAttainment/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        if (response.data && response.data.length > 0) {
-          const updatedTableData = tableData.map((row, index) => ({
-            ...row,
-            attainment: response.data[index]?.attainment || 'N/A'
-          }));
-          setTableData(updatedTableData);
-        }
-      } catch (error) {
-        console.error('Error fetching attainment data:', error);
-      }
-    };
-
-    if (employeeId && timePeriod) {
-      fetchAppraisalDetails();
-      fetchAttainmentData();
-    }
+    fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
-
+ 
   const handleBack = () => {
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
   };
@@ -443,7 +475,7 @@ const EvaluationSummary = () => {
                 Save & Exit
               </button>
             </div>
-
+          
             <div>
               <button
                 className={`px-6 py-2 text-white bg-cyan-800 rounded-lg`}

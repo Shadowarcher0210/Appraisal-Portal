@@ -219,6 +219,19 @@ const EvaluationView3 = () => {
             Back
           </button>
         </div>
+        
+        <div className='mr-2'>
+              <button
+                type="button"
+                className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+                onClick={() => {
+                  navigate("/manager-dashboard");
+                }}
+              >
+                Save & Exit
+              </button>
+            </div>
+
         <div>
           <button
             className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
