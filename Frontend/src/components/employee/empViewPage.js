@@ -6,7 +6,7 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const EmpViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); // If you're using a state to store the email
+  const [email, setEmail] = useState(""); 
  const [additionalAreas , setAdditionalAreas] = useState([]);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);

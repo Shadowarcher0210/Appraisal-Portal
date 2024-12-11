@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Save, User, Briefcase, TrendingUp, Award } from 'lucide-react';
+import { Save, User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
+import DeleteIcon from "../../assets/delete.svg"
 
 const EvaluationSummary = () => {
   const [ReviewData, setReviewData] = useState({
@@ -31,6 +32,8 @@ const EvaluationSummary = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [fileSelected, setFileSelected] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   const [tableData, setTableData] = useState([
     { 
@@ -83,6 +86,7 @@ const EvaluationSummary = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const empType = localStorage.getItem('empType');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -131,12 +135,10 @@ const EvaluationSummary = () => {
 
     const fetchAttainmentData = async () => {
       try {
-        // Placeholder for actual API endpoint to fetch attainment
         const response = await axios.get(
           `http://localhost:3003/form/getAttainment/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
-        // Update tableData with attainment percentages
         if (response.data && response.data.length > 0) {
           const updatedTableData = tableData.map((row, index) => ({
             ...row,
@@ -166,47 +168,67 @@ const EvaluationSummary = () => {
   if (error) {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
-
+  
   const handleConfirmSubmit = async () => {
     setIsModalOpen(false);
     setIsThankYouModalOpen(true);
+  
     if (!token) {
       console.log("No token found. Please log in.");
       return;
     }
+  
     try {
-      const employeeId = localStorage.getItem('employeeId');
-      const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+      let status;
+  
+      if (empType === 'HR') {
+        status = 'Completed';
+      } else {
+        status = 'Under HR Review';
+      }
+  
+      const response = await fetch(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
         method: 'PUT',
         headers: {
-          "content-Type": "application/json",
-          "Authorization": ` Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
+        body: JSON.stringify({ status }),
       });
-
+  
       if (response.ok) {
-        console.log('response', response);
+        console.log('Status updated successfully');
+  
+        const emailUrl = empType === 'HR' 
+          ? 'http://localhost:3003/confirmationEmail/HRSubmitEmail'
+          : 'http://localhost:3003/confirmationEmail/managerSubmitEmail';
+  
+        const emailResponse = await fetch(emailUrl, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            employeeId,
+          }),
+        });
+  
+        if (emailResponse.ok) {
+          console.log('Email sent successfully');
+        } else {
+          const emailError = await emailResponse.json();
+          console.log(`Error sending email: ${emailError.message}`);
+        }
+  
       } else {
         const errorData = await response.json();
-        console.log(`Error: ${errorData.error}`);
+        console.log(`Error updating status: ${errorData.error}`);
       }
-
-      const emailresponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email
-        }),
-      });
-      const emailData = await emailresponse.json();
-      console.log(emailData.message);
-
+  
     } catch (error) {
-      console.error('Error updating status:', error);
-    }
-    finally {
+      console.error('Error updating status or sending email:', error);
+    } finally {
       setIsModalOpen(false);
     }
   };
@@ -215,6 +237,19 @@ const EvaluationSummary = () => {
   const closeThankYouModal = () => {
     setIsThankYouModalOpen(false);
     navigate("/employee-dashboard");
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileSelected(true);
+      setFileName(file.name); 
+    }
+  };
+
+  const handleFileDelete = () => {
+    setFileSelected(false);
+    setFileName('');
   };
 
   return (
@@ -239,8 +274,7 @@ const EvaluationSummary = () => {
 
       <div className="mb-6">
         {formData ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full  mx-2 pr-4">
-            {/* Employee Name Card */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                 <User className="text-blue-600" size={24} />
@@ -251,7 +285,6 @@ const EvaluationSummary = () => {
               </div>
             </div>
 
-            {/* Designation Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                 <Briefcase className="text-purple-600" size={24} />
@@ -262,7 +295,6 @@ const EvaluationSummary = () => {
               </div>
             </div>
 
-            {/* Manager Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-green-100 rounded-lg shrink-0">
                 <User className="text-green-600" size={24} />
@@ -273,7 +305,6 @@ const EvaluationSummary = () => {
               </div>
             </div>
 
-            {/* Evaluation Status Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                 <TrendingUp className="text-orange-600" size={24} />
@@ -290,8 +321,8 @@ const EvaluationSummary = () => {
       </div>
 
       <div className="space-y-4 mx-2 rounded-lg">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
-      <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 ">
+          <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
             Performance Evaluation Breakdown
           </h2>
           <div className="overflow-x-auto">
@@ -344,6 +375,63 @@ const EvaluationSummary = () => {
             </table>
           </div>
         </div>
+
+        {/* {empType === 'HR' && (
+         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10 ">
+          
+              <label htmlFor="file-upload" className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center">
+           Upload file
+          </label>
+            <div className="overflow-x-auto">
+            <input
+              type="file"
+              id="file-upload"
+              name="file-upload"
+              className=" block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+            />
+          </div>
+          </div>
+          
+        )} */}
+
+{empType === 'HR' && (
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
+        <label
+          htmlFor="file-upload"
+          className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
+        >
+          Upload file
+        </label>
+        <div className="overflow-x-auto">
+      
+          <input
+            type="file"
+            id="file-upload"
+            name="file-upload"
+            className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+            onChange={handleFileChange}
+          />  <img src={DeleteIcon} alt="delete" style={{width: "20px"}} />
+           
+       
+
+        {fileSelected && (
+          <div className="flex items-center  border-gray-300 pt-2">
+            {/* <span className="text-sm text-gray-700">{fileName}</span> */}
+            <button
+              onClick={handleFileDelete}
+              className="text-red-500 hover:text-red-700 p-1"
+              aria-label="Delete file"
+            >
+           
+            </button>
+          </div>
+        )}
+         </div>
+      </div>
+    )}
+
 
           <div className=" sticky flex justify-end">
             <div className='mr-auto'>
