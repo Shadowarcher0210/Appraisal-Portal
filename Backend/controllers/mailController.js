@@ -167,6 +167,7 @@ const sendGoalsAddedEmails = async (req, res) => {
     });
   }
   };
+  
 
   const sendFinalHREmails = async (req, res) => {
     try {

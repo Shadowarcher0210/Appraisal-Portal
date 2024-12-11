@@ -161,7 +161,7 @@ const updateAppraisalStatus = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review"];
+        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review","Completed"];
         if (!validStatuses.includes(status)) {
             return res.status(400).send({ error: "Invalid status value provided" });
         }
