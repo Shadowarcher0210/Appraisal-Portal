@@ -3,10 +3,11 @@ const Appraisal = require('../models/Appraisal');
 const User = require('../models/User');
 const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
-const File = require('../models/UploadLetter');  
+const File = require('../models/UploadLetter'); 
+require('dotenv').config(); 
 
 const storage = new GridFsStorage({
-    url: 'mongodb+srv://admin:admin@madhu.upa4f.mongodb.net/Appraisal?retryWrites=true&w=majority&appName=Madhu',
+    url: process.env.CONNECTION_STRING,
     file: (req, file) => {
         if (!req.params.employeeId) {
             throw new Error('Employee ID is missing');
