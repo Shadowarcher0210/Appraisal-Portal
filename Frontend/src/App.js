@@ -34,6 +34,13 @@ import EvaluationView2 from './components/manager/EvaluationView2.js';
 
 import Self from './components/Tabs/selfAppraisalTab.js'
 import EvaluationView3 from './components/manager/EvaluationView3.js';
+
+import CEvaluation from './components/CEvaluation.js';
+import CEvaluation1 from './components/CEvaluation1.js';
+import CEvaluation2 from './components/CEvaluation2.js';
+import CEvaluation3 from './components/CEvaluation3.js';
+import CEvaluationSummary from './components/CEvaluationSummary.js';
+
 const App = () => {
   const location = useLocation();
 
@@ -89,6 +96,13 @@ const App = () => {
           <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />
           <Route path='/evaluationView3/:employeeId' element={<EvaluationView3 />} />
           <Route path='/evaluationSummary/:employeeId' element={<EvaluationSummary />} />
+
+
+          <Route path='/CE/:employeeId' element={< CEvaluation />} />
+          <Route path='/CE1/:employeeId' element={< CEvaluation1 />} />
+          <Route path='/CE2/:employeeId' element={< CEvaluation2 />} />
+          <Route path='/CE3/:employeeId' element={< CEvaluation3 />} />
+          <Route path='/CES/:employeeId' element={< CEvaluationSummary />} />
 
 
           

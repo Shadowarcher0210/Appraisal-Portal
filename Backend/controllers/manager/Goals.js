@@ -182,6 +182,99 @@ const editGoal = async (req, res) => {
 };
 
 
+// const updateManagerGoalWeight = async (req, res) => {
+//   try {
+//     const { goals, overallGoalScore } = req.body;
+//     const { employeeId, startDate, endDate } = req.params;
+
+//     if (!Array.isArray(goals) || goals.length === 0) {
+//       return res
+//         .status(400)
+//         .json({ message: 'Goals array is required and cannot be empty' });
+//     }
+
+//     const results = [];
+//     const timePeriod = [
+//       new Date(startDate).toISOString().split('T')[0],
+//       new Date(endDate).toISOString().split('T')[0],
+//     ];
+
+//     const existingGoals = await Goals.findOne({
+//       employeeId,
+//       timePeriod,
+//     });
+
+//     if (!existingGoals) {
+//       return res.status(404).json({
+//         message: 'No goals found for the employee in the given time period',
+//       });
+//     }
+
+//     for (const goal of goals) {
+//       const { managerWeightage, goalId } = goal;
+
+//       if (managerWeightage === undefined) {
+//         results.push({
+//           status: 'Failed',
+//           message: 'Manager weightage is required',
+//         });
+//         continue;
+//       }
+
+//       const goalData = existingGoals.goals.find((g) => g._id.toString() === goalId);
+//       if (!goalData) {
+//         results.push({
+//           status: 'Failed',
+//           message: `Goal with ID ${goalId} not found`,
+//         });
+//         continue;
+//       }
+
+//       if (managerWeightage > goalData.weightage) {
+//         results.push({
+//           status: 'Failed',
+//           message: 'Manager weightage must be less than or equal to the existing weightage',
+//         });
+//         continue;
+//       }
+
+//       goalData.managerWeightage = managerWeightage;
+//     }
+
+//     existingGoals.overallGoalScore = overallGoalScore;
+
+//     await existingGoals.save();
+
+//     results.push({
+//       status: 'Success',
+//       message: 'Manager weightages and overall score updated successfully',
+//       data: {
+//         employeeId: existingGoals.employeeId,
+//         empName: existingGoals.empName,
+//         empType: existingGoals.empType,
+//         timePeriod: existingGoals.timePeriod,
+//         overallGoalScore: existingGoals.overallGoalScore,
+//         goals: existingGoals.goals.map((g) => ({
+//           goalId: g._id,
+//           category: g.category,
+//           description: g.description,
+//           weightage: g.weightage,
+//           deadline: g.deadline,
+//           otherText: g.otherText,
+//           goalStatus: g.goalStatus || 'Goals Submitted',
+//           managerWeightage: g.managerWeightage,
+//         })),
+//       },
+//     });
+
+//     res.status(200).json({
+//       data: results,
+//     });
+//   } catch (error) {
+//     console.error('Error in updating manager weights:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
 const updateManagerGoalWeight = async (req, res) => {
   try {
     const { goals, overallGoalScore } = req.body;
@@ -282,48 +375,116 @@ const fetchManagerGoalWeight = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
 
     if (!employeeId || !startDate || !endDate) {
-      return res.status(400).json({ message: 'Employee ID, start date, and end date are required' });
+      return res.status(400).json({
+        message: 'Employee ID, start date, and end date are required'
+      });
+    }
+
+    const start = Date.parse(startDate);
+    const end = Date.parse(endDate);
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({
+        message: 'Invalid date format. Please provide valid dates for start and end.'
+      });
     }
 
     const timePeriod = [
-      new Date(startDate).toISOString().split('T')[0], 
+      new Date(startDate).toISOString().split('T')[0],
       new Date(endDate).toISOString().split('T')[0]
     ];
 
-    const employeeData = await Goals.findOne({
+   
+    const existingGoals = await Goals.findOne({
       employeeId,
-      timePeriod: { $gte: timePeriod[0], $lte: timePeriod[1] }
-    }).select('empName empType timePeriod goals'); 
+      timePeriod
+    });
 
-    if (!employeeData || employeeData.goals.length === 0) {
-      return res.status(404).json({ message: 'No goals found for the specified period.' });
+   
+    if (!existingGoals) {
+      return res.status(404).json({
+        message: 'No goals found for the employee in the given time period'
+      });
     }
 
-    const goalData = employeeData.goals.map((goal) => ({
-      goalId: goal._id,
-      category: goal.category,
-      description: goal.description,
-      weightage: goal.weightage,
-      managerWeightage: goal.managerWeightage,
-      deadline: goal.deadline,
-    }));
+  
+    const responseData = {
+      employeeId: existingGoals.employeeId,
+      empName: existingGoals.empName,
+      empType: existingGoals.empType,
+      timePeriod: existingGoals.timePeriod,
+      overallGoalScore: (existingGoals.overallGoalScore || 0).toFixed(2),
+      goals: existingGoals.goals.map((goal) => ({
+        goalId: goal._id,
+        category: goal.category,
+        description: goal.description,
+        weightage: goal.weightage,
+        deadline: goal.deadline,
+        otherText: goal.otherText,
+        goalStatus: goal.goalStatus || 'Goals Submitted',
+        managerWeightage: goal.managerWeightage !== undefined ? goal.managerWeightage : null 
+      }))
+    };
 
     res.status(200).json({
-      message: 'Goals retrieved successfully',
-      data: {
-        employeeId: employeeData.employeeId,
-        empName: employeeData.empName,
-        empType: employeeData.empType,
-        timePeriod: employeeData.timePeriod,
-        overallScore: employeeData.overallScore,
-        goals: goalData,
-      },
+      data: responseData
     });
 
   } catch (error) {
-    console.error('Error in fetching goals:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error in retrieving manager goals:', error);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: error.message ,
+    });
   }
 };
+
+// const fetchManagerGoalWeight = async (req, res) => {
+//   try {
+//     const { employeeId, startDate, endDate } = req.params;
+
+//     if (!employeeId || !startDate || !endDate) {
+//       return res.status(400).json({ message: 'Employee ID, start date, and end date are required' });
+//     }
+
+//     const timePeriod = [
+//       new Date(startDate).toISOString().split('T')[0], 
+//       new Date(endDate).toISOString().split('T')[0]
+//     ];
+
+//     const employeeData = await Goals.findOne({
+//       employeeId,
+//       timePeriod: { $gte: timePeriod[0], $lte: timePeriod[1] }
+//     }).select('empName empType timePeriod goals'); 
+
+//     if (!employeeData || employeeData.goals.length === 0) {
+//       return res.status(404).json({ message: 'No goals found for the specified period.' });
+//     }
+
+//     const goalData = employeeData.goals.map((goal) => ({
+//       goalId: goal._id,
+//       category: goal.category,
+//       description: goal.description,
+//       weightage: goal.weightage,
+//       managerWeightage: goal.managerWeightage,
+//       deadline: goal.deadline,
+//     }));
+
+//     res.status(200).json({
+//       message: 'Goals retrieved successfully',
+//       data: {
+//         employeeId: employeeData.employeeId,
+//         empName: employeeData.empName,
+//         empType: employeeData.empType,
+//         timePeriod: employeeData.timePeriod,
+//         overallScore: employeeData.overallScore,
+//         goals: goalData,
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error('Error in fetching goals:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
 
 module.exports = { postEmployeeGoal, getEmployeeGoals, getGoalCategories, editGoal, updateManagerGoalWeight, fetchManagerGoalWeight };

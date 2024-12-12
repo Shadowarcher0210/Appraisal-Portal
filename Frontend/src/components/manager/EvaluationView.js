@@ -144,16 +144,22 @@ const EvaluationView = () => {
 
   const handleManagerEvaluationChange = (e, index) => {
     if (!formData || !formData[0]) return;
-
+  
     const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
+    const inputValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    
+    // Convert to number, default to empty string if invalid
+    const value = inputValue === '' ? '' : parseInt(inputValue, 10);
+  
+    // Validation: check if value is between 1 and 100
+    if (value === '' || (value >= 1 && value <= 100)) {
+      if (!updatedFormData[0].pageData[index].managerEvaluation) {
+        updatedFormData[0].pageData[index].managerEvaluation = {};
+      }
+  
+      updatedFormData[0].pageData[index].managerEvaluation = value;
+      setFormData(updatedFormData);
     }
-
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
   };
 
 

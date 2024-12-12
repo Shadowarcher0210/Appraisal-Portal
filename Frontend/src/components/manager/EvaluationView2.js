@@ -201,9 +201,20 @@ const EvaluationView2 = () => {
     },
   ];
   const handleAttainmentChange = (index, event) => {
-    const newAttainments = [...attainments];
-    newAttainments[index] = event.target.value;
-    setAttainments(newAttainments);
+    const inputValue = event.target.value;
+    
+    // Remove any non-numeric characters
+    const numericValue = inputValue.replace(/[^0-9]/g, '');
+    
+    // Convert to number for validation
+    const numValue = numericValue ? parseInt(numericValue, 10) : '';
+    
+    // Validate the input
+    if (numValue === '' || (numValue >= 1 && numValue <= 100)) {
+      const newAttainments = [...attainments];
+      newAttainments[index] = numValue === '' ? '' : numValue.toString();
+      setAttainments(newAttainments);
+    }
   };
 
   const handleCommentChange = (index, event) => {
@@ -318,7 +329,6 @@ const EvaluationView2 = () => {
   const handleSaveExit = async () => {
 
     try {
-  
       const payload = AdditionalAreas.map((area, index) => ({
         quality: area.quality,
         successMetric: area.successMetric,
@@ -326,32 +336,29 @@ const EvaluationView2 = () => {
         attainments: attainments[index],
         comments: comments[index]
       }));
-      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+      const overallScore = calculateOverallScore();
+      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`, {
         method: 'PUT',
         headers: {
           "content-Type": "application/json",
 
         },
-        body: JSON.stringify({ payload }),
+        body: JSON.stringify({ payload, overallScore }),
 
       })
       if (response.ok) {
         console.log('response', response);
         const data = await response.json();
         console.log("data", data);
-        navigate("/employee-dashboard");
+        
       } else {
         const errorData = await response.json();
         console.log(`Error: ${errorData.error}`);
       }
-      console.log("PUT request successful.");
-
-
-
     } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
+      console.error('Error updating status:', error);
     }
+    navigate(`/manager-performance`, { state: { timePeriod } });
   };
  
   const calculateOverallScore = () => {

@@ -13,8 +13,10 @@ const EvaluationView3 = () => {
   const navigate = useNavigate();
   const [convertedRating, setConvertedRating] = useState('-');
 
-
-  const [reviewData, setReviewData] = useState({ managerRating: '', additionalComments: ''});
+  const [reviewData, setReviewData] = useState({ 
+    managerRating: '', 
+    additionalComments: '' 
+  });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,9 +28,8 @@ const EvaluationView3 = () => {
           ...prev,
           [name]: numericValue
         }));
-        // const converted = numericValue ? Math.round((parseInt(numericValue) / 100) * 30).toFixed(2) : '-';  // rounded  value
         const converted = numericValue ? ((parseInt(numericValue) / 100) * 30).toFixed(2) : '-'; 
-      setConvertedRating(converted);
+        setConvertedRating(converted);
       }
     } else {
       setReviewData(prev => ({
@@ -51,26 +52,43 @@ const EvaluationView3 = () => {
           `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
-        const evaluationResponse = await axios.get(
-          `http://localhost:3003/appraisal/Evaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${response.data[0]?.managerName}`
-        );
+        // Default to empty strings if no data is found
+        const empName = response.data[0]?.empName || '';
+        const designation = response.data[0]?.designation || '';
+        const managerName = response.data[0]?.managerName || '';
 
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
+        let initialFormData = {
+          empName,
+          designation,
+          managerName,
           timePeriod: response.data[0]?.timePeriod || timePeriod,
-          managerRating: evaluationResponse.data.data.managerRating || '',
-        convertedRating: evaluationResponse.data.data.convertedRating || '-',
-        additionalComments: evaluationResponse.data.data.additionalComments || '',
         };
 
+        try {
+          const evaluationResponse = await axios.get(
+            `http://localhost:3003/appraisal/Evaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`
+          );
+
+          // Merge evaluation data if available
+          initialFormData = {
+            ...initialFormData,
+            managerRating: evaluationResponse.data.data?.managerRating || '',
+            convertedRating: evaluationResponse.data.data?.convertedRating || '-',
+            additionalComments: evaluationResponse.data.data?.additionalComments || '',
+          };
+
+          // Update review data and converted rating if available
+          setReviewData({
+            managerRating: evaluationResponse.data.data?.managerRating || '',
+            additionalComments: evaluationResponse.data.data?.additionalComments || '',
+          });
+          setConvertedRating(evaluationResponse.data.data?.convertedRating || '-');
+        } catch (evaluationError) {
+          // If evaluation data fetch fails, still set the base form data
+          console.warn('No evaluation data found:', evaluationError);
+        }
+
         setFormData(initialFormData);
-        setReviewData({
-          managerRating: evaluationResponse.data.data.managerRating || '',
-          additionalComments: evaluationResponse.data.data.additionalComments || '',
-        });
-        setConvertedRating(evaluationResponse.data.data.convertedRating || '-');
         setLoading(false);
       } catch (error) {
         console.error('Error fetching appraisal details:', error);
@@ -100,7 +118,7 @@ const EvaluationView3 = () => {
    
     try {
       const response = await axios.put(
-       ` http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
+        `http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
         {
           managerRating, 
           convertedRating,
@@ -110,6 +128,28 @@ const EvaluationView3 = () => {
   
       console.log('Evaluation submitted successfully:', response.data);
       navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  
+    } catch (error) {
+      console.error('Error submitting evaluation:', error.response ? error.response.data : error.message);
+    }
+  };
+
+  const handleSaveandExit = async () => {
+    const { managerRating, additionalComments } = reviewData;
+    const managerName = formData.managerName;
+   
+    try {
+      const response = await axios.put(
+        `http://localhost:3003/appraisal/managerEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}/${managerName}`,
+        {
+          managerRating, 
+          convertedRating,
+          additionalComments,
+        }
+      );
+  
+      console.log('Evaluation submitted successfully:', response.data);
+      navigate(`/manager-performance`);
   
     } catch (error) {
       console.error('Error submitting evaluation:', error.response ? error.response.data : error.message);
@@ -143,7 +183,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Employee Name</p>
-                <p className="font-medium text-gray-900">{formData.empName}</p>
+                <p className="font-medium text-gray-900">{formData.empName || '-'}</p>
               </div>
             </div>
 
@@ -153,7 +193,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Designation</p>
-                <p className="font-medium text-gray-900">{formData.designation}</p>
+                <p className="font-medium text-gray-900">{formData.designation || '-'}</p>
               </div>
             </div>
 
@@ -163,7 +203,7 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager Name</p>
-                <p className="font-medium text-gray-900">{formData.managerName}</p>
+                <p className="font-medium text-gray-900">{formData.managerName || '-'}</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
@@ -172,16 +212,14 @@ const EvaluationView3 = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">{convertedRating !== '-' ? `${convertedRating}` : '-'}</p>
+                <p className="font-medium text-gray-900">{convertedRating !== '-' ? convertedRating : '-'}</p>
               </div>
             </div>
-
           </div>
         )}
       </div>
 
-      <div className="bg-white p-4  rounded-md shadow-md mx-2">
-        {/* <h3 className="text-lg font-semibold mb-4 text-blue-800">Overall Assessment</h3> */}
+      <div className="bg-white p-4 rounded-md shadow-md mx-2">
         <div className="space-y-4 ">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-4">Manager Rating</label>
@@ -190,12 +228,11 @@ const EvaluationView3 = () => {
               name="managerRating"
               value={reviewData.managerRating}
               onChange={handleInputChange}
-              className=" p-2 border border-gray-300  rounded-md  transition-all"
+              className="p-2 border border-gray-300 rounded-md transition-all"
               placeholder="Enter your rating"
               pattern="[0-9]*"
               inputMode="numeric"
             />
-           
           </div>
           <div>
             <label className="block text-sm font-medium mb-4 text-gray-700">Additional Comments</label>
@@ -221,16 +258,14 @@ const EvaluationView3 = () => {
         </div>
         
         <div className='mr-2'>
-              <button
-                type="button"
-                className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-                onClick={() => {
-                  navigate("/manager-dashboard");
-                }}
-              >
-                Save & Exit
-              </button>
-            </div>
+          <button
+            type="button"
+            className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+            onClick={handleSaveandExit}
+          >
+            Save & Exit
+          </button>
+        </div>
 
         <div>
           <button

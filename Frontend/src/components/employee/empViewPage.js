@@ -165,8 +165,8 @@ getAdditionalDetails();
   // ];
 
 
-  const handleContinue = async () => {
-    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
+  const handleBack = async () => {
+    navigate(`/employee-dashboard`);
 
 
   }
@@ -440,9 +440,9 @@ getAdditionalDetails();
           <div>
          <button
             className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
-            onClick={handleContinue}
+            onClick={handleBack}
           >
-            Continue
+            Back
           </button>
           </div>
 

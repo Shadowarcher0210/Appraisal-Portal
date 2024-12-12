@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const pageDataSchema = new mongoose.Schema(
@@ -21,6 +20,8 @@ const pageDataSchema = new mongoose.Schema(
         },
         managerEvaluation: {
             type: Number,
+            min:1,
+            max:100,
             default: null
         }
     },
@@ -87,6 +88,10 @@ const appraisalSchema = new mongoose.Schema({
     overallScore: {
         type: Number,
         default: null
+    },
+    appraisalLetter: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'File' 
     },
     
 });
