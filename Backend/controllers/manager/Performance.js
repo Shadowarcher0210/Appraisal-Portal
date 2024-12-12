@@ -2,6 +2,7 @@ const AdditionalAreas = require("../../models/AdditionalAreas");
 const Appraisal = require("../../models/Appraisal");
 const Goals = require("../../models/Goals");
 const ManagerEvaluation = require("../../models/ManagerEvaluation");
+const OverallWeightage = require("../../models/OverallWeightage");
 
 const getEmployeeAppraisals = async (req, res) => {
     const { managerName, startDate, endDate } = req.params;
@@ -345,5 +346,63 @@ const getOverallEvaluation = async (req, res) => {
     }
 };
 
+const postOverAllWeightage = async (req, res)=>{
+    const { employeeId, startDate, endDate } = req.params;
+    const {overallWeightage } = req.body;
 
-module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation };
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID is required.' });
+    }
+
+    const timePeriod = [
+        new Date(startDate).toISOString().split('T')[0],
+        new Date(endDate).toISOString().split('T')[0],
+    ];
+
+    if (timePeriod[0] > timePeriod[1]) {
+        return res.status(400).json({ error: 'Start date cannot be later than end date.' });
+    }
+
+    if (typeof overallWeightage !== 'number') {
+        return res.status(400).json({
+            error: 'Overall score is required and must be a number.',
+        });
+    }
+
+    try {
+        const existingRecord = await OverallWeightage.findOne({
+            employeeId,
+            timePeriod, 
+        });
+        if (existingRecord){
+            
+            existingRecord.overallWeightage = overallWeightage;
+            await existingRecord.save();
+            return res.status(200).json({
+                message: 'Additional details updated successfully!',
+                data: existingRecord,
+            }); 
+        }else {
+            const newAdditional = new OverallWeightage({
+                employeeId,
+                timePeriod,
+                overallWeightage,
+            });
+            await newAdditional.save();
+            return res.status(201).json({
+                message: 'Additional details saved successfully!',
+                data: newAdditional,
+            });
+        }
+    }
+        catch (error) {
+        console.error('Error saving overallWeightage details:', error);
+        res.status(500).json({
+            error: 'Error saving overallWeightage details.',
+            details: error.message,
+        });
+    }
+}
+
+
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation,postOverAllWeightage };
