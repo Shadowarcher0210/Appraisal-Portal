@@ -17,12 +17,6 @@ const Dashboard = () => {
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
-
-  // const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  // const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-  // const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
-  // const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
-
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
     if (employeeId) {
@@ -185,8 +179,13 @@ const Dashboard = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
   <button 
-    className="bg-blue-500 text-white hover:bg-blue-600 rounded-md px-4 py-2 text-sm transition-colors"
-    onClick={() => handleButtonClick(appraisal)}
+ className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
+  ${["Under Review", "Under HR Review"].includes(appraisal.status) 
+      ? "opacity-50 cursor-not-allowed bg-blue-300" 
+      : "hover:bg-blue-600" 
+  }`}   
+   onClick={() => handleButtonClick(appraisal)}
+    disabled={["Under Review", "Under HR Review"].includes(appraisal.status)}
   >
     {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Edit"}
   </button>

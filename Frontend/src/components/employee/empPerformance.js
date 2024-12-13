@@ -23,7 +23,7 @@ const E_PerformancePage = () => {
     'Leadership': <Users className="w-5 h-5" />,
     'Technical': <BarChart className="w-5 h-5" />,
     'Soft Skills': <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,  
+    "Others": <Target className="w-5 h-5" />,
 
   };
   const navigate = useNavigate();
@@ -93,9 +93,9 @@ const E_PerformancePage = () => {
 
   useEffect(() => {
     const fetchEmployeeGoals = async () => {
-      
-        const startDate = `${currentYear}-04-01`;
-        const endDate = `${parseInt(currentYear) + 1}-03-31`;
+
+      const startDate = `${currentYear}-04-01`;
+      const endDate = `${parseInt(currentYear) + 1}-03-31`;
       try {
         const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
         setEmployeeGoals(response.data.data[0].goals || []);
@@ -162,7 +162,16 @@ const E_PerformancePage = () => {
                         {appraisal.status}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-blue-900 hover:text-blue-700 cursor-pointer">
-                        <button className='bg-blue-600 text-white hover:bg-blue-600 rounded-md px-2 py-2 w-16' onClick={() => handleViewClick(appraisal)}>View</button>
+                        <button
+                          className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
+  ${["Under Review", "Under HR Review"].includes(appraisal.status)
+                              ? "opacity-50 cursor-not-allowed bg-blue-300"
+                              : "hover:bg-blue-600"
+                            }`} onClick={() => handleViewClick(appraisal)}
+                            disabled={["Under Review","Under HR Review"].includes(appraisal.status)
+                            }
+                            >View</button>
+                            
                       </td>
                     </tr>
                   ))
@@ -199,7 +208,7 @@ const E_PerformancePage = () => {
 
                 {expandedSection === 'employee' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-                    {employeeGoals.length>0 && employeeGoals.map((goal, index) => (
+                    {employeeGoals.length > 0 && employeeGoals.map((goal, index) => (
                       <div className="bg-white p-6 rounded-lg shadow-md" key={index}>
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-2">
@@ -240,24 +249,7 @@ const E_PerformancePage = () => {
 
             </div>
 
-            {/* Recent Activities Section */}
-            {/* <div className="w-1/4 ml-4 max-h-96 bg-white rounded-lg shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4 ">Recent Activities</h2>
-              <div className="space-y-2">
-                {recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-start space-x-3 p-1 hover:bg-gray-100 rounded-md transition-colors duration-200">
-                    <div className={`w-3 h-3 rounded-full mt-1 ${activity.type === 'success' ? 'bg-green-500' :
-                        activity.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-                      }`} />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-700">{activity.action}</p>
-                    </div>
-                  </div>
-                ))}
-                <br />
 
-              </div>
-            </div> */}
 
           </div>
 

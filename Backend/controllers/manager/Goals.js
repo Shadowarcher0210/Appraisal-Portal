@@ -43,7 +43,7 @@ const postEmployeeGoal = async (req, res) => {
         weightage: goal.weightage,  
         deadline: new Date(goal.deadline).toISOString().split('T')[0],
         otherText: goal.category === 'Others' ? goal.otherText : undefined,
-        GoalStatus: "Goals Submitted", 
+        
       }));
       console.log("Goal Content Array:", goalContentArray);
 
@@ -52,7 +52,8 @@ const postEmployeeGoal = async (req, res) => {
         empName,
         empType,
         timePeriod,
-        goals: goalContentArray, 
+        goals: goalContentArray,
+        GoalStatus: "Goals Submitted",  
       });
 
       const savedGoalDocument = await newGoalDocument.save();

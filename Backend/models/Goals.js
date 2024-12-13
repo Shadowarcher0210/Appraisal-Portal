@@ -25,10 +25,7 @@ const goalContent = new mongoose.Schema(
     managerWeightage:{
       type: Number
     },
-    GoalStatus: {
-      type: String,
-      require: [true, 'GoalStatus is required'],
-  },
+   
   },)
 
   const goalsSchema = new mongoose.Schema({
@@ -60,10 +57,15 @@ const goalContent = new mongoose.Schema(
         return dates.map(date => new Date(date).toISOString().split('T')[0]);
       }
     },
+
     goals: {
         type: [goalContent],
         default: []
     },
+    GoalStatus: {
+      type: String,
+      require: [true, 'GoalStatus is required'],
+  },
     overallGoalScore: {
         type: Number,
         default: null

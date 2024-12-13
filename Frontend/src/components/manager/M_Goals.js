@@ -23,6 +23,7 @@ const M_Goals = () => {
   const [employeeToSubmit, setEmployeeToSubmit] = useState(null);
   const [submittedEmployees, setSubmittedEmployees] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [goalsFetched, setGoalsFetched] = useState({});
   const [goalFormData, setGoalFormData] = useState({
     employeeId: "",
     empName: "",
@@ -33,9 +34,7 @@ const M_Goals = () => {
     deadline: "",
   });
 
-  // const location = useLocation();
-  // const { timePeriod } = location.state || {};
-
+ 
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
@@ -45,11 +44,7 @@ const M_Goals = () => {
   const [employees, setEmployees] = useState([]);
   const [expandedEmployees, setExpandedEmployees] = useState({});
 
-  // const [employeeGoals, setEmployeeGoals] = useState(() => {
-  //   const storedGoals = localStorage.getItem("employeeGoals");
-  //   return storedGoals ? JSON.parse(storedGoals) : {};
-  // });
-
+ 
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
     "Leadership": <Users className="w-5 h-5" />,
@@ -185,10 +180,17 @@ const M_Goals = () => {
         const response = await axios.get(
           `http://localhost:3003/goals/${employeeId}/${appraisalStartDate}/${appraisalEndDate}`
         );
+       
+
         setGoals((prevGoals) => ({
           ...prevGoals,
           [employeeId]: response.data.data[0].goals,
         }));
+        setGoalsFetched((prev) => ({
+          ...prev,
+          [employeeId]: true, 
+        }));
+      
         console.log("Goals getting:", response.data.data[0].goals);
         console.log("Goals check:", response.data.data[0].goals[0].description);
 
@@ -284,83 +286,48 @@ const M_Goals = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="flex items-center space-x-4">
-                    {(!submittedEmployees.includes(employee.employeeId)) && (
-                      <>
-                        <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAddGoalClick(employee.employeeId);
-                            }}
-                            className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
-                          >
-                            <Plus className="w-4 h-4 mr-2" /> 
-                            Add Goal
-                          </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSubmitConfirm(employee.employeeId);
-                          }}
-                          disabled={submitting[employee.employeeId]}
-                          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
-                        >
-                          <Send className="w-4 h-4 mr-2" />
-                          Submit Goals
-                        </button>
-                      </>
-                    )}
-                    { submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 (
-                      <span className="text-green-600 font-medium flex items-center">
-                        <Award className="w-4 h-4 mr-2" />
-                        Goals Submitted
-                      </span>
-                    ) }
-                    {expandedEmployees[employee.employeeId] ?
-                      <ChevronUp className="w-5 h-5 text-gray-400" /> :
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    }
-                  </div> */}
                   <div className="flex items-center space-x-4">
-                    {!submittedEmployees.includes(employee.employeeId) && (
-                      <>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddGoalClick(employee.employeeId);
-                          }}
-                          className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Goal
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSubmitConfirm(employee.employeeId);
-                          }}
-                          disabled={submitting[employee.employeeId]}
-                          className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
-                        >
-                          <Send className="w-4 h-4 mr-2" />
-                          Submit Goals
-                        </button>
-                      </>
-                    )}
+  {!submittedEmployees.includes(employee.employeeId) && !goalsFetched[employee.employeeId] && (
+    <>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAddGoalClick(employee.employeeId);
+        }}
+        className="flex items-center px-4 py-2 text-sm font-medium bg-cyan-800 text-white rounded-lg hover:bg-cyan-700 transition-colors duration-200 shadow-sm"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Add Goal
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSubmitConfirm(employee.employeeId);
+        }}
+        disabled={submitting[employee.employeeId]}
+        className="flex items-center px-4 py-2 text-sm bg-white border border-cyan-800 text-cyan-800 font-medium rounded-lg hover:bg-cyan-700 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
+      >
+        <Send className="w-4 h-4 mr-2" />
+        Submit Goals
+      </button>
+    </>
+  )}
 
-                    {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
-                      <span className="text-green-600 font-medium flex items-center">
-                        <Award className="w-4 h-4 mr-2" />
-                        {goals[employee.employeeId]?.[0]?.GoalStatus || 'Goals Submitted'}
-                      </span>
-                    )}
+  {submittedEmployees.includes(employee.employeeId) && goals[employee.employeeId]?.length > 0 && (
+    <span className="text-green-600 font-medium flex items-center">
+      <Award className="w-4 h-4 mr-2" />
+      {goals[employee.employeeId]?.[0]?.GoalStatus || 'Goals Submitted'}
+    </span>
+  )}
 
-                    {expandedEmployees[employee.employeeId] ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
+  {expandedEmployees[employee.employeeId] ? (
+    <ChevronUp className="w-5 h-5 text-gray-400" />
+  ) : (
+    <ChevronDown className="w-5 h-5 text-gray-400" />
+    
+  )}
+</div>
+
 
                 </div>
 
@@ -454,32 +421,7 @@ const M_Goals = () => {
                 }
               </h3>
               <div className="space-y-4">
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
-                  <select
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={goalFormData.category}
-                    onChange={(e) =>
-                      setGoalFormData({
-                        ...goalFormData,
-                        category: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="development">Development</option>
-                    <option value="leadership">Leadership</option>
-                    <option value="technical">Technical</option>
-                    <option value="soft-skills">Soft Skills</option>
-                    
-
-                    
-                  </select>
-                 
-                </div> */}
-
-
+                
 <div>
       <form>
         <label htmlFor="category">Category:</label>
