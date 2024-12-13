@@ -100,8 +100,6 @@ const saveAppraisalDetails = async (req, res) => {
     }
 };
 
-
-
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { status } = req.body;

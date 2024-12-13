@@ -161,7 +161,7 @@ const EvaluationSummary = () => {
           const managerRating = parseFloat(evaluationData.managerRating || 0);
           const goalWeight = parseFloat(overallGoalScore || 0);
           const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
-          setOverallWeightage(overallWeightage || 'N/A');
+          setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
   
           const updatedTableData = [
             {
