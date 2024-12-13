@@ -153,8 +153,17 @@ const M_myPerformance = () => {
                                                 {appraisal.status}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-blue-900 hover:text-blue-700 cursor-pointer">
-                                                <button className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16' onClick={() => handleViewClick(appraisal)}>View</button>
-                                            </td>
+                                            <button 
+ className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
+  ${["Under Review", "Under HR Review"].includes(appraisal.status) 
+      ? "opacity-50 cursor-not-allowed bg-blue-300" 
+      : "hover:bg-blue-600" 
+  }`}   
+   onClick={() => handleViewClick(appraisal)}
+    disabled={["Under Review", "Under HR Review"].includes(appraisal.status)}
+  >
+    {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Edit"}
+  </button>                                            </td>
                                         </tr>
                                     ))
                                 ) : (

@@ -5,60 +5,7 @@ const bodyParser = require('body-parser');
 const Goals = require('../models/Goals');
 const app = express()
 app.use(bodyParser.json())
-// const saveAppraisalDetails = async (req, res) => {
-//     const { employeeId, startDate, endDate } = req.params;
-//     const { pageData } = req.body;
-//     const isExit = req.query.isExit === 'true';
-//     try {
-//         if (!employeeId) {
-//             return res.status(400).send({ error: 'User ID is required' });
-//         }
 
-//         const isValidDate = (date) => !isNaN(new Date(date).getTime());
-//         if (!isValidDate(startDate) || !isValidDate(endDate)) {
-//             return res.status(400).send({ error: 'Invalid date format.' });
-//         }
-
-//         const user = await Employee.findOne({ employeeId: employeeId }, { empName: 1 });
-//         if (!user) {
-//             return res.status(404).send({ error: 'User not found' });
-//         }
-
-//         const timePeriod = [new Date(startDate), new Date(endDate)];
-//         const newStatus = isExit ? 'In Progress' : 'Submitted';
-
-//         const updateFields = { pageData, status: newStatus };
-//         if (newStatus === 'Submitted') {
-//             const currentDate = new Date();
-//             const formattedDate = new Date(currentDate.toISOString().split('T')[0]);
-//             updateFields.submittedDate = formattedDate;
-//         }
-
-//         const updatedAppraisal = await Appraisal.findOneAndUpdate(
-//             {
-//                 employeeId: employeeId,
-//                 timePeriod: { $all: timePeriod },
-//             },
-//             updateFields,
-//             { new: true }
-//         );
-
-//         if (!updatedAppraisal) {
-//             return res.status(404).json({ message: 'Appraisal form not found.' });
-//         }
-
-//         res.status(201).send({
-//             message: 'Appraisal form saved successfully!',
-//             data: updatedAppraisal,
-//         });
-//     } catch (error) {
-//         console.log('Error saving appraisal form', error);
-//         res.status(500).send({
-//             success: false,
-//             error: error.message
-//         });
-//     }
-// };
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { pageData, overallScore } = req.body;
@@ -83,8 +30,7 @@ const saveAppraisalDetails = async (req, res) => {
                 });
             }
 
-            if (question.managerEvaluation &&
-                (typeof question.managerEvaluation !== 'number')) {
+            if (question.managerEvaluation && (typeof question.managerEvaluation !== 'number')) {
                 return res.status(400).send({
                     error: 'Each manager evaluation must have a percentage'
                 });
@@ -103,9 +49,18 @@ const saveAppraisalDetails = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        // Determine status based on manager evaluation
-        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        const existingAppraisal = await Appraisal.findOne({
+            employeeId: employeeId,
+            timePeriod: { $all: timePeriod }
+        });
+
+        let newStatus = existingAppraisal ? existingAppraisal.status : null;
+        if (existingAppraisal && existingAppraisal.status === 'Under HR Review') {
+            newStatus = existingAppraisal.status; 
+        } else {
+            const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+            newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        }
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -121,7 +76,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             {
                 pageData: updatedPageData,
-                status: newStatus,
+                status: newStatus,  
                 overallScore,
                 lastModified: new Date()
             },
@@ -144,6 +99,7 @@ const saveAppraisalDetails = async (req, res) => {
         });
     }
 };
+
 
 
 const updateAppraisalStatus = async (req, res) => {

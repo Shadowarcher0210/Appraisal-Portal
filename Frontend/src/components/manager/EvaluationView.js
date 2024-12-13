@@ -185,9 +185,13 @@ const EvaluationView = () => {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
-  
-  
-    navigate('/manager-performance'); 
+  const empType = localStorage.getItem('empType')
+  if(empType==='Manager'){
+ navigate('/manager-performance'); 
+  }
+    else if(empType==='HR'){
+navigate('/hr-performance')
+    }
    
     
   };
