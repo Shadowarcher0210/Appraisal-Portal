@@ -404,7 +404,7 @@ const EvaluationSummary = () => {
                 <p className="text-sm text-gray-400 mb-1">
                   Manager's Evaluation
                 </p>
-                <p className="font-medium text-gray-900">{overallWeightage}</p>
+                <p className="font-medium text-gray-900">{overallWeightage.toFixed(2)}</p>
               </div>
             </div>
           </div>

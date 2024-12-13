@@ -404,5 +404,46 @@ const postOverAllWeightage = async (req, res)=>{
     }
 }
 
+const getOverAllPercentage = async (req, res) => {
+    const { employeeId, startDate, endDate } = req.params;
 
-module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation,postOverAllWeightage };
+    if (!employeeId) {
+        return res.status(400).json({ error: 'Employee ID is required.' });
+    }
+
+    const timePeriod = [
+        new Date(startDate).toISOString().split('T')[0],
+        new Date(endDate).toISOString().split('T')[0],
+    ];
+
+    if (timePeriod[0] > timePeriod[1]) {
+        return res.status(400).json({ error: 'Start date cannot be later than end date.' });
+    }
+
+    try {
+        const records = await OverallWeightage.find({
+            employeeId,
+            timePeriod
+        });
+
+        if (!records || records.length === 0) {
+            return res.status(404).json({
+                message: 'No records found for the specified employee and time period.',
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Overall weightage details retrieved successfully.',
+            data: records,
+        });
+    } catch (error) {
+        console.error('Error retrieving overallWeightage details:', error);
+        res.status(500).json({
+            error: 'Error retrieving overallWeightage details.',
+            details: error.message,
+        });
+    }
+};
+
+
+module.exports = { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails,saveManagerEvaluation,getManagerEvaluation,getOverallEvaluation,postOverAllWeightage, getOverAllPercentage };

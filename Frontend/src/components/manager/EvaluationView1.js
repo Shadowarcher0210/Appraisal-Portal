@@ -269,10 +269,10 @@ const handleSaveExit= async ()=>{
     0
   );
 
-  let overallScore = 0;
+  let overallGoalScore = 0;
   if (totalManagerWeight <= totalPossibleWeight) {
     const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-    overallScore = (percentageOutOf100 / 100) * 35;
+    overallGoalScore = (percentageOutOf100 / 100) * 35;
   }
 
   const payload = {
@@ -280,7 +280,7 @@ const handleSaveExit= async ()=>{
       goalId, 
       managerWeightage: managerWeightages[goalId],
     })),
-    overallScore, 
+    overallGoalScore, 
   };
 
   console.log("Payload being sent:", payload);
@@ -325,10 +325,10 @@ const handleSaveExit= async ()=>{
     0
   );
 
-  let overallScore = 0;
+  let overallGoalScore = 0;
   if (totalManagerWeight <= totalPossibleWeight) {
     const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-    overallScore = (percentageOutOf100 / 100) * 35;
+    overallGoalScore = (percentageOutOf100 / 100) * 35;
   }
 
   const payload = {
@@ -336,7 +336,7 @@ const handleSaveExit= async ()=>{
       goalId, 
       managerWeightage: managerWeightages[goalId],
     })),
-    overallScore, 
+    overallGoalScore, 
   };
 
   console.log("Payload being sent:", payload);

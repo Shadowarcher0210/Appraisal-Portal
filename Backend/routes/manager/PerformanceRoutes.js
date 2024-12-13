@@ -1,5 +1,5 @@
 const express = require('express');
-const { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails, saveManagerEvaluation, getManagerEvaluation, getOverallEvaluation, postOverAllWeightage} = require('../../controllers/manager/Performance');
+const { getEmployeeAppraisals, saveAdditionalDetails, getAdditionalDetails, saveManagerEvaluation, getManagerEvaluation, getOverallEvaluation, postOverAllWeightage, getOverAllPercentage} = require('../../controllers/manager/Performance');
 const router = express.Router()
 
 router.get('/allAppraisals/:managerName/:startDate/:endDate', getEmployeeAppraisals)
@@ -9,4 +9,5 @@ router.put('/managerEvaluation/:employeeId/:startDate/:endDate/:managerName', sa
 router.get('/Evaluation/:employeeId/:startDate/:endDate/:managerName', getManagerEvaluation);
 router.get('/overAllEvaluation/:employeeId/:startDate/:endDate',getOverallEvaluation);
 router.post('/overAllWeightage/:employeeId/:startDate/:endDate',postOverAllWeightage);
+router.get('/getOverAllPercentage/:employeeId/:startDate/:endDate',getOverAllPercentage);
 module.exports = router;
