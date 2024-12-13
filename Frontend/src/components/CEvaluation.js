@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
-import tick from '../../assets/tick.svg'
+import tick from '../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
-const EvaluationView = () => {
+const CEvaluation = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState(""); 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -65,38 +65,38 @@ const EvaluationView = () => {
   };
 
   const handleContinue =  async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
+    // if (!formData || !formData[0] || !formData[0].pageData) return;
   
-    try {
-      const overallScore = calculateOverallScore();
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          answer: item.answer || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
+    // try {
+    //   const overallScore = calculateOverallScore();
+    //   const submissionData = {
+    //     pageData: formData[0].pageData.map(item => ({
+    //       questionId: item.questionId,
+    //       answer: item.answer || '',
+    //       notes: item.notes || '',
+    //       weights: item.weights || '',
+    //       managerEvaluation: item.managerEvaluation|| 0
           
-        })),
-        overallScore: parseFloat(overallScore),
-      };
+    //     })),
+    //     overallScore: parseFloat(overallScore),
+    //   };
       
   
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("PUT request successful.");
+    // //   await axios.put(
+    // //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
+    // //     submissionData,
+    // //     { headers: { "Content-Type": "application/json" } }
+    // //   );
+    //   console.log("PUT request successful.");
   
      
-    } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
-    }
+    // } catch (error) {
+    //   console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+    //   setError("Error submitting evaluation");
+    // }
   
   
-    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
+    navigate(`/CE1/${employeeId}`,{state:{timePeriod}}); 
    
   }
 
@@ -144,63 +144,53 @@ const EvaluationView = () => {
 
   const handleManagerEvaluationChange = (e, index) => {
     if (!formData || !formData[0]) return;
-  
+
     const updatedFormData = [...formData];
-    const inputValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-    
-    // Convert to number, default to empty string if invalid
-    const value = inputValue === '' ? '' : parseInt(inputValue, 10);
-  
-    // Validation: check if value is between 1 and 100
-    if (value === '' || (value >= 1 && value <= 100)) {
-      if (!updatedFormData[0].pageData[index].managerEvaluation) {
-        updatedFormData[0].pageData[index].managerEvaluation = {};
-      }
-  
-      updatedFormData[0].pageData[index].managerEvaluation = value;
-      setFormData(updatedFormData);
+    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+
+    if (!updatedFormData[0].pageData[index].managerEvaluation) {
+      updatedFormData[0].pageData[index].managerEvaluation = {};
     }
+
+    updatedFormData[0].pageData[index].managerEvaluation = value;
+    setFormData(updatedFormData);
   };
 
 
 
-  const handleSaveExit = async () => {
-    try {
+  // const handleSaveExit = async () => {
+  //   try {
      
-      const submissionData = {
-        pageData: formData[0].pageData.map(item => ({
-          questionId: item.questionId,
-          answer: item.answer || '',
-          notes: item.notes || '',
-          weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
+  //     const submissionData = {
+  //       pageData: formData[0].pageData.map(item => ({
+  //         questionId: item.questionId,
+  //         answer: item.answer || '',
+  //         notes: item.notes || '',
+  //         weights: item.weights || '',
+  //         managerEvaluation: item.managerEvaluation|| 0
           
-        }))
-      };
+  //       }))
+  //     };
       
   
-      await axios.put(
-        `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-        submissionData,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      console.log("PUT request successful.");
+  //   //   await axios.put(
+  //   //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
+  //   //     submissionData,
+  //   //     { headers: { "Content-Type": "application/json" } }
+  //   //   );
+  //     console.log("PUT request successful.");
   
      
-    } catch (error) {
-      console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-      setError("Error submitting evaluation");
-    }
-  const empType = localStorage.getItem('empType')
-  if(empType==='Manager'){
- navigate('/manager-performance'); 
-  }
-    else if(empType==='HR'){
-navigate('/hr-performance')
-    }
+  //   } catch (error) {
+  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+  //     setError("Error submitting evaluation");
+  //   }
+  
+  
+  //   navigate('/manager-performance'); 
    
     
-  };
+  // };
 
 
   if (loading) {
@@ -384,11 +374,9 @@ navigate('/hr-performance')
                       )}
                       {/* {status === 'Completed' && ( */}
                       <td className="p-2 text-sm text-gray-600 text-center">
-                        <input
-                          className="w-20 p-1 border border-gray-300 rounded  "
-                          value={formData[0].pageData[index].managerEvaluation || ''}
-                          onInput={(e) => handleManagerEvaluationChange(e, index)}  
-                        />
+                       
+                         {formData[0].pageData[index].managerEvaluation || ''}
+                          
                       </td>
                     </tr>
                   );
@@ -410,20 +398,20 @@ navigate('/hr-performance')
               Back
             </button>
           </div>
-          <div  className='mr-2'>
+          {/* <div  className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={handleSaveExit}
             >
              Save & Exit
             </button>
-          </div>
+          </div> */}
           <div >
             <button
               className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
               onClick={handleContinue}
             >
-              Continue
+              Next
             </button>
           </div>  
         </div>
@@ -452,4 +440,4 @@ navigate('/hr-performance')
   );
 };
 
-export default EvaluationView;
+export default CEvaluation;

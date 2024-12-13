@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
-const EvaluationView2 = () => {
+const CEvaluation2 = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState(null);
@@ -201,20 +201,9 @@ const EvaluationView2 = () => {
     },
   ];
   const handleAttainmentChange = (index, event) => {
-    const inputValue = event.target.value;
-    
-    // Remove any non-numeric characters
-    const numericValue = inputValue.replace(/[^0-9]/g, '');
-    
-    // Convert to number for validation
-    const numValue = numericValue ? parseInt(numericValue, 10) : '';
-    
-    // Validate the input
-    if (numValue === '' || (numValue >= 1 && numValue <= 100)) {
-      const newAttainments = [...attainments];
-      newAttainments[index] = numValue === '' ? '' : numValue.toString();
-      setAttainments(newAttainments);
-    }
+    const newAttainments = [...attainments];
+    newAttainments[index] = event.target.value;
+    setAttainments(newAttainments);
   };
 
   const handleCommentChange = (index, event) => {
@@ -287,79 +276,83 @@ const EvaluationView2 = () => {
   };
 
   const handleContinue = async () => {
-    try {
-      const payload = AdditionalAreas.map((area, index) => ({
-        quality: area.quality,
-        successMetric: area.successMetric,
-        weightage: area.weightage,
-        attainments: attainments[index],
-        comments: comments[index]
-      }));
-      const overallScore = calculateOverallScore();
-      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-        method: 'PUT',
-        headers: {
-          "content-Type": "application/json",
+    // try {
+    //   const payload = AdditionalAreas.map((area, index) => ({
+    //     quality: area.quality,
+    //     successMetric: area.successMetric,
+    //     weightage: area.weightage,
+    //     attainments: attainments[index],
+    //     comments: comments[index]
+    //   }));
+    //   const overallScore = calculateOverallScore();
+    // //   const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+    // //     method: 'PUT',
+    // //     headers: {
+    // //       "content-Type": "application/json",
 
-        },
-        body: JSON.stringify({ payload, overallScore }),
+    // //     },
+    // //     body: JSON.stringify({ payload, overallScore }),
 
-      })
-      if (response.ok) {
-        console.log('response', response);
-        const data = await response.json();
-        console.log("data", data);
+    // //   })
+    // //   if (response.ok) {
+    // //     console.log('response', response);
+    // //     const data = await response.json();
+    // //     console.log("data", data);
         
-      } else {
-        const errorData = await response.json();
-        console.log(`Error: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error('Error updating status:', error);
-    }
-    navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
+    // //   } else {
+    // //     const errorData = await response.json();
+    // //     console.log(`Error: ${errorData.error}`);
+    // //   }
+    // } catch (error) {
+    //   console.error('Error updating status:', error);
+    // }
+    navigate(`/CE3/${employeeId}`, { state: { timePeriod } });
   };
 
 
 
   const handleBack = () => {
-    navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
+    navigate(`/CE1/${employeeId}`, { state: { timePeriod } });
   };
   
-  const handleSaveExit = async () => {
+  // const handleSaveExit = async () => {
 
-    try {
-      const payload = AdditionalAreas.map((area, index) => ({
-        quality: area.quality,
-        successMetric: area.successMetric,
-        weightage: area.weightage,
-        attainments: attainments[index],
-        comments: comments[index]
-      }));
-      const overallScore = calculateOverallScore();
-      const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`, {
-        method: 'PUT',
-        headers: {
-          "content-Type": "application/json",
+  //   try {
+  
+  //     const payload = AdditionalAreas.map((area, index) => ({
+  //       quality: area.quality,
+  //       successMetric: area.successMetric,
+  //       weightage: area.weightage,
+  //       attainments: attainments[index],
+  //       comments: comments[index]
+  //     }));
+  //   //   const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
+  //   //     method: 'PUT',
+  //   //     headers: {
+  //   //       "content-Type": "application/json",
 
-        },
-        body: JSON.stringify({ payload, overallScore }),
+  //   //     },
+  //   //     body: JSON.stringify({ payload }),
 
-      })
-      if (response.ok) {
-        console.log('response', response);
-        const data = await response.json();
-        console.log("data", data);
-        
-      } else {
-        const errorData = await response.json();
-        console.log(`Error: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error('Error updating status:', error);
-    }
-    navigate(`/manager-performance`, { state: { timePeriod } });
-  };
+  //   //   })
+  //   //   if (response.ok) {
+  //   //     console.log('response', response);
+  //   //     const data = await response.json();
+  //   //     console.log("data", data);
+  //   //     navigate("/employee-dashboard");
+  //   //   } else {
+  //   //     const errorData = await response.json();
+  //   //     console.log(`Error: ${errorData.error}`);
+  //   //   }
+  //     console.log("PUT request successful.");
+
+
+
+  //   } catch (error) {
+  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
+  //     setError("Error submitting evaluation");
+  //   }
+  // };
  
   const calculateOverallScore = () => {
     if (!attainments || attainments.length === 0) return 0;
@@ -532,21 +525,12 @@ const EvaluationView2 = () => {
                 </span>
               </td>
               <td className="p-2 text-center ">
-                <input
-                  className="w-24 p-2 text-sm border border-gray-300 rounded-md  focus:border-transparent transition-all duration-300 text-center"
-                  value={attainments[index]}
-                  onChange={(e) => handleAttainmentChange(index, e)}
-                  placeholder="0%"
-                />
+                {attainments[index]}
+                 
               </td>
               <td className="p-2">
-                <textarea
-                  className="w-full p-1 mt-1 text-sm border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-                  value={comments[index]}
-                  onChange={(e) => handleCommentChange(index, e)}
-                  rows="2"
-                  placeholder="Add your insights."
-                />
+                {comments[index]}
+                  
               </td>
             </tr>
           );
@@ -575,14 +559,14 @@ const EvaluationView2 = () => {
               Back
             </button>
           </div>
-          <div className='mr-2'>
+          {/* <div className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={handleSaveExit}
             >
               Save & Exit
             </button>
-          </div>
+          </div> */}
           <div >
             <button
               className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
@@ -597,4 +581,4 @@ const EvaluationView2 = () => {
   );
 };
 
-export default EvaluationView2;
+export default CEvaluation2;

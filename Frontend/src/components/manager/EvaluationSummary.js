@@ -68,24 +68,6 @@ const EvaluationSummary = () => {
     },
   ]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setReviewData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value,
-        },
-      }));
-    } else {
-      setReviewData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
 
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -94,6 +76,7 @@ const EvaluationSummary = () => {
   const token = localStorage.getItem("token");
   const empType = localStorage.getItem("empType");
   const [overallWeightage, setOverallWeightage] = useState('N/A');
+  const [overallGoalScore, setOverallGoalScore] = useState('N/A');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -110,19 +93,50 @@ const EvaluationSummary = () => {
   ];
 
   useEffect(() => {
+    const fetchGoalWeight = async () => {
+      if (!timePeriod) return;
+  
+      try {
+        const startDate = new Date(timePeriod[0]);
+        const endDate = new Date(timePeriod[1]);
+        
+        const prevYearStartDate = `${startDate.getFullYear() - 1}-04-01`;
+        const prevYearEndDate = `${endDate.getFullYear() - 1}-03-31`;
+  
+        const goalWeightResponse = await axios.get(
+          `http://localhost:3003/goals/managerWeight/${employeeId}/${prevYearStartDate}/${prevYearEndDate}`
+        );
+        console.log("Goal Weight Response Data:", goalWeightResponse.data.data.overallGoalScore);
+  
+      
+        setOverallGoalScore(goalWeightResponse.data.data.overallGoalScore);
+        console.log("check goals manager rating", overallGoalScore)
+      
+      } catch (error) {
+        console.error("Error fetching goal weight:", error);
+        setOverallGoalScore('N/A');
+      }
+    };
+  
+    if (employeeId && timePeriod) {
+      fetchGoalWeight();
+    }
+  }, [employeeId, timePeriod]);
+
+  useEffect(() => {
     const fetchAppraisalDetails = async () => {
       if (!employeeId || !timePeriod) {
         setError("Employee ID or time period not found");
         setLoading(false);
         return;
       }
-
+  
       try {
         const formResponse = await axios.get(
           `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
         console.log("Form Response Data:", formResponse.data);
-
+  
         const initialFormData = {
           empName: formResponse.data[0]?.empName || "",
           designation: formResponse.data[0]?.designation || "",
@@ -131,27 +145,24 @@ const EvaluationSummary = () => {
           status: formResponse.data[0]?.status || "",
           employeeId: formResponse.data[0]?.employeeId || "",
         };
-
+  
         setFormData(initialFormData);
-
+  
         const overallEvaluationResponse = await axios.get(
           `http://localhost:3003/appraisal/overAllEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
-        console.log(
-          "Overall Evaluation Response Data:",
-          overallEvaluationResponse.data
-        );
-
+        console.log("Overall Evaluation Response Data:", overallEvaluationResponse.data);
+  
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
-
+  
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
           const managerRating = parseFloat(evaluationData.managerRating || 0);
-
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating;
+          const goalWeight = parseFloat(overallGoalScore || 0);
+          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
           setOverallWeightage(overallWeightage || 'N/A');
-
+  
           const updatedTableData = [
             {
               id: 1,
@@ -163,7 +174,7 @@ const EvaluationSummary = () => {
               id: 2,
               category: "Employee Goals",
               weightage: "35%",
-              attainment: "N/A",
+              attainment: overallGoalScore || "N/A", 
             },
             {
               id: 3,
@@ -184,13 +195,13 @@ const EvaluationSummary = () => {
               attainment: overallWeightage.toFixed(2),
             },
           ];
-
+  
           setTableData(updatedTableData);
-          console.log("table data", tableData[0]);
+          console.log("Updated table data", updatedTableData);
         } else {
           console.log("No overall evaluation data found");
         }
-
+  
         setLoading(false);
       } catch (error) {
         console.error("Error fetching appraisal details:", error);
@@ -198,9 +209,10 @@ const EvaluationSummary = () => {
         setLoading(false);
       }
     };
-
+  
     fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
+  }, [employeeId, timePeriod, overallGoalScore]);
+
 
   const handleBack = () => {
     navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
@@ -214,24 +226,27 @@ const EvaluationSummary = () => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
 
-  const handleConfirmSubmit = async () => {
+  
+
+  const handleConfirmSubmit = async () => { 
     setIsModalOpen(false);
     setIsThankYouModalOpen(true);
-
+  
     if (!token) {
       console.log("No token found. Please log in.");
       return;
     }
-
+  
     try {
       let status;
-
+  
       if (empType === "HR") {
         status = "Completed";
       } else {
         status = "Under HR Review";
       }
-
+  
+      // Update form status
       const response = await fetch(
         `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         {
@@ -243,15 +258,39 @@ const EvaluationSummary = () => {
           body: JSON.stringify({ status }),
         }
       );
-
+  
       if (response.ok) {
         console.log("Status updated successfully");
-
+  
+        // Calculate overallWeightage
+        const calculatedWeightage = overallWeightage || "N/A";
+  
+        // Post overallWeightage
+        const weightageResponse = await fetch(
+          `http://localhost:3003/appraisal/overAllWeightage/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ overallWeightage: calculatedWeightage }),
+          }
+        );
+  
+        if (weightageResponse.ok) {
+          console.log("Overall weightage submitted successfully");
+        } else {
+          const weightageError = await weightageResponse.json();
+          console.log(`Error submitting overall weightage: ${weightageError.message}`);
+        }
+  
+        // Send email notification
         const emailUrl =
           empType === "HR"
             ? "http://localhost:3003/confirmationEmail/HRSubmitEmail"
             : "http://localhost:3003/confirmationEmail/managerSubmitEmail";
-
+  
         const emailResponse = await fetch(emailUrl, {
           method: "POST",
           headers: {
@@ -262,7 +301,7 @@ const EvaluationSummary = () => {
             employeeId,
           }),
         });
-
+  
         if (emailResponse.ok) {
           console.log("Email sent successfully");
         } else {
@@ -279,6 +318,7 @@ const EvaluationSummary = () => {
       setIsModalOpen(false);
     }
   };
+
 
   const closeModal = () => setIsModalOpen(false);
   const closeThankYouModal = () => {

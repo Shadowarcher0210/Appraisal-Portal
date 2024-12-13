@@ -80,14 +80,21 @@ const Dashboard = () => {
     setModalOpen(false);
   };
 
-
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
   
-    const navigatePath = ["Submitted", "Under Review", "Under HR Review", "Completed"].includes(status)
-      ? `/empview/${employeeId}`  
-      : "/form"; 
+    console.log("Status in EMP Dashboard", status);
+    
+    let navigatePath = "";
+    
+    if (status === "Submitted") {
+      navigatePath = `/empview/${employeeId}`;
+    } else if (status === "In Progress" ) {
+      navigatePath = `/form`;
+    } else if (status === "Completed") {
+      navigatePath = `/CE/${employeeId}`;
+    }
   
     if (status === "To Do") {
       try {
@@ -105,11 +112,11 @@ const Dashboard = () => {
       } catch (error) {
         console.error(`Error updating status:`, error);
       }
+      navigatePath = `/form`;
     }
   
     navigate(navigatePath, { state: { timePeriod } });
   };
-  
   return (
     <div className="min-h-screen bg-white">
       {/* Header Section with improved layout */}

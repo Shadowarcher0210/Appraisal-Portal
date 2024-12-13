@@ -163,6 +163,7 @@ const updateAppraisalStatus = async (req, res) => {
         res.status(500).send({ error: "Error updating appraisal status" });
     }
 };
+
 const getAppraisals = async (req, res) => {
     const { employeeId } = req.params;
     try {

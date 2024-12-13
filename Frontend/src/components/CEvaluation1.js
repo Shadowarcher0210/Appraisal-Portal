@@ -3,7 +3,7 @@ import axios from "axios";
 import {User, Briefcase,TrendingUp,Target,Award,ChevronRight,Users,BarChart,Calendar,Calculator,} from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
-const EvaluationView1 = () => {
+const CEvaluation1 = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -217,7 +217,7 @@ const EvaluationView1 = () => {
 }, [employeeId, timePeriod]);
 
   const handleBack = () => {
-    navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
+    navigate(`/CE/${employeeId}`, { state: { timePeriod } });
   };
 
 
@@ -255,118 +255,118 @@ useEffect(() => {
     fetchAppraisalDetails();
 }, [employeeId, timePeriod]);
 
-const handleSaveExit= async ()=>{
-  setLoading(true);
-  const totalPossibleWeight = employeeGoals.reduce(
-    (sum, goal) => sum + goal.weightage,
-    0
-  );
-  const totalManagerWeight = Object.values(managerWeightages).reduce(
-    (sum, weight) => {
-      const numericWeight = parseFloat(weight);
-      return isNaN(numericWeight) ? sum : sum + numericWeight;
-    },
-    0
-  );
+// const handleSaveExit= async ()=>{
+//   setLoading(true);
+//   const totalPossibleWeight = employeeGoals.reduce(
+//     (sum, goal) => sum + goal.weightage,
+//     0
+//   );
+//   const totalManagerWeight = Object.values(managerWeightages).reduce(
+//     (sum, weight) => {
+//       const numericWeight = parseFloat(weight);
+//       return isNaN(numericWeight) ? sum : sum + numericWeight;
+//     },
+//     0
+//   );
 
-  let overallScore = 0;
-  if (totalManagerWeight <= totalPossibleWeight) {
-    const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-    overallScore = (percentageOutOf100 / 100) * 35;
-  }
+//   let overallScore = 0;
+//   if (totalManagerWeight <= totalPossibleWeight) {
+//     const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+//     overallScore = (percentageOutOf100 / 100) * 35;
+//   }
 
-  const payload = {
-    goals: Object.keys(managerWeightages).map((goalId) => ({
-      goalId, 
-      managerWeightage: managerWeightages[goalId],
-    })),
-    overallScore, 
-  };
+//   const payload = {
+//     goals: Object.keys(managerWeightages).map((goalId) => ({
+//       goalId, 
+//       managerWeightage: managerWeightages[goalId],
+//     })),
+//     overallScore, 
+//   };
 
-  console.log("Payload being sent:", payload);
+//   console.log("Payload being sent:", payload);
 
-  try {
-    const response = await axios.put(
-      `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}?isExit=true`,
-      payload
-    );
+//   try {
+//     // const response = await axios.put(
+//     //   `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}?isExit=true`,
+//     //   payload
+//     // );
 
-    if (response.data && response.data.length > 0) {
-      const failedResults = response.data.filter(
-        (result) => result.status === "Failed"
-      );
-      if (failedResults.length > 0) {
-        setError(failedResults.map((result) => result.message).join(", "));
-      } else {
-        setSuccessMessage("Manager weightages updated successfully!");
-      }
-    }
-    navigate("/manager-performance", { state: { timePeriod } });
-  } catch (error) {
-    console.error("Error updating manager weightage:", error);
-    setError("An error occurred while updating manager weightage.");
-  } finally {
-    setLoading(false);
-  }
-}
+//     // if (response.data && response.data.length > 0) {
+//     //   const failedResults = response.data.filter(
+//     //     (result) => result.status === "Failed"
+//     //   );
+//     //   if (failedResults.length > 0) {
+//     //     setError(failedResults.map((result) => result.message).join(", "));
+//     //   } else {
+//     //     setSuccessMessage("Manager weightages updated successfully!");
+//     //   }
+//     // }
+//     navigate("/manager-performance", { state: { timePeriod } });
+//   } catch (error) {
+//     console.error("Error updating manager weightage:", error);
+//     setError("An error occurred while updating manager weightage.");
+//   } finally {
+//     setLoading(false);
+//   }
+// }
 
 
   const handleContinue = async () => {
     setLoading(true);
-  const totalPossibleWeight = employeeGoals.reduce(
-    (sum, goal) => sum + goal.weightage,
-    0
-  );
-  const totalManagerWeight = Object.values(managerWeightages).reduce(
-    (sum, weight) => {
-      const numericWeight = parseFloat(weight);
-      return isNaN(numericWeight) ? sum : sum + numericWeight;
-    },
-    0
-  );
-
-  let overallScore = 0;
-  if (totalManagerWeight <= totalPossibleWeight) {
-    const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-    overallScore = (percentageOutOf100 / 100) * 35;
-  }
-
-  const payload = {
-    goals: Object.keys(managerWeightages).map((goalId) => ({
-      goalId, 
-      managerWeightage: managerWeightages[goalId],
-    })),
-    overallScore, 
-  };
-
-  console.log("Payload being sent:", payload);
-
-  try {
-    const response = await axios.put(
-      `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}`,
-      payload
+    const totalPossibleWeight = employeeGoals.reduce(
+      (sum, goal) => sum + goal.weightage,
+      0
     );
-
-    if (response.data && response.data.length > 0) {
-      const failedResults = response.data.filter(
-        (result) => result.status === "Failed"
-      );
-      if (failedResults.length > 0) {
-        setError(failedResults.map((result) => result.message).join(", "));
-      } else {
-        setSuccessMessage("Manager weightages updated successfully!");
-      }
-    }
-    navigate("/manager-performance", { state: { timePeriod } });
-  } catch (error) {
-    console.error("Error updating manager weightage:", error);
-    setError("An error occurred while updating manager weightage.");
-  } finally {
-    setLoading(false);
+    const totalManagerWeight = Object.values(managerWeightages).reduce(
+      (sum, weight) => {
+        const numericWeight = parseFloat(weight);
+        return isNaN(numericWeight) ? sum : sum + numericWeight;
+      },
+      0
+    );
   
-    navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
+    let overallScore = 0;
+    if (totalManagerWeight <= totalPossibleWeight) {
+      const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+      overallScore = (percentageOutOf100 / 100) * 35;
+    }
+  
+    const payload = {
+      goals: Object.keys(managerWeightages).map((goalId) => ({
+        goalId, // Include the goal ID for backend reference
+        managerWeightage: managerWeightages[goalId],
+      })),
+      overallScore, // Add the calculated overall score
+    };
+  
+    console.log("Payload being sent:", payload);
+  
+    try {
+    //   const response = await axios.put(
+    //     `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+    //     payload
+    //   );
+  
+    //   if (response.data && response.data.length > 0) {
+    //     const failedResults = response.data.filter(
+    //       (result) => result.status === "Failed"
+    //     );
+    //     if (failedResults.length > 0) {
+    //       setError(failedResults.map((result) => result.message).join(", "));
+    //     } else {
+    //       setSuccessMessage("Manager weightages updated successfully!");
+    //     }  
+    //   }
+    
+    } catch (error) {
+      console.error("Error updating manager weightage:", error);
+      setError("An error occurred while updating manager weightage.");
+    } finally {
+      setLoading(false);
+    }
+    navigate(`/CE2/${employeeId}`, { state: { timePeriod } });
   };
-  }
+
 
   const previousYear = currentYear - 1;
 
@@ -563,20 +563,13 @@ const handleSaveExit= async ()=>{
                     Back
                 </button>
             </div>
-            <div className="mr-2">
-                <button
-                    className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-                    onClick={handleSaveExit}
-                >
-                    Save & Exit
-                </button>
-            </div>
+           
             <div>
                 <button
                     className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
                     onClick={handleContinue}
                 >
-                    Continue
+                   Next
                 </button>
             </div>
         </div>
@@ -585,4 +578,4 @@ const handleSaveExit= async ()=>{
 
 };
 
-export default EvaluationView1;
+export default CEvaluation1;
