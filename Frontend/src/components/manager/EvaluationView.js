@@ -162,11 +162,8 @@ const EvaluationView = () => {
     }
   };
 
-
-
   const handleSaveExit = async () => {
     try {
-     
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
@@ -177,27 +174,24 @@ const EvaluationView = () => {
           
         }))
       };
-      
-  
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
         submissionData,
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("PUT request successful.");
-  
-     
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
-  
-  
-    navigate('/manager-performance'); 
-   
-    
+  const empType = localStorage.getItem('empType')
+  if(empType==='Manager'){
+ navigate('/manager-performance'); 
+  }
+    else if(empType==='HR'){
+navigate('/hr-performance')
+    }
   };
-
 
   if (loading) {
     return (

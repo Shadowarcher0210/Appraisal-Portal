@@ -83,8 +83,7 @@ const saveAppraisalDetails = async (req, res) => {
                 });
             }
 
-            if (question.managerEvaluation &&
-                (typeof question.managerEvaluation !== 'number')) {
+            if (question.managerEvaluation && (typeof question.managerEvaluation !== 'number')) {
                 return res.status(400).send({
                     error: 'Each manager evaluation must have a percentage'
                 });
@@ -103,9 +102,18 @@ const saveAppraisalDetails = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        // Determine status based on manager evaluation
-        const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
-        const newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        const existingAppraisal = await Appraisal.findOne({
+            employeeId: employeeId,
+            timePeriod: { $all: timePeriod }
+        });
+
+        let newStatus = existingAppraisal ? existingAppraisal.status : null;
+        if (existingAppraisal && existingAppraisal.status === 'Under HR Review') {
+            newStatus = existingAppraisal.status; 
+        } else {
+            const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
+            newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
+        }
 
         const updatedPageData = pageData.map(question => {
             if (question.managerEvaluation) {
@@ -121,7 +129,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             {
                 pageData: updatedPageData,
-                status: newStatus,
+                status: newStatus,  
                 overallScore,
                 lastModified: new Date()
             },
@@ -144,7 +152,6 @@ const saveAppraisalDetails = async (req, res) => {
         });
     }
 };
-
 
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;

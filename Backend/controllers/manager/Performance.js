@@ -58,11 +58,11 @@ const saveAdditionalDetails = async (req, res) => {
         });
     }
 
-    if (typeof overallScore !== 'number') {
-        return res.status(400).json({
-            error: 'Overall score is required and must be a number.',
-        });
-    }
+    // if (typeof overallScore !== 'number') {
+    //     return res.status(400).json({
+    //         error: 'Overall score is required and must be a number.',
+    //     });
+    // }
 
     try {
         const existingRecord = await AdditionalAreas.findOne({
@@ -363,11 +363,11 @@ const postOverAllWeightage = async (req, res)=>{
         return res.status(400).json({ error: 'Start date cannot be later than end date.' });
     }
 
-    if (typeof overallWeightage !== 'number') {
-        return res.status(400).json({
-            error: 'Overall score is required and must be a number.',
-        });
-    }
+    // if (typeof overallWeightage !== 'number') {
+    //     return res.status(400).json({
+    //         error: 'Overall score is required and must be a number.',
+    //     });
+    // }
 
     try {
         const existingRecord = await OverallWeightage.findOne({

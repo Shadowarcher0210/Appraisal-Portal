@@ -161,7 +161,7 @@ const EvaluationSummary = () => {
           const managerRating = parseFloat(evaluationData.managerRating || 0);
           const goalWeight = parseFloat(overallGoalScore || 0);
           const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
-          setOverallWeightage(overallWeightage || 'N/A');
+          setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
   
           const updatedTableData = [
             {
@@ -404,7 +404,7 @@ const EvaluationSummary = () => {
                 <p className="text-sm text-gray-400 mb-1">
                   Manager's Evaluation
                 </p>
-                <p className="font-medium text-gray-900">{overallWeightage.toFixed(2)}</p>
+                <p className="font-medium text-gray-900">{overallWeightage}</p>
               </div>
             </div>
           </div>
