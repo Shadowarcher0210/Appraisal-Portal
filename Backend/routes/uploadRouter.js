@@ -1,6 +1,8 @@
 const express = require('express');
-const { uploadAppraisalLetter } = require('../controllers/uploadController');
-const { authenticateUser } = require('../middleware/authenticateUser')
+const { uploadAppraisalLetter, fetchAppraisalLetter } = require('../controllers/uploadController');
+
 const router = express.Router()
 router.put('/upload/:employeeId', uploadAppraisalLetter)
+router.get('/fetch/:employeeId', fetchAppraisalLetter)
+
 module.exports = router;

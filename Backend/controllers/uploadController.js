@@ -3,6 +3,7 @@ const Appraisal = require('../models/Appraisal');
 const User = require('../models/User');
 const multer = require('multer');
 const { GridFsStorage } = require('multer-gridfs-storage');
+const { GridFSBucket } = require('mongodb');
 const File = require('../models/UploadLetter'); 
 require('dotenv').config(); 
 
@@ -14,7 +15,7 @@ const storage = new GridFsStorage({
         }
         console.log('File being uploaded:', file);
         const fileMetadata = {
-            filename: `${file.originalname}`,
+            filename:` ${file.originalname}`,
             bucketName: 'uploadLetters',
             metadata: {
                 employeeId: req.params.employeeId,
@@ -80,4 +81,49 @@ const uploadAppraisalLetter = async (req, res) => {
     });
 };
 
-module.exports = { uploadAppraisalLetter };
+const fetchAppraisalLetter = async (req, res) => {
+    const { employeeId } = req.params;
+
+    if (!employeeId) {
+        return res.status(400).send({ error: 'Employee ID is required' });
+    }
+
+    try {
+        const user = await User.findOne({ employeeId: employeeId });
+        if (!user) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+
+        const appraisal = await Appraisal.findOne({ employeeId: employeeId });
+
+        if (!appraisal || !appraisal.appraisalLetter) {
+            return res.status(404).send({ error: 'Appraisal letter not found for this user.' });
+        }
+
+        const fileDocument = await File.findById(appraisal.appraisalLetter);
+
+        if (!fileDocument) {
+            return res.status(404).send({ error: 'File metadata not found.' });
+        }
+
+        const bucket = new GridFSBucket(mongoose.connection.db, {
+            bucketName: 'uploadLetters',
+        });
+
+        const downloadStream = bucket.openDownloadStream(fileDocument.gridFsFileId);
+
+        res.set('Content-Type', 'application/pdf'); 
+        res.set('Content-Disposition', `attachment; filename="${fileDocument.filename}"`);
+
+        downloadStream.pipe(res);
+
+        downloadStream.on('error', (err) => {
+            return res.status(500).send({ error: 'Error streaming file: ' + err.message });
+        });
+
+    } catch (error) {
+        return res.status(500).send({ error: 'Error fetching appraisal letter: ' + error.message });
+    }
+};
+
+module.exports = { uploadAppraisalLetter, fetchAppraisalLetter };
