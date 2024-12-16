@@ -326,13 +326,36 @@ const EvaluationSummary = () => {
     navigate("/employee-dashboard");
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]; 
+  
     if (file) {
-      setFileSelected(true);
-      setFileName(file.name);
+      setFileSelected(true); 
+      setFileName(file.name); 
+  
+      const formData = new FormData();
+      formData.append('appraisalLetter', file); 
+  
+      try {
+        const response = await axios.put(
+          `http://localhost:3003/letter/upload/0054`,
+          formData, 
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+  
+        if (response.status === 200) {
+          console.log('File uploaded successfully');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error); 
+      }
     }
   };
+  
 
   const handleFileDelete = () => {
     setFileSelected(false);
