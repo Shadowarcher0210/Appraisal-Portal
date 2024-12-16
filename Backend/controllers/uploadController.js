@@ -113,7 +113,8 @@ const fetchAppraisalLetter = async (req, res) => {
         const downloadStream = bucket.openDownloadStream(fileDocument.gridFsFileId);
 
         res.set('Content-Type', 'application/pdf'); 
-        res.set('Content-Disposition', `attachment; filename="${fileDocument.filename}"`);
+        res.set('Access-Control-Expose-Headers', 'Content-Disposition');
+        res.set('Content-Disposition', `filename="${fileDocument.filename}"`);
 
         downloadStream.pipe(res);
 

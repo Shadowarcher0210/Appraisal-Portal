@@ -312,36 +312,39 @@ useEffect(() => {
 
 
   const handleContinue = async () => {
-    setLoading(true);
-    const totalPossibleWeight = employeeGoals.reduce(
-      (sum, goal) => sum + goal.weightage,
-      0
-    );
-    const totalManagerWeight = Object.values(managerWeightages).reduce(
-      (sum, weight) => {
-        const numericWeight = parseFloat(weight);
-        return isNaN(numericWeight) ? sum : sum + numericWeight;
-      },
-      0
-    );
+    navigate(`/CE2/${employeeId}`, { state: { timePeriod } });
+  };
+
+    // setLoading(true);
+    // const totalPossibleWeight = employeeGoals.reduce(
+    //   (sum, goal) => sum + goal.weightage,
+    //   0
+    // );
+    // const totalManagerWeight = Object.values(managerWeightages).reduce(
+    //   (sum, weight) => {
+    //     const numericWeight = parseFloat(weight);
+    //     return isNaN(numericWeight) ? sum : sum + numericWeight;
+    //   },
+    //   0
+    // );
   
-    let overallScore = 0;
-    if (totalManagerWeight <= totalPossibleWeight) {
-      const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-      overallScore = (percentageOutOf100 / 100) * 35;
-    }
+    // let overallScore = 0;
+    // if (totalManagerWeight <= totalPossibleWeight) {
+    //   const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
+    //   overallScore = (percentageOutOf100 / 100) * 35;
+    // }
   
-    const payload = {
-      goals: Object.keys(managerWeightages).map((goalId) => ({
-        goalId, // Include the goal ID for backend reference
-        managerWeightage: managerWeightages[goalId],
-      })),
-      overallScore, // Add the calculated overall score
-    };
+    // const payload = {
+    //   goals: Object.keys(managerWeightages).map((goalId) => ({
+    //     goalId, // Include the goal ID for backend reference
+    //     managerWeightage: managerWeightages[goalId],
+    //   })),
+    //   overallScore, // Add the calculated overall score
+    // };
   
-    console.log("Payload being sent:", payload);
+    // console.log("Payload being sent:", payload);
   
-    try {
+  //  try {
     //   const response = await axios.put(
     //     `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
     //     payload
@@ -358,15 +361,13 @@ useEffect(() => {
     //     }  
     //   }
     
-    } catch (error) {
-      console.error("Error updating manager weightage:", error);
-      setError("An error occurred while updating manager weightage.");
-    } finally {
-      setLoading(false);
-    }
-    navigate(`/CE2/${employeeId}`, { state: { timePeriod } });
-  };
-
+    // } catch (error) {
+    //   console.error("Error updating manager weightage:", error);
+    //   setError("An error occurred while updating manager weightage.");
+    // } finally {
+    //   setLoading(false);
+    // }
+  
 
   const previousYear = currentYear - 1;
 
@@ -514,16 +515,20 @@ useEffect(() => {
                                     <div>
                                         <div className="flex items-center gap-4 w-full">
                                             <label className="text-sm font-medium text-gray-700 -mt-4">Weight (%)</label>
-                                            <div className="relative">
-                                            <input
+                                             <div className="relative">
+                                                <div className="w-32 p-2 border rounded mb-4 text-left bg-gray-100">
+                                                {managerWeightages[goal._id] || `Max ${goal.weightage}%`}
+                                              </div>
+                                             </div>
+                                            {/* <div className="relative"> */}
+                                            {/* <input
                                                 type="number"
                                                 className="w-32 p-2 border rounded mb-4"
                                                 value={managerWeightages[goal._id] || ''}                                                
-                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} // Update managerWeightage for this goal
+                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
                                                 min="1"
                                                 max={goal.weightage}
                                                 placeholder={`Max ${goal.weightage}%`}
-                                                // onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
                                                 />
                                             
 
@@ -531,11 +536,11 @@ useEffect(() => {
                                                     <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
                                                         Cannot exceed {goal.weightage}%
                                                     </div>
-                                                )}
-                                            </div>
-                                            <div className="text-sm text-gray-500 -mt-4">
+                                                )} */}
+                                            {/* </div> */}
+                                            {/* <div className="text-sm text-gray-500 -mt-4">
                                                 Maximum allowed: {goal.weightage}%
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 

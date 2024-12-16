@@ -61,8 +61,9 @@ const EvaluationView = () => {
 
   const handleBack = () => {
     setIsModalVisible(false);
-    navigate("/manager-performance");
-  };
+    const empType = localStorage.getItem('empType')
+    if(empType==='Manager') navigate('/manager-performance');
+    else if(empType==='HR') navigate('/hr-performance')  };
 
   const handleContinue =  async () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;

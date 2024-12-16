@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion'
 
 const M_Performance = () => {
     const [selectedYear, setSelectedYear] = useState('');
@@ -114,7 +115,28 @@ const M_Performance = () => {
                     </select>
                 </label>
             </div>
-            <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
+            <div className="overflow-hidden w-full relative mt-1">
+  <motion.div
+    className="flex mt-1"
+    animate={{
+        x: ['10%', '60%'],
+      transition: {
+        repeat: Infinity, 
+        duration: 10, 
+        ease: 'linear',
+      },
+    }}
+    style={{ width: '60%' }} 
+  >
+    <p className="whitespace-nowrap text-red-700 bg-yellow-100 underline mr-2">
+      *Note:  
+    </p>
+    <p className="whitespace-nowrap text-red-700">
+     If you need to make any changes for your employee's appraisal after submission, please reach out to your HR department for assistance.
+    </p>
+  </motion.div>
+</div>
+            <div className="flex-1 p-2  overflow-hidden max-h-full">
                 <div className="w-12/12 p-3 bg-white border shadow-md rounded-md ml-2 mr-8">
                     <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-4">Preceding Appraisals</h2>
                     <table className="min-w-full divide-y divide-gray-200">
@@ -140,20 +162,22 @@ const M_Performance = () => {
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-500">
                                             {appraisal.managerName}
                                         </td>
-                                        <td className="px-6 py-4  whitespace-nowrap">
-                                            <span className='inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>{appraisal.status}</span>
-
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium
+                                            ${appraisal.status === "Completed" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                            {appraisal.status}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">
                                         <button
-    className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 
-        ${appraisal.status === "Under HR Review" ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-    `}
-    disabled={appraisal.status === "Under HR Review"}
-    onClick={() => handleViewClick(appraisal)}
->
-    {appraisal.status === "Completed" ? "View" : "Review"}
-</button>
+                                            className={`bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16 
+                                                ${appraisal.status === "Under HR Review" ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                                            `}
+                                            disabled={appraisal.status === "Under HR Review"}
+                                            onClick={() => handleViewClick(appraisal)}
+                                        >
+                                            {appraisal.status === "Completed" ? "View" : "Review"}
+                                        </button>
                                         </td>
                                     </tr>
                                 ))

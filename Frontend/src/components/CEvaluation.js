@@ -61,7 +61,10 @@ const CEvaluation = () => {
 
   const handleBack = () => {
     setIsModalVisible(false);
-    navigate("/manager-performance");
+    // navigate("/manager-performance");
+    const empType = localStorage.getItem('empType')
+    if(empType==='Manager') navigate('/manager-performance');
+    else if(empType==='HR') navigate('/hr-performance')
   };
 
   const handleContinue =  async () => {
@@ -340,10 +343,10 @@ const CEvaluation = () => {
                     className="hover:bg-gray-50 transition-colors duration-200 group border-b"
                   >                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
               <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
-                        <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded">{item.answer}</span>
+                        <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded w-72">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
-                        <td className="p-2 text-sm text-gray-700 w-48">
+                        <td className="p-2 text-sm text-gray-700 w-52">
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
                             <span className="bg-blue-50 text-cyan-700 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
@@ -364,7 +367,7 @@ const CEvaluation = () => {
                       </td>
                       )}
                       {weights ? (
-                        <td className="p-2 text-sm text-center text-gray-700 w-48">
+                        <td className="p-2 text-sm text-left text-gray-700 w-48">
                                        <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
                                        {weights} %</span>
                         </td>
@@ -373,7 +376,7 @@ const CEvaluation = () => {
                       </td>
                       )}
                       {/* {status === 'Completed' && ( */}
-                      <td className="p-2 text-sm text-gray-600 text-center">
+                      <td className="p-2 text-sm text-gray-600 text-left">
                        
                          {formData[0].pageData[index].managerEvaluation || ''}
                           
@@ -382,9 +385,7 @@ const CEvaluation = () => {
                   );
                 })}
               </tbody>
-              <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
-   
-  </div>
+        
             </table>
           </div>
         </div>

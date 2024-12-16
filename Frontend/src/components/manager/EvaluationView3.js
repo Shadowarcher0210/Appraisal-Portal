@@ -149,7 +149,10 @@ const EvaluationView3 = () => {
       );
   
       console.log('Evaluation submitted successfully:', response.data);
-      navigate(`/manager-performance`);
+      //navigate(`/manager-performance`);
+      const empType = localStorage.getItem('empType')
+      if(empType==='Manager') navigate('/manager-performance');
+      else if(empType==='HR') navigate('/hr-performance')
   
     } catch (error) {
       console.error('Error submitting evaluation:', error.response ? error.response.data : error.message);
@@ -247,7 +250,7 @@ const EvaluationView3 = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex justify-end">
+      <div className="mt-36 flex justify-end">
         <div className="mr-auto">
           <button
             className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"

@@ -358,7 +358,10 @@ const EvaluationView2 = () => {
     } catch (error) {
       console.error('Error updating status:', error);
     }
-    navigate(`/manager-performance`, { state: { timePeriod } });
+    // navigate(`/manager-performance`, { state: { timePeriod } });
+        const empType = localStorage.getItem('empType')
+        if(empType==='Manager') navigate('/manager-performance');
+        else if(empType==='HR') navigate('/hr-performance')
   };
  
   const calculateOverallScore = () => {

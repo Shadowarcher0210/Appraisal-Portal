@@ -10,7 +10,11 @@ const CEvaluationSummary = () => {
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
   const [downloadError, setDownloadError] = useState(null);
-const [tableData, setTableData] = useState([
+  const [overallGoalScore, setOverallGoalScore] = useState('N/A');
+  const [overallWeightage, setOverallWeightage] = useState('N/A');
+
+
+  const [tableData, setTableData] = useState([
     { 
       id: 1, 
       category: 'Employee Self Appraisal', 
@@ -84,8 +88,13 @@ const [tableData, setTableData] = useState([
 
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
-        //  setOverallEvaluationData(evaluationData);
-          
+          const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
+          const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
+          const managerRating = parseFloat(evaluationData.managerRating || 0);
+          const goalWeight = parseFloat(overallGoalScore || 0);
+          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
+            
 
           const updatedTableData = [
             { 
@@ -98,7 +107,7 @@ const [tableData, setTableData] = useState([
               id: 2, 
               category: 'Employee Goals', 
               weightage: '35%', 
-              attainment: 'N/A'
+              attainment: overallGoalScore || 'N/A'
             },
             { 
               id: 3, 
@@ -116,7 +125,7 @@ const [tableData, setTableData] = useState([
               id: 5, 
               category: 'Overall Weightage', 
               weightage: '100%', 
-              attainment:  'N/A'
+              attainment:   overallWeightage.toFixed(2) || 'N/A'
             }
           ];
 
@@ -135,7 +144,38 @@ const [tableData, setTableData] = useState([
     };
 
     fetchAppraisalDetails();
-  }, [employeeId, timePeriod, tableData]);
+  }, [employeeId, timePeriod, overallGoalScore]);
+
+  useEffect(() => {
+    const fetchGoalWeight = async () => {
+      if (!timePeriod) return;
+  
+      try {
+        const startDate = new Date(timePeriod[0]);
+        const endDate = new Date(timePeriod[1]);
+        
+        const prevYearStartDate = `${startDate.getFullYear() - 1}-04-01`;
+        const prevYearEndDate = `${endDate.getFullYear() - 1}-03-31`;
+  
+        const goalWeightResponse = await axios.get(
+          `http://localhost:3003/goals/managerWeight/${employeeId}/${prevYearStartDate}/${prevYearEndDate}`
+        );
+        console.log("Goal Weight Response Data:", goalWeightResponse.data.data.overallGoalScore);
+  
+      
+        setOverallGoalScore(goalWeightResponse.data.data.overallGoalScore);
+        console.log("check goals manager rating", overallGoalScore)
+      
+      } catch (error) {
+        console.error("Error fetching goal weight:", error);
+        setOverallGoalScore('N/A');
+      }
+    };
+  
+    if (employeeId && timePeriod) {
+      fetchGoalWeight();
+    }
+  }, [employeeId, timePeriod]);
  
   const handleBack = () => {
     navigate(`/CE3/${employeeId}`, { state: { timePeriod } });
@@ -239,7 +279,7 @@ const [tableData, setTableData] = useState([
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="font-medium text-gray-900">{overallWeightage}</p>
               </div>
             </div>
           </div>

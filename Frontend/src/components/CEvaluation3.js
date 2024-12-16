@@ -165,24 +165,55 @@ const CEvaluation3 = () => {
 
       <div className="bg-white p-4 rounded-md shadow-md mx-2">
         <div className="space-y-4 ">
-          <div>
+          {/* <div>
             <label className="block text-sm font-semibold text-gray-700 mb-4">Manager Rating</label>
-           
-            <p className='ml-4'>
-              {reviewData.managerRating}
-            </p>
+            <input
+              type="text"
+              name="managerRating"
+              value={reviewData.managerRating}
+            //  onChange={handleInputChange}
+              className="p-2 border border-gray-300 rounded-md transition-all"
+              placeholder="Enter your rating"
+              pattern="[0-9]*"
+              inputMode="numeric"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium mb-4 text-gray-700">Additional Comments</label>
-           
-             <p className='ml-4'>
-              {reviewData.additionalComments}
-            </p>
+            <textarea
+              name="additionalComments"
+              value={reviewData.additionalComments}
+            //  onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-md transition-all h-24 resize-none"
+              placeholder="Enter additional comments here..."
+            />
+          </div> */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Manager Rating
+            </label>
+            <div
+              className="p-2 w-32 border border-gray-300 rounded-md bg-gray-100 text-gray-800"
+            >
+              {reviewData.managerRating || "N/A"}
+            </div>
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-4 text-gray-700">
+              Additional Comments
+            </label>
+            <div
+              className="w-full p-3 border mb-8 border-gray-300 rounded-md bg-gray-100 text-gray-800 h-24 "
+              style={{ whiteSpace: "pre-wrap" }} 
+            >
+              {reviewData.additionalComments || "No additional comments provided."}
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <div className="mt-6  flex justify-end mb-0">
+      <div className="mt-32 flex justify-end">
         <div className="mr-auto">
           <button
             className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"

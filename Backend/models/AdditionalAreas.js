@@ -30,7 +30,7 @@ const AdditionalAreaSchema = new mongoose.Schema({
     required: [true, "Employee ID is required"],
   },
   timePeriod: {
-    type: [String],
+    type: [Date],
     validate: {
       validator: function (v) {
         return v.length === 2;
