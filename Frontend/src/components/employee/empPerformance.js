@@ -157,9 +157,15 @@ const E_PerformancePage = () => {
                         {appraisal.managerName}
                       </td>
                       {/* <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-gray-500"> */}
-                      <td className="px-6 py-2 mt-4 inline-flex text-sm font-semibold rounded-lg bg-green-100 text-green-700">
+                      {/* <td className="px-6 py-2 mt-4 inline-flex text-sm font-semibold rounded-lg bg-green-100 text-green-700">
 
                         {appraisal.status}
+                      </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium
+                          ${appraisal.status === "Submitted" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {appraisal.status}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-blue-900 hover:text-blue-700 cursor-pointer">
                         <button

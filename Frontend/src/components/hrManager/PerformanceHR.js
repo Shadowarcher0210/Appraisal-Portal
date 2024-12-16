@@ -108,7 +108,8 @@ const PerformanceHR = () => {
         if (status === "Under HR Review") {
             navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
         } else if (status === "Completed") {
-            navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
+           // navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
+           navigate(`/CE/${employeeId}`, { state: { timePeriod } });
         }
     };
 
@@ -121,40 +122,48 @@ const PerformanceHR = () => {
                 <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your Team progress.</p>
             </div>
 
-            <div className='mt-2 ml-2 flex space-x-4'>
-                <div className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
-                    <label htmlFor="time-period" className="mr-2">Time Period:</label>
-                    <select
-                        id="time-period"
-                        value={selectedYear || ''}
-                        onChange={(e) => setSelectedYear(e.target.value)}
-                        className="bg-transparent"
-                    >
-                        {academicYears.map((year) => (
-                            <option key={year} value={year}>
-                                {year}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+            <div className="flex justify-between items-center">
+    <div className='mt-2 ml-2 flex space-x-4'>
+        <div className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
+            <label htmlFor="time-period" className="mr-2">Time Period:</label>
+            <select
+                id="time-period"
+                value={selectedYear || ''}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="bg-transparent"
+            >
+                {academicYears.map((year) => (
+                    <option key={year} value={year}>
+                        {year}
+                    </option>
+                ))}
+            </select>
+        </div>
 
-                <div className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
-                    <label htmlFor="reporting-manager" className="mr-2">Reporting Manager:</label>
-                    <select
-                        id="reporting-manager"
-                        value={selectedManager || ''}
-                        onChange={(e) => setSelectedManager(e.target.value)}
-                        className="bg-transparent"
-                    >
-                        <option value="">All Managers</option>
-                        {uniqueManagers.map((manager) => (
-                            <option key={manager} value={manager}>
-                                {manager}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+        <div className='border-black border-1 rounded-full py-1 px-9 bg-slate-100'>
+            <label htmlFor="reporting-manager" className="mr-2">Reporting Manager:</label>
+            <select
+                id="reporting-manager"
+                value={selectedManager || ''}
+                onChange={(e) => setSelectedManager(e.target.value)}
+                className="bg-transparent"
+            >
+                <option value="">All Managers</option>
+                {uniqueManagers.map((manager) => (
+                    <option key={manager} value={manager}>
+                        {manager}
+                    </option>
+                ))}
+            </select>
+        </div>
+    </div>
+
+    <div className="mr-10 ">
+        <button className="bg-orange-400 text-white px-3 py-2 rounded-md hover:bg-orange-600">
+            Create Appraisal
+        </button>
+    </div>
+</div>
 
             <div className="flex-1 p-2 mt-5 overflow-hidden max-h-full">
                 <div className="w-12/12 p-3 bg-white border shadow-md rounded-md ml-2 mr-8">
@@ -183,8 +192,9 @@ const PerformanceHR = () => {
                                             {appraisal.managerName || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className='inline-flex items-center py-1.5 px-2 rounded-lg text-sm font-medium text-green-800 bg-cyan-100'>
-                                                {appraisal.status || 'N/A'}
+                                            <span className={`inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium
+                                            ${appraisal.status === "Completed" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                            {appraisal.status}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-blue-900 hover:text-blue-700 cursor-pointer">

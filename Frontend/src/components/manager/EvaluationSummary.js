@@ -34,7 +34,8 @@ const EvaluationSummary = () => {
   const [email, setEmail] = useState("");
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
-
+  const [documentName, setDocumentName] = useState(null);
+  
   const [tableData, setTableData] = useState([
     {
       id: 1,
@@ -122,6 +123,35 @@ const EvaluationSummary = () => {
       fetchGoalWeight();
     }
   }, [employeeId, timePeriod]);
+
+
+  useEffect(() => {
+    const fetchFilename = async () => {
+        try {
+            const response = await axios.head(`http://localhost:3003/letter/fetch/${employeeId}`);
+            const contentDisposition = response.headers['content-disposition']; // Check lowercase key
+            const match = contentDisposition && contentDisposition.match(/filename="(.+?)"/);
+            const extractedFilename = match ? match[1] : null;
+
+            console.log("Response Headers:", response.headers); 
+
+            if (extractedFilename) {
+                setDocumentName(extractedFilename);
+                console.log("Extracted Document Name:", extractedFilename);
+            } else {
+                console.log('Filename not found in response headers.');
+            }
+        } catch (err) {
+            console.error('Error fetching filename:', err);
+            console.log('Failed to fetch the filename.');
+        }
+    };
+
+    if (employeeId) {
+        fetchFilename();
+    }
+}, [employeeId]);
+
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -323,20 +353,43 @@ const EvaluationSummary = () => {
   const closeModal = () => setIsModalOpen(false);
   const closeThankYouModal = () => {
     setIsThankYouModalOpen(false);
-    navigate("/employee-dashboard");
+   // navigate("/manager-performance");
+   const empType = localStorage.getItem('empType')
+   if(empType==='Manager') navigate('/manager-performance');
+   else if(empType==='HR') navigate('/hr-performance')
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]; 
+  
     if (file) {
-      setFileSelected(true);
+      setFileSelected(file); 
       setFileName(file.name);
+  
+      const formData = new FormData();
+      formData.append('appraisalLetter', file); 
+  
+      try {
+        const response = await axios.put(
+          `http://localhost:3003/letter/upload/${employeeId}`,
+          formData, 
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+  
+        if (response.status === 200) {
+          setDocumentName(file.name) 
+          console.log('File uploaded successfully');
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error); 
+      }
     }
-  };
-
-  const handleFileDelete = () => {
-    setFileSelected(false);
-    setFileName("");
   };
 
   return (
@@ -470,7 +523,7 @@ const EvaluationSummary = () => {
           </div>
         </div>
 
-        {empType === "HR" && (
+        {/* {empType === "HR" && (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
             <label
               htmlFor="file-upload"
@@ -487,7 +540,29 @@ const EvaluationSummary = () => {
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
                 onChange={handleFileChange}
               />
-              {fileSelected && (
+
+              { documentName ? (
+                  <div>
+                     <div className="flex items-center border-gray-300 pt-2">
+                  <div className="text-gray-800 text-sm">
+                    {documentName}
+                  </div>
+
+                  <button
+                    onClick={handleFileDelete}
+                    className="text-red-500 hover:text-red-700 items-end ml-96 -mt-14"
+                    aria-label="Delete file"
+                  >
+                    <img
+                      src={DeleteIcon}
+                      alt="delete"
+                      style={{ width: "20px" }}
+                    />
+                  </button>
+                </div>
+                  </div>
+              ):
+            (fileSelected ? (
                 <div className="flex items-center border-gray-300 pt-2">
                   <div className="text-gray-800 text-sm">
                     {fileSelected.name}
@@ -505,6 +580,43 @@ const EvaluationSummary = () => {
                     />
                   </button>
                 </div>
+              ):(<div/>))
+            }
+            </div>
+          </div>
+        )} */}
+        {empType === "HR" && (
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
+            <label
+              htmlFor="file-upload"
+              className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
+            >
+              Upload file
+            </label>
+            <div className="overflow-x-auto">
+              <input
+                type="file"
+                id="file-upload"
+                name="file-upload"
+                className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+                onChange={handleFileChange}
+              />
+
+              {fileName ? (
+                <div className="flex items-center border-gray-300 pt-2">
+                  <div className="text-gray-800 text-sm">
+                    {fileName.name}
+                  </div>
+                </div>
+              ) : documentName ? (
+                <div className="flex items-center border-gray-300 pt-2">
+                  <div className="text-gray-800 text-sm">
+                    {documentName}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">-</div>
               )}
             </div>
           </div>
@@ -526,9 +638,13 @@ const EvaluationSummary = () => {
               type="button"
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={() => {
-                navigate("/manager-dashboard");
+               
+                const empType = localStorage.getItem('empType')
+                if(empType==='Manager') navigate('/manager-performance');
+                else if(empType==='HR') navigate('/hr-performance')
               }}
             >
+              
               Save & Exit
             </button>
           </div>

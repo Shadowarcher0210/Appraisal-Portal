@@ -301,8 +301,12 @@ const handleSaveExit= async ()=>{
         setSuccessMessage("Manager weightages updated successfully!");
       }
     }
-    navigate("/manager-performance", { state: { timePeriod } });
-  } catch (error) {
+    // navigate("/manager-performance", { state: { timePeriod } });
+    const empType = localStorage.getItem('empType')
+        if(empType==='Manager')  navigate('/manager-performance') 
+          else if(empType==='HR') navigate('/hr-performance') 
+  
+   } catch (error) {
     console.error("Error updating manager weightage:", error);
     setError("An error occurred while updating manager weightage.");
   } finally {

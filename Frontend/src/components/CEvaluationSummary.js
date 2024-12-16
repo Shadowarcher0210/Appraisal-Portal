@@ -35,6 +35,8 @@ const CEvaluationSummary = () => {
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState('');
   const [downloadError, setDownloadError] = useState(null);
+  const [overallGoalScore, setOverallGoalScore] = useState('N/A');
+  const [overallWeightage, setOverallWeightage] = useState('N/A');
 
 
   const [tableData, setTableData] = useState([
@@ -70,24 +72,6 @@ const CEvaluationSummary = () => {
     }
   ]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setReviewData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setReviewData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
 
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -144,8 +128,13 @@ const CEvaluationSummary = () => {
 
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
-        //  setOverallEvaluationData(evaluationData);
-          
+          const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
+          const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
+          const managerRating = parseFloat(evaluationData.managerRating || 0);
+          const goalWeight = parseFloat(overallGoalScore || 0);
+          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
+            
 
           const updatedTableData = [
             { 
@@ -158,7 +147,7 @@ const CEvaluationSummary = () => {
               id: 2, 
               category: 'Employee Goals', 
               weightage: '35%', 
-              attainment: 'N/A'
+              attainment: overallGoalScore || 'N/A'
             },
             { 
               id: 3, 
@@ -176,7 +165,7 @@ const CEvaluationSummary = () => {
               id: 5, 
               category: 'Overall Weightage', 
               weightage: '100%', 
-              attainment:  'N/A'
+              attainment:   overallWeightage.toFixed(2) || 'N/A'
             }
           ];
 
@@ -195,6 +184,37 @@ const CEvaluationSummary = () => {
     };
 
     fetchAppraisalDetails();
+  }, [employeeId, timePeriod, overallGoalScore]);
+
+  useEffect(() => {
+    const fetchGoalWeight = async () => {
+      if (!timePeriod) return;
+  
+      try {
+        const startDate = new Date(timePeriod[0]);
+        const endDate = new Date(timePeriod[1]);
+        
+        const prevYearStartDate = `${startDate.getFullYear() - 1}-04-01`;
+        const prevYearEndDate = `${endDate.getFullYear() - 1}-03-31`;
+  
+        const goalWeightResponse = await axios.get(
+          `http://localhost:3003/goals/managerWeight/${employeeId}/${prevYearStartDate}/${prevYearEndDate}`
+        );
+        console.log("Goal Weight Response Data:", goalWeightResponse.data.data.overallGoalScore);
+  
+      
+        setOverallGoalScore(goalWeightResponse.data.data.overallGoalScore);
+        console.log("check goals manager rating", overallGoalScore)
+      
+      } catch (error) {
+        console.error("Error fetching goal weight:", error);
+        setOverallGoalScore('N/A');
+      }
+    };
+  
+    if (employeeId && timePeriod) {
+      fetchGoalWeight();
+    }
   }, [employeeId, timePeriod]);
  
   const handleBack = () => {
@@ -209,90 +229,7 @@ const CEvaluationSummary = () => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
   
-  const handleConfirmSubmit = async () => {
-    setIsModalOpen(false);
-    setIsThankYouModalOpen(true);
-  
-    if (!token) {
-      console.log("No token found. Please log in.");
-      return;
-    }
-  
-    try {
-      let status;
-  
-      if (empType === 'HR') {
-        status = 'Completed';
-      } else {
-        status = 'Under HR Review';
-      }
-  
-      const response = await fetch(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status }),
-      });
-  
-      if (response.ok) {
-        console.log('Status updated successfully');
-  
-        const emailUrl = empType === 'HR' 
-          ? 'http://localhost:3003/confirmationEmail/HRSubmitEmail'
-          : 'http://localhost:3003/confirmationEmail/managerSubmitEmail';
-  
-        const emailResponse = await fetch(emailUrl, {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            employeeId,
-          }),
-        });
-  
-        if (emailResponse.ok) {
-          console.log('Email sent successfully');
-        } else {
-          const emailError = await emailResponse.json();
-          console.log(`Error sending email: ${emailError.message}`);
-        }
-  
-      } else {
-        const errorData = await response.json();
-        console.log(`Error updating status: ${errorData.error}`);
-      }
-  
-    } catch (error) {
-      console.error('Error updating status or sending email:', error);
-    } finally {
-      setIsModalOpen(false);
-    }
-  };
-  
-  const closeModal = () => setIsModalOpen(false);
-  const closeThankYouModal = () => {
-    setIsThankYouModalOpen(false);
-    navigate("/employee-dashboard");
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileSelected(true);
-      setFileName(file.name); 
-    }
-  };
-
-  const handleFileDelete = () => {
-    setFileSelected(false);
-    setFileName('');
-  };
-
-  
+ 
   const handleDownloadLetter = async () => {
     try {
       setDownloadError(null);
@@ -378,7 +315,7 @@ const CEvaluationSummary = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="font-medium text-gray-900">{overallWeightage}</p>
               </div>
             </div>
           </div>
