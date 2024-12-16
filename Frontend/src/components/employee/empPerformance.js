@@ -81,8 +81,14 @@ const E_PerformancePage = () => {
 
   const handleViewClick = (appraisal) => {
     console.log("Navigating to view");
-    const { employeeId, timePeriod } = appraisal;
-    navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+
+    const { employeeId, timePeriod, status } = appraisal;
+    if (status === "Submitted" || status === "Under Review" || status === "Under HR Review") {
+      navigate(`/empView/${employeeId}`, { state: { timePeriod } })
+    }
+    else if (status === "Completed") {
+      navigate(`/CE/${employeeId}`, { state: { timePeriod } });
+    }
     handleCloseMenu();
   };
 
@@ -170,14 +176,12 @@ const E_PerformancePage = () => {
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-sm  text-blue-900 hover:text-blue-700 cursor-pointer">
                         <button
                           className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
-  ${["Under Review", "Under HR Review"].includes(appraisal.status)
-                              ? "opacity-50 cursor-not-allowed bg-blue-300"
-                              : "hover:bg-blue-600"
+ 
+                             
                             }`} onClick={() => handleViewClick(appraisal)}
-                            disabled={["Under Review","Under HR Review"].includes(appraisal.status)
-                            }
-                            >View</button>
-                            
+
+                        >View</button>
+
                       </td>
                     </tr>
                   ))

@@ -1,4 +1,5 @@
 const Appraisal = require("../../models/Appraisal");
+const User = require("../../models/User");
 
 const getEmployeeAppraisals = async (req, res) => {
     const {startDate, endDate } = req.params;
@@ -29,4 +30,28 @@ const getEmployeeAppraisals = async (req, res) => {
         res.status(500).json({ success: false, message: "Failed to fetch appraisals" });
     }
 };
-module.exports = {getEmployeeAppraisals}
+const getAllEmployees = async (req, res) => {
+    try {
+        const users = await User.find(); 
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No employees found."
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: users
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching employees."
+        });
+    }
+};
+
+module.exports = {getEmployeeAppraisals,getAllEmployees}

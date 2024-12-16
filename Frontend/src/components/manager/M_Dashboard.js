@@ -202,7 +202,7 @@ className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-color
   }`}                         onClick={() => handleButtonClick(appraisal)}
                         disabled={['Under Review','Under HR Review'].includes(appraisal.status)}
                       >
-    {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Edit"}
+    {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Start"}
     </button>
                     </td>
                   </tr> 
