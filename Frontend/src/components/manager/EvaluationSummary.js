@@ -5,33 +5,13 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import DeleteIcon from "../../assets/delete.svg";
 
 const EvaluationSummary = () => {
-  const [ReviewData, setReviewData] = useState({
-    employeeName: "",
-    employeeId: "",
-    department: "",
-    assessmentPeriod: "",
-    ratings: {
-      productivity: "",
-      quality: "",
-      teamwork: "",
-      communication: "",
-      initiative: "",
-    },
-    strengths: "",
-    areasForImprovement: "",
-    goalsAchieved: "",
-    futureObjectives: "",
-    overallRating: "",
-    additionalComments: "",
-  });
+ 
 
-  const [submitted, setSubmitted] = useState(false);
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
 
@@ -78,20 +58,6 @@ const EvaluationSummary = () => {
   const [overallWeightage, setOverallWeightage] = useState('N/A');
   const [overallGoalScore, setOverallGoalScore] = useState('N/A');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-    console.log("Assessment submitted:", ReviewData);
-  };
-
-  const ratingOptions = [
-    { value: "5", label: "Outstanding" },
-    { value: "4", label: "Exceeds Expectations" },
-    { value: "3", label: "Meets Expectations" },
-    { value: "2", label: "Needs Improvement" },
-    { value: "1", label: "Unsatisfactory" },
-  ];
-
   useEffect(() => {
     const fetchGoalWeight = async () => {
       if (!timePeriod) return;
@@ -121,7 +87,7 @@ const EvaluationSummary = () => {
     if (employeeId && timePeriod) {
       fetchGoalWeight();
     }
-  }, [employeeId, timePeriod]);
+  }, [employeeId, timePeriod,overallGoalScore]);
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -338,7 +304,7 @@ const EvaluationSummary = () => {
   
       try {
         const response = await axios.put(
-          `http://localhost:3003/letter/upload/0054`,
+          `http://localhost:3003/letter/upload/${employeeId}`,
           formData, 
           {
             headers: {
@@ -548,8 +514,8 @@ const EvaluationSummary = () => {
             <button
               type="button"
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={() => {
-                navigate("/manager-dashboard");
+              onClick={() => {handleFileChange()
+                navigate("/hr-performance");
               }}
             >
               Save & Exit

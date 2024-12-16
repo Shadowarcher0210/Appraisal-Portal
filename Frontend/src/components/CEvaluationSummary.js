@@ -2,42 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {  User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import DeleteIcon from "../assets/delete.svg"
 
 const CEvaluationSummary = () => {
-  const [ReviewData, setReviewData] = useState({
-    employeeName: '',
-    employeeId: '',
-    department: '',
-    assessmentPeriod: '',
-    ratings: {
-      productivity: '',
-      quality: '',
-      teamwork: '',
-      communication: '',
-      initiative: ''
-    },
-    strengths: '',
-    areasForImprovement: '',
-    goalsAchieved: '',
-    futureObjectives: '',
-    overallRating: '',
-    additionalComments: ''
-  });
+ 
 
-  const [submitted, setSubmitted] = useState(false);
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [fileSelected, setFileSelected] = useState(false);
-  const [fileName, setFileName] = useState('');
   const [downloadError, setDownloadError] = useState(null);
-
-
-  const [tableData, setTableData] = useState([
+const [tableData, setTableData] = useState([
     { 
       id: 1, 
       category: 'Employee Self Appraisal', 
@@ -70,46 +43,13 @@ const CEvaluationSummary = () => {
     }
   ]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
-      setReviewData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
-        }
-      }));
-    } else {
-      setReviewData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
-  };
-
+ 
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const empType = localStorage.getItem('empType');
-  const [overallEvaluationData, setOverallEvaluationData] = useState(null);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   setSubmitted(true);
-  //   console.log('Assessment submitted:', ReviewData);
-  // };
-
-  const ratingOptions = [
-    { value: '5', label: 'Outstanding' },
-    { value: '4', label: 'Exceeds Expectations' },
-    { value: '3', label: 'Meets Expectations' },
-    { value: '2', label: 'Needs Improvement' },
-    { value: '1', label: 'Unsatisfactory' }
-  ];
+  
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -195,7 +135,7 @@ const CEvaluationSummary = () => {
     };
 
     fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
+  }, [employeeId, timePeriod, tableData]);
  
   const handleBack = () => {
     navigate(`/CE3/${employeeId}`, { state: { timePeriod } });
@@ -209,88 +149,9 @@ const CEvaluationSummary = () => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
   
-  const handleConfirmSubmit = async () => {
-    setIsModalOpen(false);
-    setIsThankYouModalOpen(true);
-  
-    if (!token) {
-      console.log("No token found. Please log in.");
-      return;
-    }
-  
-    try {
-      let status;
-  
-      if (empType === 'HR') {
-        status = 'Completed';
-      } else {
-        status = 'Under HR Review';
-      }
-  
-      const response = await fetch(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ status }),
-      });
-  
-      if (response.ok) {
-        console.log('Status updated successfully');
-  
-        const emailUrl = empType === 'HR' 
-          ? 'http://localhost:3003/confirmationEmail/HRSubmitEmail'
-          : 'http://localhost:3003/confirmationEmail/managerSubmitEmail';
-  
-        const emailResponse = await fetch(emailUrl, {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            employeeId,
-          }),
-        });
-  
-        if (emailResponse.ok) {
-          console.log('Email sent successfully');
-        } else {
-          const emailError = await emailResponse.json();
-          console.log(`Error sending email: ${emailError.message}`);
-        }
-  
-      } else {
-        const errorData = await response.json();
-        console.log(`Error updating status: ${errorData.error}`);
-      }
-  
-    } catch (error) {
-      console.error('Error updating status or sending email:', error);
-    } finally {
-      setIsModalOpen(false);
-    }
-  };
-  
-  const closeModal = () => setIsModalOpen(false);
-  const closeThankYouModal = () => {
-    setIsThankYouModalOpen(false);
-    navigate("/employee-dashboard");
-  };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileSelected(true);
-      setFileName(file.name); 
-    }
-  };
+ 
 
-  const handleFileDelete = () => {
-    setFileSelected(false);
-    setFileName('');
-  };
 
   
   const handleDownloadLetter = async () => {

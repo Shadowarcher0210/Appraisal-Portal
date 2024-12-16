@@ -40,7 +40,7 @@ const sendConfirmationEmails = async (req, res) => {
       subject: 'Confirmation of appraisal form submission',
       html: `Dear ${user.managerName},<br><br>
       This is a system-generated email to confirm that ${user.empName} has successfully submitted their appraisal form for the <strong>${presentYear} - ${nextYear}</strong> appraisal cycle.<br><br>
-      Submission Details:<br><br>Employee Name: ${user.empName} <br><br>Department: ${user.department}.<br><br>You can view your employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.<br><br>Thank you.<br><br>Best regards,<br>BlueSpire`
+      Submission Details:<br><br>Employee Name: ${user.empName} <br><br>Department: ${user.department}.<br><br>You can view your employee's application status at <a href="http://localhost:3000">http://localhost:3000/manager-performance</a>.<br><br>Thank you./n/nBest regards,<br>BlueSpire`
     };
 
     await transporter.sendMail(userMailOptions);
