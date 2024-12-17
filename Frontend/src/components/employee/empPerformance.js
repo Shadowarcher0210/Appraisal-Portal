@@ -31,6 +31,7 @@ const E_PerformancePage = () => {
 
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
+  const nextYear2 = currentYear + 2;
 
 
   const toggleSection = (section) => {
@@ -100,8 +101,8 @@ const E_PerformancePage = () => {
   useEffect(() => {
     const fetchEmployeeGoals = async () => {
 
-      const startDate = `${currentYear}-04-01`;
-      const endDate = `${parseInt(currentYear) + 1}-03-31`;
+      const startDate = `${currentYear+1}-04-01`;
+      const endDate = `${parseInt(currentYear) + 2}-03-31`;
       try {
         const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
         setEmployeeGoals(response.data.data[0].goals || []);
@@ -198,7 +199,7 @@ const E_PerformancePage = () => {
           <div className="flex justify-between mt-5 ml-2 mr-8">
             {/* Previous Year Goals Section */}
             <div className="w-full p-3 bg-white border shadow-md rounded-md">
-              <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Goals for {currentYear}-{nextYear} </h2>
+              <h2 className="text-2xl font-bold text-white bg-blue-600 p-2 rounded mb-6">Goals for {nextYear}-{nextYear2} </h2>
 
               <div className="mb-2">
                 <button

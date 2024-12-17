@@ -19,7 +19,9 @@ const MyPerformanceHR = () => {
 
 
     const currentYear = new Date().getFullYear();
-    const nextYear = currentYear + 1;
+  const nextYear = currentYear + 1;
+  const nextYear2 = currentYear + 2;
+
     const employeeId = localStorage.getItem('employeeId');
     const categoryIcons = {
         'Development': <Target className="w-5 h-5" />,
@@ -74,8 +76,8 @@ const MyPerformanceHR = () => {
     useEffect(() => {
         const fetchEmployeeGoals = async () => {
           
-            const startDate = `${currentYear}-04-01`;
-            const endDate = `${parseInt(currentYear) + 1}-03-31`;
+            const startDate = `${currentYear+1}-04-01`;
+            const endDate = `${parseInt(currentYear)  +2}-03-31`;
           try {
             const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
             setEmployeeGoals(response.data.data[0].goals || []);
@@ -175,7 +177,7 @@ const MyPerformanceHR = () => {
                     <div className="flex justify-between mt-5 ml-2 mr-8">
             {/* Previous Year Goals Section */}
             <div className="w-full p-3 bg-white border shadow-md rounded-md">
-              <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-6">Goals for {currentYear}-{nextYear} </h2>
+              <h2 className="text-2xl font-bold text-white bg-cyan-800 p-2 rounded mb-6">Goals for {nextYear}-{nextYear2} </h2>
 
               <div className="mb-2">
                 <button
@@ -203,8 +205,8 @@ const MyPerformanceHR = () => {
                               {categoryIcons[goal.category]}
                             </div>
                             <span className="text-sm font-semibold text-cyan-900 uppercase tracking-wide">
-                              {goal.category}
-                            </span>
+                                   {goal.category === 'Others' ? goal.otherText : goal.category}
+                                  </span>
                           </div>
                         </div>
 

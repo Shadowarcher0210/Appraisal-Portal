@@ -368,102 +368,6 @@ const deleteAppraisalForm = async (req, res) => {
     }
 };
 
-
-// const sendExpiringAppraisalNotification = async (req, res) => {
-//     const { employeeId, startDate } = req.params;
-
-//     try {
-//         const startDateTime = new Date(startDate);
-//         if (isNaN(startDateTime.getTime())) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid date format. Please use YYYY-MM-DD format'
-//             });
-//         }
-
-
-//         const endDateTime = new Date(startDateTime);
-//         endDateTime.setDate(endDateTime.getDate() + 7);
-
-
-//         startDateTime.setHours(0, 0, 0, 0);
-//         endDateTime.setHours(0, 0, 0, 0);
-
-//         const today = new Date();
-//         today.setHours(0, 0, 0, 0);
-
-
-//         const notificationDate = new Date(endDateTime);
-//         notificationDate.setDate(notificationDate.getDate() - 7);
-
-//         const query = {
-//             employeeId: employeeId,
-//             timePeriod: { $exists: true, $size: 2 }
-//         };
-
-//         console.log('Checking appraisal for employeeId:', employeeId, 'with start date:', startDate);
-//         console.log('Query:', JSON.stringify(query));
-
-//         const appraisal = await Appraisal.findOne(query).select({
-//             timePeriod: 1,
-//             employeeId: 1,
-//             status: 1,
-//             empScore: 1,
-//             managerName: 1
-//         });
-
-//         console.log('Found appraisal:', JSON.stringify(appraisal));
-
-//         if (!appraisal) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'No appraisal found for this employee'
-//             });
-//         }
-
-//         const endDate = new Date(appraisal.timePeriod[1]);
-
-       
-//         const oneWeekBefore = new Date(endDate);
-//         oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
-
-       
-
-//         let message;
-//         let notificationStatus;
-
-//         if (today >= oneWeekBefore) {
-//             message = `Please submit your appraisal before ${endDate.toISOString().split('T')[0]} `;
-//         } 
-
-//         return res.status(200).json({
-//             success: true,
-//             data: {
-//                 employeeId,
-//                 status: notificationStatus,
-//                 message
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error('Error checking appraisal expiration:', error);
-
-//         if (error.name === 'CastError') {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid user ID format'
-//             });
-//         }
-
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Error checking appraisal expiration',
-//             error: error.message
-//         });
-//     }
-// };
-
-
 const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
 
@@ -476,15 +380,12 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             });
         }
 
-        // Ensure today's date is in the same time zone as the start date
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set to 00:00 for a clean date comparison (local time)
+        today.setHours(0, 0, 0, 0); 
 
-        // Calculate 7 days after the start date
         const notificationEndDate = new Date(startDateTime);
-        notificationEndDate.setDate(notificationEndDate.getDate() + 7); // 7 days after start date
-        notificationEndDate.setHours(0, 0, 0, 0); // Set to 00:00 for clean comparison
-
+        notificationEndDate.setDate(notificationEndDate.getDate() + 7); 
+        notificationEndDate.setHours(0, 0, 0, 0); 
         const query = {
             employeeId: employeeId,
             timePeriod: { $exists: true, $size: 2 }
@@ -511,13 +412,11 @@ const sendExpiringAppraisalNotification = async (req, res) => {
         }
 
         const [appraisalStartDate] = appraisal.timePeriod.map(date => new Date(date));
-        appraisalStartDate.setHours(0, 0, 0, 0); // Ensure it's set to the start of the day
-
+        appraisalStartDate.setHours(0, 0, 0, 0);
         console.log('Appraisal Start Date:', appraisalStartDate);
         console.log('Notification End Date (7 days after start date):', notificationEndDate);
 
         let message;
-        // Check if today is within 7 days after the start date and status is "To Do" or "In Progress"
         if (
             today >= appraisalStartDate &&
             today <= notificationEndDate &&
@@ -526,7 +425,7 @@ const sendExpiringAppraisalNotification = async (req, res) => {
             message = `Please complete your appraisal before ${notificationEndDate.toISOString().split('T')[0]}.`;
         } else {
             console.log('Condition not met. Today:', today, 'Appraisal Start Date:', appraisalStartDate, 'Notification End Date:', notificationEndDate, 'Status:', appraisal.status);
-            message = null; // No notification
+            message = null;
         }
 
         return res.status(200).json({
@@ -798,6 +697,7 @@ const notifyGoalsAssaigned = async (req, res) => {
                 message: "Manager Name is required"
             });
         }
+
         if (!employeeId) {
             return res.status(400).json({
                 success: false,
@@ -807,7 +707,7 @@ const notifyGoalsAssaigned = async (req, res) => {
 
         const goal = await Goals.findOne({
             employeeId,
-            "goals.GoalStatus": "Goals Submitted"
+            GoalStatus: "Goals Submitted"  
         });
 
         if (!goal) {
@@ -819,32 +719,23 @@ const notifyGoalsAssaigned = async (req, res) => {
 
         const presentYear = new Date().getFullYear();
         const nextYear = presentYear + 1;
+        const nextYear2 = presentYear + 2;
 
-        const notificationMessage = `Your manager ${managerName} has assigned you goals for the year ${presentYear} to ${nextYear}.`;
+        const notificationMessage = `Your manager ${managerName} has assigned you goals for ${nextYear} - ${nextYear2}.`;
 
-        const hasSubmittedGoals = goal.goals.some(g => g.GoalStatus === "Goals Submitted");
-
-        if (hasSubmittedGoals) {
-            return res.status(200).json({
-                success: true,
-                notificationMessage,
-            });
-        }
-
-        return res.status(404).json({
-            success: false,
-            message: "No goals with the status 'Goals Submitted' found",
+        return res.status(200).json({
+            success: true,
+            notificationMessage,
         });
 
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error sending Notification",
             error: error.message,
         });
     }
 };
-
 
 const notifyHRForUnderReviewAppraisals = async (req, res) => {
     try {
