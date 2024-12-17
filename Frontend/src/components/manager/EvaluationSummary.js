@@ -4,6 +4,7 @@ import { User, Briefcase, TrendingUp } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const EvaluationSummary = () => {
+  const [userData , setUserData]= useState(null)
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
@@ -12,6 +13,13 @@ const EvaluationSummary = () => {
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
   const [documentName, setDocumentName] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const empType = localStorage.getItem("empType");
+  const [overallWeightage, setOverallWeightage] = useState('N/A');
+
 
   const [tableData, setTableData] = useState([
     {
@@ -48,43 +56,8 @@ const EvaluationSummary = () => {
   ]);
 
 
-  const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const empType = localStorage.getItem("empType");
-  const [overallWeightage, setOverallWeightage] = useState('N/A');
-  const [overallGoalScore, setOverallGoalScore] = useState('N/A');
 
-  useEffect(() => {
-    const fetchGoalWeight = async () => {
-      if (!timePeriod) return;
-
-      try {
-
-
-        const goalWeightResponse = await axios.get(
-          `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-        console.log("Goal Weight Response Data:", goalWeightResponse.data.data.overallGoalScore);
-
-
-        setOverallGoalScore(goalWeightResponse.data.data.overallGoalScore);
-        console.log("check goals manager rating", overallGoalScore)
-
-      } catch (error) {
-        console.error("Error fetching goal weight:", error);
-        setOverallGoalScore('N/A');
-      }
-    };
-
-    if (employeeId && timePeriod) {
-      fetchGoalWeight();
-    }
-  }, [employeeId, timePeriod]);
-
-
+  
   useEffect(() => {
     const fetchFilename = async () => {
       try {
@@ -114,7 +87,7 @@ const EvaluationSummary = () => {
 
 
   useEffect(() => {
-    const fetchAppraisalDetails = async () => {
+    const fetchAllEvaluations = async () => {
       if (!employeeId || !timePeriod) {
         setError("Employee ID or time period not found");
         setLoading(false);
@@ -122,21 +95,7 @@ const EvaluationSummary = () => {
       }
 
       try {
-        const formResponse = await axios.get(
-          `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-        console.log("Form Response Data:", formResponse.data);
 
-        const initialFormData = {
-          empName: formResponse.data[0]?.empName || "",
-          designation: formResponse.data[0]?.designation || "",
-          managerName: formResponse.data[0]?.managerName || "",
-          timePeriod: formResponse.data[0]?.timePeriod || timePeriod,
-          status: formResponse.data[0]?.status || "",
-          employeeId: formResponse.data[0]?.employeeId || "",
-        };
-
-        setFormData(initialFormData);
 
         const overallEvaluationResponse = await axios.get(
           `http://localhost:3003/appraisal/overAllEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
@@ -200,9 +159,27 @@ const EvaluationSummary = () => {
       }
     };
 
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod, overallGoalScore]);
+    fetchAllEvaluations();
+  }, [employeeId, timePeriod]);
+useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
+  const fetchUserDetails = async () => {
+    if (employeeId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:3003/form/userDetailsAppraisal/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        )
+        setUserData(response.data)
+        console.log("User Details in evaluation view 1", response.data)
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    } else {
+      console.log("User ID not found in local storage.");
+    }
+  };
 
   const handleBack = () => {
     navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
@@ -236,7 +213,6 @@ const EvaluationSummary = () => {
         status = "Under HR Review";
       }
 
-      // Update form status
       const response = await fetch(
         `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
         {
@@ -252,10 +228,8 @@ const EvaluationSummary = () => {
       if (response.ok) {
         console.log("Status updated successfully");
 
-        // Calculate overallWeightage
         const calculatedWeightage = overallWeightage || "N/A";
 
-        // Post overallWeightage
         const weightageResponse = await fetch(
           `http://localhost:3003/appraisal/overAllWeightage/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
           {
@@ -358,22 +332,22 @@ const EvaluationSummary = () => {
         <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
-            {formData ? (
+            
               <div className="flex items-center gap-2">
                 <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
                   {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
                   {new Date(timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
               </div>
-            ) : (
+          
               <div />
-            )}
+           
           </div>
         </div>
       </div>
 
       <div className="mb-6">
-        {formData ? (
+        {userData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
@@ -381,7 +355,7 @@ const EvaluationSummary = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Employee Name</p>
-                <p className="font-medium text-gray-900">{formData.empName}</p>
+                <p className="font-medium text-gray-900">{userData.empName}</p>
               </div>
             </div>
 
@@ -392,7 +366,7 @@ const EvaluationSummary = () => {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Designation</p>
                 <p className="font-medium text-gray-900">
-                  {formData.designation}
+                  {userData.designation}
                 </p>
               </div>
             </div>
@@ -404,7 +378,7 @@ const EvaluationSummary = () => {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager Name</p>
                 <p className="font-medium text-gray-900">
-                  {formData.managerName}
+                  {userData.managerName}
                 </p>
               </div>
             </div>
@@ -620,7 +594,6 @@ const EvaluationSummary = () => {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">

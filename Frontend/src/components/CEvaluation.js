@@ -6,15 +6,12 @@ import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const CEvaluation = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
-  const currentYear = new Date().getFullYear() + 1;
-  const token = localStorage.getItem('token')
   const location = useLocation();
   const { timePeriod } = location.state || {}
 
@@ -50,7 +47,6 @@ const CEvaluation = () => {
           `http://localhost:3003/all/details/${employeeId}`
         );
 
-        setEmail(response.data.user.email);
       } catch (error) {
         console.error("Error fetching user details:", error);
       }

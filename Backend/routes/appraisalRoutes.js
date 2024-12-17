@@ -1,5 +1,5 @@
 const express = require('express');
-const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, notifyGoalsAssaigned, notifyEmployeeWhenUnderReview, notifyHRForUnderReviewAppraisals,} = require('../controllers/appraisalController');
+const { saveAppraisalDetails, getAppraisals, updateAppraisalStatus, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, getApplicationNotification, getApplicationNotificationStarts, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, notifyGoalsAssaigned, notifyEmployeeWhenUnderReview, notifyHRForUnderReviewAppraisals, getUserDetailsFromAppraisal,} = require('../controllers/appraisalController');
 const {authenticateUser} = require('../middleware/authenticateUser')
 
 const router = express.Router()
@@ -17,6 +17,7 @@ router.get('/getNotiStarts/:employeeId',getApplicationNotificationStarts);
 router.get('/notify/:managerName',notifyManagersOfSubmittedAppraisals);
 router.get('/notifyGoals/:employeeId/:managerName',notifyGoalsAssaigned);
 router.get('/notifyHR/:empType',notifyHRForUnderReviewAppraisals);
+router.get('/userDetailsAppraisal/:employeeId/:startDate/:endDate',getUserDetailsFromAppraisal)
 
 
 

@@ -6,7 +6,6 @@ import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,50 +38,19 @@ const EvaluationView = () => {
     setShowHelpPopup(!showHelpPopup);
   };
 
-  useEffect(() => {
-    fetchuserDetails();
-  }, []);
 
-  const fetchuserDetails = async () => {
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-
-        setEmail(response.data.user.email);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
+  
 
   const handleBack = () => {
     setIsModalVisible(false);
     const empType = localStorage.getItem('empType')
-    if(empType==='Manager') navigate('/manager-performance');
-    else if(empType==='HR') navigate('/hr-performance') 
- };
+    if (empType === 'Manager') navigate('/manager-performance');
+    else if (empType === 'HR') navigate('/hr-performance')
+  };
 
-
- const isFormComplete = () => {
-  if (!formData || !formData[0] || !formData[0].pageData) return false;
-
-  return formData[0].pageData.every(item => 
-    item.managerEvaluation !== undefined && 
-    item.managerEvaluation !== '' && 
-    item.managerEvaluation >= 1 && 
-    item.managerEvaluation <= 100
-  );
-};
-  const handleContinue =  async () => {
+  const handleContinue = async () => {
     if (!formData || !formData[0] || !formData[0].pageData) return;
-    if (!isFormComplete()) {
-      alert("Please fill in all manager evaluations with values between 1 and 100");
-      return;
-    }
+
     try {
       const overallScore = calculateOverallScore();
       const submissionData = {
@@ -425,7 +393,7 @@ const EvaluationView = () => {
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-cyan-800 text-cyan-800 rounded-lg"
+              className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -433,20 +401,17 @@ const EvaluationView = () => {
           </div>
           <div className='mr-2'>
             <button
-              className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
+              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={handleSaveExit}
             >
               Save & Exit
             </button>
           </div>
           <div >
-          <button
-            className={`px-6 py-2 rounded-lg transition-colors ${isFormComplete() ? 'bg-cyan-800 hover:bg-cyan-700 text-white' : 'bg-gray-400 text-white cursor-not-allowed'
-              }`}       
-             onClick={handleContinue}
-              disabled={!isFormComplete()}
+            <button
+              className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+              onClick={handleContinue}
             >
-
               Continue
             </button>
           </div>

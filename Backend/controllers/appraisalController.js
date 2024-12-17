@@ -8,7 +8,7 @@ app.use(bodyParser.json())
 
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData, overallScore } = req.body;
+    const { pageData, selfScore,managerScore } = req.body;
 
     const isExit = req.query.isExit === 'true';
 
@@ -56,7 +56,7 @@ const saveAppraisalDetails = async (req, res) => {
 
         let newStatus = existingAppraisal ? existingAppraisal.status : null;
         if (existingAppraisal && existingAppraisal.status === 'Under HR Review') {
-            newStatus = existingAppraisal.status; 
+            newStatus = existingAppraisal.status;
         } else {
             const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
             newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
@@ -76,7 +76,7 @@ const saveAppraisalDetails = async (req, res) => {
             },
             {
                 pageData: updatedPageData,
-                status: newStatus,  
+                status: newStatus,
                 overallScore,
                 lastModified: new Date()
             },
@@ -100,6 +100,8 @@ const saveAppraisalDetails = async (req, res) => {
     }
 };
 
+
+
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
     const { status } = req.body;
@@ -115,7 +117,7 @@ const updateAppraisalStatus = async (req, res) => {
 
         const timePeriod = [new Date(startDate), new Date(endDate)];
 
-        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review","Completed"];
+        const validStatuses = ["To Do", "In Progress", "Submitted", "Under Review", "Under HR Review", "Completed"];
         if (!validStatuses.includes(status)) {
             return res.status(400).send({ error: "Invalid status value provided" });
         }
@@ -170,7 +172,7 @@ const getAppraisals = async (req, res) => {
         if (!user) {
             return res.status(404).send({ error: 'User not found' });
         }
-       
+
         if (appraisals.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });
         }
@@ -369,100 +371,6 @@ const deleteAppraisalForm = async (req, res) => {
 };
 
 
-// const sendExpiringAppraisalNotification = async (req, res) => {
-//     const { employeeId, startDate } = req.params;
-
-//     try {
-//         const startDateTime = new Date(startDate);
-//         if (isNaN(startDateTime.getTime())) {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid date format. Please use YYYY-MM-DD format'
-//             });
-//         }
-
-
-//         const endDateTime = new Date(startDateTime);
-//         endDateTime.setDate(endDateTime.getDate() + 7);
-
-
-//         startDateTime.setHours(0, 0, 0, 0);
-//         endDateTime.setHours(0, 0, 0, 0);
-
-//         const today = new Date();
-//         today.setHours(0, 0, 0, 0);
-
-
-//         const notificationDate = new Date(endDateTime);
-//         notificationDate.setDate(notificationDate.getDate() - 7);
-
-//         const query = {
-//             employeeId: employeeId,
-//             timePeriod: { $exists: true, $size: 2 }
-//         };
-
-//         console.log('Checking appraisal for employeeId:', employeeId, 'with start date:', startDate);
-//         console.log('Query:', JSON.stringify(query));
-
-//         const appraisal = await Appraisal.findOne(query).select({
-//             timePeriod: 1,
-//             employeeId: 1,
-//             status: 1,
-//             empScore: 1,
-//             managerName: 1
-//         });
-
-//         console.log('Found appraisal:', JSON.stringify(appraisal));
-
-//         if (!appraisal) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: 'No appraisal found for this employee'
-//             });
-//         }
-
-//         const endDate = new Date(appraisal.timePeriod[1]);
-
-       
-//         const oneWeekBefore = new Date(endDate);
-//         oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
-
-       
-
-//         let message;
-//         let notificationStatus;
-
-//         if (today >= oneWeekBefore) {
-//             message = `Please submit your appraisal before ${endDate.toISOString().split('T')[0]} `;
-//         } 
-
-//         return res.status(200).json({
-//             success: true,
-//             data: {
-//                 employeeId,
-//                 status: notificationStatus,
-//                 message
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error('Error checking appraisal expiration:', error);
-
-//         if (error.name === 'CastError') {
-//             return res.status(400).json({
-//                 success: false,
-//                 message: 'Invalid user ID format'
-//             });
-//         }
-
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Error checking appraisal expiration',
-//             error: error.message
-//         });
-//     }
-// };
-
 
 const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
@@ -605,11 +513,11 @@ const getApplicationNotification = async (req, res) => {
                 employeeId,
             })
         }
-        else if (appraisal.status === 'Completed'){
+        else if (appraisal.status === 'Completed') {
             const managerName = appraisal.managerName || 'the manager';
             return res.status(200).json({
-                sucess:true,
-                message:`Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed.`,
+                sucess: true,
+                message: `Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed.`,
                 employeeId,
             })
         }
@@ -657,7 +565,7 @@ const getApplicationNotificationStarts = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 shouldNotify: false,
-               
+
             });
         }
 
@@ -693,7 +601,7 @@ const getApplicationNotificationStarts = async (req, res) => {
         return res.status(200).json({
             success: true,
             shouldNotify: false,
-    
+
         });
 
     } catch (error) {
@@ -900,9 +808,35 @@ const notifyHRForUnderReviewAppraisals = async (req, res) => {
     }
 };
 
+const getUserDetailsFromAppraisal = async (req, res) => {
+    const { employeeId, startDate, endDate } = req.params
+    try {
+        if (!employeeId && !startDate && !endDate) {
+            return res.status(404).send({
+                success: false,
+                message: 'Employee Id and Time Period is not found'
+            })
+        } else {
+
+            const start = new Date(startDate).toISOString().split('T')[0]
+            const end = new Date(endDate).toISOString().split('T')[0]
+
+
+            const user = await Appraisal.findOne({
+                employeeId: employeeId,
+                "timePeriod.0": { $gte: start },
+                "timePeriod.1": { $lte: end },
+            },{empName:1,managerName:1,designation:1,status:1,_id:0})
+            res.status(200).json(user)
+        }
+    } catch (error) {
+        console.error('Error fetching appraisal User Details:', error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+
+}
 
 
 
 
-
-module.exports = { notifyHRForUnderReviewAppraisals, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, getApplicationNotificationStarts, getApplicationNotification, saveAppraisalDetails, updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned }
+module.exports = { notifyHRForUnderReviewAppraisals, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, getApplicationNotificationStarts, getApplicationNotification, saveAppraisalDetails, updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned, getUserDetailsFromAppraisal }

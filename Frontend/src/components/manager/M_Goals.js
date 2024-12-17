@@ -109,7 +109,7 @@ const M_Goals = () => {
 
 
 
-  const [empType, setEmpType] = useState("Employee"); 
+  const [empType] = useState("Employee"); 
 
   const fetchCategories = async () => {
     try {
@@ -156,7 +156,7 @@ const M_Goals = () => {
       }
     };
     allEmployees();
-  }, []);
+  },[]);
 
   const handleEditGoal = (employeeId, goal) => {
     setSelectedEmployee(employeeId);
