@@ -22,7 +22,7 @@ const M_Goals = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [employeeToSubmit, setEmployeeToSubmit] = useState(null);
   const [submittedEmployees, setSubmittedEmployees] = useState([]);
-  const [goals, setGoals] = useState([]);
+  const [goals, setGoals] = useState({});
   const [goalsFetched, setGoalsFetched] = useState({});
   const [goalFormData, setGoalFormData] = useState({
     employeeId: "",
@@ -38,8 +38,8 @@ const M_Goals = () => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
-  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
-  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
+  const appraisalStartDate = new Date(`${currentYear+1}-04-01`).toLocaleDateString('en-CA');
+  const appraisalEndDate = new Date(`${currentYear + 2}-03-31`).toLocaleDateString('en-CA');
 
   const [employees, setEmployees] = useState([]);
   const [expandedEmployees, setExpandedEmployees] = useState({});

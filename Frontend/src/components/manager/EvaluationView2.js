@@ -317,7 +317,7 @@ const EvaluationView2 = () => {
     } catch (error) {
       console.error('Error updating status:', error);
     }
-    navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
+    navigate(`/evaluationSummary/${employeeId}`, { state: { timePeriod } });
   };
 
 
