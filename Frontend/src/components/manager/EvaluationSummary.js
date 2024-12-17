@@ -95,7 +95,7 @@ const EvaluationSummary = () => {
     const fetchFilename = async () => {
         try {
             const response = await axios.head(`http://localhost:3003/letter/fetch/${employeeId}`);
-            const contentDisposition = response.headers['content-disposition']; // Check lowercase key
+            const contentDisposition = response.headers['content-disposition'];
             const match = contentDisposition && contentDisposition.match(/filename="(.+?)"/);
             const extractedFilename = match ? match[1] : null;
 
@@ -239,7 +239,7 @@ const EvaluationSummary = () => {
       if (empType === "HR") {
         status = "Completed";
       } else {
-        status = "Under HR Review";
+        status = "Pending HR Review";
       }
   
       // Update form status

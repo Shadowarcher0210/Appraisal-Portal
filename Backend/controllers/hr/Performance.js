@@ -17,7 +17,7 @@ const getEmployeeAppraisals = async (req, res) => {
                     { $lte: [{ $arrayElemAt: ["$timePeriod", 1] }, new Date(endDate)] }
                 ]
             },
-            status: { $in: [ "Under HR Review",'Completed'] }
+            status: { $in: [ "Pending HR Review" , "Under HR Review",'Completed'] }
         });
 
         if (appraisals.length === 0) {

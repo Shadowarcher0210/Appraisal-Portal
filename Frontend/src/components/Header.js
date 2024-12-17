@@ -356,7 +356,7 @@ const Header = () => {
             className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
             onClick={() => handleTabClick('performance', '/employee-performance')}
           >
-            Performance
+            Performance Insights
           </div>
         </div>
       )}
@@ -373,13 +373,13 @@ const Header = () => {
             className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
             onClick={() => handleTabClick('myPerformance', '/manager-my-performance')}
           >
-            My Performance
+            Performance Insights
           </div>
           <div
             className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
             onClick={() => handleTabClick('performance', '/manager-performance')}
           >
-            Performance
+            Team Appraisals
           </div>
           <div
             className={`nav-item cursor-pointer relative ${activeTab === 'goals' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
@@ -402,13 +402,13 @@ const Header = () => {
             className={`nav-item cursor-pointer relative ${activeTab === 'myPerformance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
             onClick={() => handleTabClick('myPerformance', '/hr-myperformance')}
           >
-            My Performance
+            Performance Insights
           </div>
           <div
             className={`nav-item cursor-pointer relative ${activeTab === 'performance' ? 'text-blue-600 after:content-[""] after:absolute after:left-0 after:bottom-[-13px] after:w-full after:h-[2px] after:bg-blue-600' : 'text-gray-600'}`}
             onClick={() => handleTabClick('performance', '/hr-performance')}
           >
-            Performance
+            Employee Appraisals
           </div>
         </div>
       )}

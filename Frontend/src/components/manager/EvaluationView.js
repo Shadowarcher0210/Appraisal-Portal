@@ -310,7 +310,7 @@ const EvaluationView = () => {
                 <TrendingUp className="text-orange-600" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400 mb-1">Self Appraisal Evaluation</p>
+                <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
                 <p className="font-medium text-gray-900">{calculateOverallScore()}</p>
               </div>
             </div>
