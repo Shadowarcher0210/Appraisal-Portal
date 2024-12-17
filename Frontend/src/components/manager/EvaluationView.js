@@ -6,7 +6,7 @@ import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState(""); 
+  const [email, setEmail] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -91,29 +91,29 @@ const EvaluationView = () => {
           answer: item.answer || '',
           notes: item.notes || '',
           weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
-          
+          managerEvaluation: item.managerEvaluation || 0
+
         })),
         overallScore: parseFloat(overallScore),
       };
-      
-  
+
+
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
         submissionData,
         { headers: { "Content-Type": "application/json" } }
       );
       console.log("PUT request successful.");
-  
-     
+
+
     } catch (error) {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
-  
-  
-    navigate(`/evaluationView1/${employeeId}`,{state:{timePeriod}}); 
-   
+
+
+    navigate(`/evaluationView1/${employeeId}`, { state: { timePeriod } });
+
   }
 
   useEffect(() => {
@@ -160,19 +160,19 @@ const EvaluationView = () => {
 
   const handleManagerEvaluationChange = (e, index) => {
     if (!formData || !formData[0]) return;
-  
+
     const updatedFormData = [...formData];
     const inputValue = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-    
+
     // Convert to number, default to empty string if invalid
     const value = inputValue === '' ? '' : parseInt(inputValue, 10);
-  
+
     // Validation: check if value is between 1 and 100
     if (value === '' || (value >= 1 && value <= 100)) {
       if (!updatedFormData[0].pageData[index].managerEvaluation) {
         updatedFormData[0].pageData[index].managerEvaluation = {};
       }
-  
+
       updatedFormData[0].pageData[index].managerEvaluation = value;
       setFormData(updatedFormData);
     }
@@ -186,8 +186,8 @@ const EvaluationView = () => {
           answer: item.answer || '',
           notes: item.notes || '',
           weights: item.weights || '',
-          managerEvaluation: item.managerEvaluation|| 0
-          
+          managerEvaluation: item.managerEvaluation || 0
+
         }))
       };
       await axios.put(
@@ -200,12 +200,12 @@ const EvaluationView = () => {
       console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
       setError("Error submitting evaluation");
     }
-  const empType = localStorage.getItem('empType')
-  if(empType==='Manager'){
- navigate('/manager-performance'); 
-  }
-    else if(empType==='HR'){
-navigate('/hr-performance')
+    const empType = localStorage.getItem('empType')
+    if (empType === 'Manager') {
+      navigate('/manager-performance');
+    }
+    else if (empType === 'HR') {
+      navigate('/hr-performance')
     }
   };
 
@@ -235,16 +235,16 @@ navigate('/hr-performance')
 
   const calculateOverallScore = () => {
     if (!formData || !formData[0] || !formData[0].pageData) return 0;
-  
+
     const totalQuestions = formData[0].pageData.length;
     const totalPercentage = totalQuestions * 100;
-  
+
     const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
-      return sum + (item.managerEvaluation || 0); 
+      return sum + (item.managerEvaluation || 0);
     }, 0);
-  
-    const overallScore = (totalManagerEvaluation / totalPercentage) * 10; 
-    return overallScore.toFixed(2); 
+
+    const overallScore = (totalManagerEvaluation / totalPercentage) * 10;
+    return overallScore.toFixed(2);
   };
 
   return (
@@ -327,21 +327,21 @@ navigate('/hr-performance')
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-            <thead className="bg-gray-50">
-            <tr className="bg-gray-50">
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Areas of Self Assessment</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Requirement</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Response</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Notes</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Attainment</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Manager Evaluation</th>
-                  
+              <thead className="bg-gray-50">
+                <tr className="bg-gray-50">
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Areas of Self Assessment</th>
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Requirement</th>
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Response</th>
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Notes</th>
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Attainment</th>
+                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    Manager Evaluation</th>
+
                 </tr>
               </thead>
               <tbody>
@@ -351,11 +351,11 @@ navigate('/hr-performance')
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   return (
-                    <tr 
-                    key={index} 
-                    className="hover:bg-gray-50 transition-colors duration-200 group border-b"
-                  >                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
-              <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-50 transition-colors duration-200 group border-b"
+                    >                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
+                      <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
                         <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded">{item.answer}</span>
                       </td>
                       {previousAnswer ? (
@@ -363,7 +363,7 @@ navigate('/hr-performance')
                           <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
                             <img src={tick} size={14} className="text-gray-400" />
                             <span className="bg-blue-50 text-cyan-700 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
-                            {previousAnswer}</span>
+                              {previousAnswer}</span>
                           </div>
                         </td>
                       ) : (
@@ -381,28 +381,43 @@ navigate('/hr-performance')
                       )}
                       {weights ? (
                         <td className="p-2 text-sm text-center text-gray-700 w-48">
-                                       <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
-                                       {weights} %</span>
+                          <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                            {weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
                       {/* {status === 'Completed' && ( */}
-                      <td className="p-2 text-sm text-gray-600 text-center">
+                      {/* <td className="p-2 text-sm text-gray-600 text-center">
                         <input
                           className="w-20 p-1 border border-gray-300 rounded  "
                           value={formData[0].pageData[index].managerEvaluation || ''}
                           onInput={(e) => handleManagerEvaluationChange(e, index)}  
                         />
+                      </td> */}
+                      <td className="p-2 text-sm text-gray-600 text-center">
+                        <select
+                          className="w-20 p-1 border border-gray-300 rounded"
+                          value={formData[0].pageData[index].managerEvaluation || ''}
+                          onChange={(e) => handleManagerEvaluationChange(e, index)}
+                        >
+                          <option value="">select</option>
+                          <option value="20">20</option>
+                          <option value="40">40</option>
+                          <option value="60">60</option>
+                          <option value="80">80</option>
+                          <option value="100">100</option>
+                        </select>
                       </td>
+
                     </tr>
                   );
                 })}
               </tbody>
               <div className="mt-2 bg-white rounded-lg p-0.5 shadow-md">
-   
-  </div>
+
+              </div>
             </table>
           </div>
         </div>
@@ -416,12 +431,12 @@ navigate('/hr-performance')
               Back
             </button>
           </div>
-          <div  className='mr-2'>
+          <div className='mr-2'>
             <button
               className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
               onClick={handleSaveExit}
             >
-             Save & Exit
+              Save & Exit
             </button>
           </div>
           <div >
@@ -434,7 +449,7 @@ navigate('/hr-performance')
 
               Continue
             </button>
-          </div>  
+          </div>
         </div>
 
         {isModalVisible && (

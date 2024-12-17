@@ -2,38 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {  User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import DeleteIcon from "../assets/delete.svg"
 
 const CEvaluationSummary = () => {
-  const [ReviewData, setReviewData] = useState({
-    employeeName: '',
-    employeeId: '',
-    department: '',
-    assessmentPeriod: '',
-    ratings: {
-      productivity: '',
-      quality: '',
-      teamwork: '',
-      communication: '',
-      initiative: ''
-    },
-    strengths: '',
-    areasForImprovement: '',
-    goalsAchieved: '',
-    futureObjectives: '',
-    overallRating: '',
-    additionalComments: ''
-  });
+ 
 
-  const [submitted, setSubmitted] = useState(false);
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [fileSelected, setFileSelected] = useState(false);
-  const [fileName, setFileName] = useState('');
   const [downloadError, setDownloadError] = useState(null);
   const [overallGoalScore, setOverallGoalScore] = useState('N/A');
   const [overallWeightage, setOverallWeightage] = useState('N/A');
@@ -72,28 +47,13 @@ const CEvaluationSummary = () => {
     }
   ]);
 
-
+ 
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const empType = localStorage.getItem('empType');
-  const [overallEvaluationData, setOverallEvaluationData] = useState(null);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   setSubmitted(true);
-  //   console.log('Assessment submitted:', ReviewData);
-  // };
-
-  const ratingOptions = [
-    { value: '5', label: 'Outstanding' },
-    { value: '4', label: 'Exceeds Expectations' },
-    { value: '3', label: 'Meets Expectations' },
-    { value: '2', label: 'Needs Improvement' },
-    { value: '1', label: 'Unsatisfactory' }
-  ];
+  
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -229,7 +189,11 @@ const CEvaluationSummary = () => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
   
+
  
+
+
+  
   const handleDownloadLetter = async () => {
     try {
       setDownloadError(null);

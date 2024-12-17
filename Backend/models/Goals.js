@@ -46,7 +46,7 @@ const goalContent = new mongoose.Schema(
       enum: ['HR', 'Manager', 'Employee'],
     },
     timePeriod: {
-      type: [String],
+      type: [Date],
       validate: {
         validator: function(v) {
           return v.length === 2;

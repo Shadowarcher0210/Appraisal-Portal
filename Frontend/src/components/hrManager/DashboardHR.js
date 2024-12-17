@@ -169,8 +169,8 @@ const DashboardHR = () => {
                                                 className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16'
                                                 onClick={() => handleButtonClick(appraisal)}
                                             >
-                                                {appraisal.status === "Submitted" ? "View" : "Edit"}
-                                            </button>
+    {["Submitted", "Under Review","Completed"].includes(appraisal.status) ? "View" : "Start"}
+    </button>
                                         </td>
                                     </tr>
                                 ))

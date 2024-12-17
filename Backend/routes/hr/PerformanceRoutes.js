@@ -4,5 +4,4 @@ const router= express.Router();
 
 router.get('/allAppraisals/:startDate/:endDate', getEmployeeAppraisals)
 router.get('/allEmployees',getAllEmployees)
-
 module.exports=router;

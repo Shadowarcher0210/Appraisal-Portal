@@ -18,26 +18,7 @@ const CEvaluation3 = () => {
     additionalComments: '' 
   });
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-    
-  //   if (name === 'managerRating') {
-  //     const numericValue = value.replace(/[^0-9]/g, '');
-  //     if (numericValue === '' || (parseInt(numericValue) <= 100)) {
-  //       setReviewData(prev => ({
-  //         ...prev,
-  //         [name]: numericValue
-  //       }));
-  //       const converted = numericValue ? ((parseInt(numericValue) / 100) * 30).toFixed(2) : '-'; 
-  //       setConvertedRating(converted);
-  //     }
-  //   } else {
-  //     setReviewData(prev => ({
-  //       ...prev,
-  //       [name]: value
-  //     }));
-  //   }
-  // };
+ 
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -120,7 +101,7 @@ const CEvaluation3 = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full">
+    <div className="h-screen bg-gray-100 p-4 w-full">
       <div className="mb-2">
         <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
@@ -241,18 +222,7 @@ const CEvaluation3 = () => {
             Back
           </button>
         </div>
-        
-        {/* <div className='mr-2'>
-          <button
-            type="button"
-            className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-            onClick={() => {
-              navigate("/manager-dashboard");
-            }}
-          >
-            Save & Exit
-          </button>
-        </div> */}
+      
 
         <div>
           <button
