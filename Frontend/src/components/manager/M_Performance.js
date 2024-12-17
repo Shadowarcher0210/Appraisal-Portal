@@ -95,7 +95,7 @@ const M_Performance = () => {
     return (
         <div className="justify-center items-start mt-20 ml-6">
             <div>
-                <label className='ml-2 text-3xl font-bold text-orange-600'>Performance Insights</label>
+                <label className='ml-2 text-3xl font-bold text-orange-600'>Appraisal Insights for the team</label>
                 <p className='ml-4 mt-3 text-gray-800 font-medium'>Key metrics and trends to guide your Team progress.</p>
             </div>
 

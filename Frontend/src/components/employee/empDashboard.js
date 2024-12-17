@@ -88,7 +88,7 @@ const Dashboard = () => {
 
     let navigatePath = "";
 
-    if (status === "Submitted" || status === "Under Review" || status === "Under HR Review") {
+    if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
       navigatePath = `/empview/${employeeId}`;
     } else if (status === "In Progress") {
       navigatePath = `/form`;

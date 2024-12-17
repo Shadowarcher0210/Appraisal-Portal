@@ -447,14 +447,24 @@ const handleSaveExit= async ()=>{
                                                 type="number"
                                                 className="w-32 p-2 border rounded mb-4"
                                                 value={managerWeightages[goal._id] || ''}                                                
-                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} // Update managerWeightage for this goal
+                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
                                                 min="1"
-                                                max={goal.weightage}
-                                                placeholder={`Max ${goal.weightage}%`}
-                                                // onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
+                                                max="100"
+                                                placeholder="Add goal weightage"
+                                               
                                                 />
-                                            
-
+{/*                                             
+                                            <input
+                                                type="number"
+                                                className="w-44 p-2 border rounded mb-4"
+                                                value={managerWeightages[goal._id] || ''}                                                
+                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
+                                                min="1"
+                                                max='100'
+                                                placeholder="Add goal weightage"
+                                               
+                                                /> */}
+                                          
                                                 {Number(managerWeightages[goal._id]) > goal.weightage && (
                                                     <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
                                                         Cannot exceed {goal.weightage}%
