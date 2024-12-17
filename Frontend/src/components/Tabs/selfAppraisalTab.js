@@ -7,10 +7,6 @@ const SelfAppraisalTab = ({
   handlePreviousForm,
 }) => {
 
-// useAutosave(() => {
-//     handleSave();
-// }, 60 * 1000);
-
   const generalQuestions = [
     "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
     "Team-work: I work effectively and efficiently with team.",
@@ -53,6 +49,8 @@ const SelfAppraisalTab = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [totalWeight, setTotalWeight] = useState(0);
+  const [convertedScore, setConvertedScore] = useState(0);
 
   const location = useLocation();
   const { timePeriod } = location.state || {}
@@ -132,10 +130,11 @@ const SelfAppraisalTab = ({
   }, [employeeId, timePeriod]);
 
   const updateWeight = (index, value) => {
-    setWeights(prev => ({
-      ...prev,
-      [index]: value
-    }));
+    setWeights((prev) => {
+      const updatedWeights = { ...prev, [index]: value };
+      calculateScore(updatedWeights); 
+      return updatedWeights;
+    });
   };
 
   const saveNotes = (index, value) => {
@@ -144,6 +143,21 @@ const SelfAppraisalTab = ({
       [index]: value
     }));
   };
+
+  const calculateScore = (updatedWeights) => {
+    const totalQuestions = generalQuestions.length + competencyQuestions.length;
+    const totalWeight = Object.values(updatedWeights).reduce(
+      (sum, weight) => sum + weight,0);
+
+    const score = totalQuestions > 0 ? (totalWeight / (totalQuestions * 100)) * 10 : 0;
+
+    setTotalWeight(totalWeight);
+    setConvertedScore(score.toFixed(2)); 
+  };
+
+  useEffect(() => {
+    calculateScore(weights); 
+  }, [weights]);
 
 
   const isFormComplete = () => {
@@ -284,7 +298,7 @@ const handleSave = async () => {
         "content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
       },
-      body: JSON.stringify({ pageData }),
+      body: JSON.stringify({ pageData,selfScore:convertedScore },),
       status: "In Progress"
     })
     if (response.ok) {
@@ -401,7 +415,7 @@ const closeThankYouModal = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1"> Evaluation Status</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="font-medium text-gray-900">{convertedScore}</p>
               </div>
             </div>
           </div>) : (<div />)}
@@ -592,4 +606,3 @@ const closeThankYouModal = () => {
 }; 
 
 export default SelfAppraisalTab;
-
