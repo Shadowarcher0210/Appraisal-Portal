@@ -485,23 +485,23 @@ const handleSaveExit= async ()=>{
         <div className="sticky mt-20 flex justify-end">
             <div className="mr-auto">
                 <button
-                    className="px-6 py-2 bg-white border border-cyan-800 text-cyan-800 rounded-lg"
-                    onClick={handleBack}
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-cyan-800 text-cyan-800 rounded-lg"
+              onClick={handleBack}
                 >
                     Back
                 </button>
             </div>
             <div className="mr-2">
                 <button
-                    className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-                    onClick={handleSaveExit}
+              className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
+              onClick={handleSaveExit}
                 >
                     Save & Exit
                 </button>
             </div>
             <div>
                 <button
-                    className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+                    className="px-6 py-2 text-white bg-cyan-800 hover:bg rounded-lg"
                     onClick={handleContinue}
                 >
                     Continue
