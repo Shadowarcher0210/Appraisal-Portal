@@ -2,11 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { User, Briefcase, TrendingUp } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import DeleteIcon from "../../assets/delete.svg";
 
 const EvaluationSummary = () => {
- 
-
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
@@ -15,7 +12,7 @@ const EvaluationSummary = () => {
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
   const [documentName, setDocumentName] = useState(null);
-  
+
   const [tableData, setTableData] = useState([
     {
       id: 1,
@@ -25,24 +22,25 @@ const EvaluationSummary = () => {
     },
     {
       id: 2,
+      category: "Manager Assessment",
+      weightage: "30%",
+      attainment: "",
+    },
+    {
+      id: 3,
       category: "Employee Goals",
       weightage: "35%",
       attainment: "",
     },
     {
-      id: 3,
+      id: 4,
       category: "Additional Areas of Assessment",
       weightage: "25%",
       attainment: "",
     },
+   
     {
-      id: 4,
-      category: "Manager Rating",
-      weightage: "30%",
-      attainment: "",
-    },
-    {
-      id: 4,
+      id: 5,
       category: "Overall Weightage",
       weightage: "100%",
       attainment: "",
@@ -62,29 +60,25 @@ const EvaluationSummary = () => {
   useEffect(() => {
     const fetchGoalWeight = async () => {
       if (!timePeriod) return;
-  
+
       try {
-        const startDate = new Date(timePeriod[0]);
-        const endDate = new Date(timePeriod[1]);
-        
-        const prevYearStartDate = `${startDate.getFullYear() - 1}-04-01`;
-        const prevYearEndDate = `${endDate.getFullYear() - 1}-03-31`;
-  
+
+
         const goalWeightResponse = await axios.get(
-          `http://localhost:3003/goals/managerWeight/${employeeId}/${prevYearStartDate}/${prevYearEndDate}`
+          `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
         console.log("Goal Weight Response Data:", goalWeightResponse.data.data.overallGoalScore);
-  
-      
+
+
         setOverallGoalScore(goalWeightResponse.data.data.overallGoalScore);
         console.log("check goals manager rating", overallGoalScore)
-      
+
       } catch (error) {
         console.error("Error fetching goal weight:", error);
         setOverallGoalScore('N/A');
       }
     };
-  
+
     if (employeeId && timePeriod) {
       fetchGoalWeight();
     }
@@ -99,24 +93,24 @@ const EvaluationSummary = () => {
             const match = contentDisposition && contentDisposition.match(/filename="(.+?)"/);
             const extractedFilename = match ? match[1] : null;
 
-            console.log("Response Headers:", response.headers); 
+        console.log("Response Headers:", response.headers);
 
-            if (extractedFilename) {
-                setDocumentName(extractedFilename);
-                console.log("Extracted Document Name:", extractedFilename);
-            } else {
-                console.log('Filename not found in response headers.');
-            }
-        } catch (err) {
-            console.error('Error fetching filename:', err);
-            console.log('Failed to fetch the filename.');
+        if (extractedFilename) {
+          setDocumentName(extractedFilename);
+          console.log("Extracted Document Name:", extractedFilename);
+        } else {
+          console.log('Filename not found in response headers.');
         }
+      } catch (err) {
+        console.error('Error fetching filename:', err);
+        console.log('Failed to fetch the filename.');
+      }
     };
 
     if (employeeId) {
-        fetchFilename();
+      fetchFilename();
     }
-}, [employeeId]);
+  }, [employeeId]);
 
 
   useEffect(() => {
@@ -126,13 +120,13 @@ const EvaluationSummary = () => {
         setLoading(false);
         return;
       }
-  
+
       try {
         const formResponse = await axios.get(
           `http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
         console.log("Form Response Data:", formResponse.data);
-  
+
         const initialFormData = {
           empName: formResponse.data[0]?.empName || "",
           designation: formResponse.data[0]?.designation || "",
@@ -141,24 +135,23 @@ const EvaluationSummary = () => {
           status: formResponse.data[0]?.status || "",
           employeeId: formResponse.data[0]?.employeeId || "",
         };
-  
+
         setFormData(initialFormData);
-  
+
         const overallEvaluationResponse = await axios.get(
           `http://localhost:3003/appraisal/overAllEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
         console.log("Overall Evaluation Response Data:", overallEvaluationResponse.data);
-  
+
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
-  
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
-          const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
           const managerRating = parseFloat(evaluationData.managerRating || 0);
-          const goalWeight = parseFloat(overallGoalScore || 0);
+          const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
+          const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
           const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
-  
+
           const updatedTableData = [
             {
               id: 1,
@@ -168,22 +161,23 @@ const EvaluationSummary = () => {
             },
             {
               id: 2,
-              category: "Employee Goals",
-              weightage: "35%",
-              attainment: overallGoalScore || "N/A", 
+              category: "Manager Assessment",
+              weightage: "30%",
+              attainment: evaluationData.managerRating || "N/A",
             },
             {
               id: 3,
+              category: "Employee Goals",
+              weightage: "35%",
+              attainment: evaluationData.goalsOverAll || "N/A",
+            },
+            {
+              id: 4,
               category: "Additional Areas of Assessment",
               weightage: "25%",
               attainment: evaluationData.additionalAreasOverall || "N/A",
             },
-            {
-              id: 4,
-              category: "Manager Rating",
-              weightage: "30%",
-              attainment: evaluationData.managerRating || "N/A",
-            },
+
             {
               id: 5,
               category: "Overall Weightage",
@@ -191,13 +185,13 @@ const EvaluationSummary = () => {
               attainment: overallWeightage.toFixed(2),
             },
           ];
-  
+
           setTableData(updatedTableData);
           console.log("Updated table data", updatedTableData);
         } else {
           console.log("No overall evaluation data found");
         }
-  
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching appraisal details:", error);
@@ -205,13 +199,13 @@ const EvaluationSummary = () => {
         setLoading(false);
       }
     };
-  
+
     fetchAppraisalDetails();
   }, [employeeId, timePeriod, overallGoalScore]);
 
 
   const handleBack = () => {
-    navigate(`/evaluationView3/${employeeId}`, { state: { timePeriod } });
+    navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
   };
 
   if (loading) {
@@ -222,26 +216,26 @@ const EvaluationSummary = () => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
 
-  
 
-  const handleConfirmSubmit = async () => { 
+
+  const handleConfirmSubmit = async () => {
     setIsModalOpen(false);
     setIsThankYouModalOpen(true);
-  
+
     if (!token) {
       console.log("No token found. Please log in.");
       return;
     }
-  
+
     try {
       let status;
-  
+
       if (empType === "HR") {
         status = "Completed";
       } else {
         status = "Pending HR Review";
       }
-  
+
       // Update form status
       const response = await fetch(
         `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -254,13 +248,13 @@ const EvaluationSummary = () => {
           body: JSON.stringify({ status }),
         }
       );
-  
+
       if (response.ok) {
         console.log("Status updated successfully");
-  
+
         // Calculate overallWeightage
         const calculatedWeightage = overallWeightage || "N/A";
-  
+
         // Post overallWeightage
         const weightageResponse = await fetch(
           `http://localhost:3003/appraisal/overAllWeightage/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
@@ -273,20 +267,20 @@ const EvaluationSummary = () => {
             body: JSON.stringify({ overallWeightage: calculatedWeightage }),
           }
         );
-  
+
         if (weightageResponse.ok) {
           console.log("Overall weightage submitted successfully");
         } else {
           const weightageError = await weightageResponse.json();
           console.log(`Error submitting overall weightage: ${weightageError.message}`);
         }
-  
+
         // Send email notification
         const emailUrl =
           empType === "HR"
             ? "http://localhost:3003/confirmationEmail/HRSubmitEmail"
             : "http://localhost:3003/confirmationEmail/managerSubmitEmail";
-  
+
         const emailResponse = await fetch(emailUrl, {
           method: "POST",
           headers: {
@@ -297,7 +291,7 @@ const EvaluationSummary = () => {
             employeeId,
           }),
         });
-  
+
         if (emailResponse.ok) {
           console.log("Email sent successfully");
         } else {
@@ -319,41 +313,41 @@ const EvaluationSummary = () => {
   const closeModal = () => setIsModalOpen(false);
   const closeThankYouModal = () => {
     setIsThankYouModalOpen(false);
-   // navigate("/manager-performance");
-   const empType = localStorage.getItem('empType')
-   if(empType==='Manager') navigate('/manager-performance');
-   else if(empType==='HR') navigate('/hr-performance')
+    // navigate("/manager-performance");
+    const empType = localStorage.getItem('empType')
+    if (empType === 'Manager') navigate('/manager-performance');
+    else if (empType === 'HR') navigate('/hr-performance')
   };
 
 
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0]; 
-  
+    const file = e.target.files[0];
+
     if (file) {
-      setFileSelected(file); 
+      setFileSelected(file);
       setFileName(file.name);
-  
+
       const formData = new FormData();
-      formData.append('appraisalLetter', file); 
-  
+      formData.append('appraisalLetter', file);
+
       try {
         const response = await axios.put(
           `http://localhost:3003/letter/upload/${employeeId}`,
-          formData, 
+          formData,
           {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           }
         );
-  
+
         if (response.status === 200) {
-          setDocumentName(file.name) 
+          setDocumentName(file.name)
           console.log('File uploaded successfully');
         }
       } catch (error) {
-        console.error('Error uploading file:', error); 
+        console.error('Error uploading file:', error);
       }
     }
   };
@@ -604,13 +598,13 @@ const EvaluationSummary = () => {
               type="button"
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
               onClick={() => {
-               
+
                 const empType = localStorage.getItem('empType')
-                if(empType==='Manager') navigate('/manager-performance');
-                else if(empType==='HR') navigate('/hr-performance')
+                if (empType === 'Manager') navigate('/manager-performance');
+                else if (empType === 'HR') navigate('/hr-performance')
               }}
             >
-              
+
               Save & Exit
             </button>
           </div>

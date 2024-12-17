@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {User, Briefcase,TrendingUp,Target,Award,ChevronRight,Users,BarChart,Calendar,Calculator,} from "lucide-react";
+import {User, Briefcase,TrendingUp,Target,Award,Users,BarChart,Calendar} from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const EvaluationView1 = () => {
-  const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [formData, setFormData] = useState(null);
+  const [userData , setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
@@ -18,8 +15,6 @@ const EvaluationView1 = () => {
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-  const startDate = new Date(`${currentYear -1}-04-01`).toLocaleDateString('en-CA');
-  const endDate = new Date(`${currentYear}-03-31`).toLocaleDateString('en-CA');
 
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
@@ -122,39 +117,7 @@ const EvaluationView1 = () => {
     setIsWeightCalculationReady(false);
 }, [employeeGoals]);
 
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError('Employee ID or time period not found');
-        setLoading(false);
-        return;
-      }
-     
-        try {
-            const response = await axios.get(
-              `http://localhost:3003/all/details/${employeeId}`
-            );
-            const initialFormData = {
-                empName: response.data.user.empName || '',
-                designation: response.data.user.designation || '',
-                managerName: response.data.user.managerName || '',
-                timePeriod: response.data.user.timePeriod || timePeriod,
-                status: response.data[0]?.status || '',
-        
-              };
-      
-        
-        console.log("res check for eval", initialFormData);
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching appraisal details:', error);
-        setError('Error fetching appraisal details');
-        setLoading(false);
-      }
-    };
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
+  
 
   useEffect(() => {
     const initialWeightages = employeeGoals.reduce((acc, goal) => {
@@ -165,9 +128,7 @@ const EvaluationView1 = () => {
     setIsWeightCalculationReady(false);
   }, [employeeGoals]);
 
-  const toggleHelpPopup = () => {
-    setShowHelpPopup(!showHelpPopup);
-  };
+  
 
   useEffect(() => {
     fetchUserDetails();
@@ -179,8 +140,9 @@ const EvaluationView1 = () => {
       try {
         const response = await axios.get(
           `http://localhost:3003/all/details/${employeeId}`
-        );
-        setEmail(response.data.user.email);
+        )
+        setUserData(response.data.user)
+        console.log("User Details in evaluation view 1",response.data.user)
       } catch (error) {
         console.error("Error fetching user details:", error);
       }
@@ -194,7 +156,7 @@ const EvaluationView1 = () => {
  
     try {
       const response = await axios.get(
-        `http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`
+        `http://localhost:3003/goals/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
       );
       const goals = response.data.data[0].goals; 
       setEmployeeGoals(goals || []);   
@@ -220,40 +182,6 @@ const EvaluationView1 = () => {
     navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
   };
 
-
-useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-        if (!employeeId || !timePeriod) {
-            setError('Employee ID or time period not found');
-            setLoading(false);
-            return;
-        }
-        try {
-            const response = await axios.get(
-                ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-            );
-
-            const initialFormData = {
-                empName: response.data[0]?.empName || '',
-                designation: response.data[0]?.designation || '',
-                managerName: response.data[0]?.managerName || '',
-                timePeriod: response.data[0]?.timePeriod || timePeriod,
-                status: response.data[0]?.status || '',
-                pageData: employeeGoals.map((employeeGoals, index) => ({
-                    managerWeightages : response.data[0]?.pageData[index]?.managerWeightages || '',
-                }))
-            };
-            setFormData([initialFormData]);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching appraisal details:', error);
-            setError('Error fetching appraisal details');
-            setLoading(false);
-        }
-    };
-
-    fetchAppraisalDetails();
-}, [employeeId, timePeriod]);
 
 const handleSaveExit= async ()=>{
   setLoading(true);
@@ -287,7 +215,7 @@ const handleSaveExit= async ()=>{
 
   try {
     const response = await axios.put(
-      `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}?isExit=true`,
+      `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
       payload
     );
 
@@ -347,7 +275,7 @@ const handleSaveExit= async ()=>{
 
   try {
     const response = await axios.put(
-      `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}`,
+      `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
       payload
     );
 
@@ -388,30 +316,26 @@ const handleSaveExit= async ()=>{
             <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-white">
-                        Employee Goals for {previousYear}-{currentYear}
+                        Employee Goals for {currentYear}-{currentYear+1}
                     </h1>
-                    {formData && formData[0] ? (
-                        <div className="flex items-center gap-2">
+                   
+                        <div className="flex items-end gap-2">
                             <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
-                                {new Date(formData[0].timePeriod[0])
-                                    .toISOString()
-                                    .slice(0, 10)}{" "}
+                                {new Date (timePeriod[0]).toISOString().split("T")[0]}{" "}
                                 to{" "}
-                                {new Date(formData[0].timePeriod[1])
-                                    .toISOString()
-                                    .slice(0, 10)}
+                                {new Date (timePeriod[1]).toISOString().split("T")[0]}
                             </span>
                         </div>
-                    ) : (
+                  
                         <div />
-                    )}
+                    
                 </div>
             </div>
         </div>
 
         {/* Employee Details Section */}
         <div className="mb-6">
-            {formData && formData[0] ? (
+            {userData  ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
                     {/* Employee Name */}
                     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
@@ -421,7 +345,7 @@ const handleSaveExit= async ()=>{
                         <div>
                             <p className="text-sm text-gray-400 mb-1">Employee Name</p>
                             <p className="font-medium text-gray-900">
-                                {formData[0].empName}
+                                {userData.empName}
                             </p>
                         </div>
                     </div>
@@ -434,7 +358,7 @@ const handleSaveExit= async ()=>{
                         <div>
                             <p className="text-sm text-gray-400 mb-1">Designation</p>
                             <p className="font-medium text-gray-900">
-                                {formData[0].designation}
+                                {userData.designation}
                             </p>
                         </div>
                     </div>
@@ -447,7 +371,7 @@ const handleSaveExit= async ()=>{
                         <div>
                             <p className="text-sm text-gray-400 mb-1">Manager Name</p>
                             <p className="font-medium text-gray-900">
-                                {formData[0].managerName}
+                                {userData.managerName}
                             </p>
                         </div>
                     </div>

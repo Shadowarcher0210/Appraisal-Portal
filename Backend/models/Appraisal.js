@@ -85,9 +85,14 @@ const appraisalSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    overallScore: {
+    
+    selfScore: {
         type: Number,
         default: null
+    },
+    managerScore:{
+        type:Number,
+        default:null
     },
     appraisalLetter: { 
         type: mongoose.Schema.Types.ObjectId, 

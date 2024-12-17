@@ -286,19 +286,28 @@ const getOverallEvaluation = async (req, res) => {
                 employeeId,
                 timePeriod: { $all: [start, end] }, // Ensures exact match for timePeriod
             },
-            { overallScore: 1, _id: 0 }
+            { selfScore: 1, _id: 0 }
         );
 
-        // // Fetch Goals overall score
-        // const goalsOverAll = await Goals.findOne(
-        //     {
-        //         employeeId,
-        //         timePeriod: { $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] }, // Match as ISO date strings
-        //     },
-        //     { overallGoalScore: 1 }
-        // );
+         const managerRating = await Appraisal.findOne(
+            {
+                employeeId,
+                timePeriod: { $all: [start, end] }, // Match directly as dates
+            },
+            { managerScore: 1, _id: 0 }
+        );
 
-        // Fetch Additional Areas overall score
+
+
+        // Fetch Goals overall score
+        const goalsOverAll = await Goals.findOne(
+            {
+                employeeId,
+                timePeriod: { $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] }, // Match as ISO date strings
+            },
+            { overallGoalScore: 1 }
+        );
+
         const additionalAreasOverall = await AdditionalAreas.findOne(
             {
                 employeeId,
@@ -307,32 +316,27 @@ const getOverallEvaluation = async (req, res) => {
             { overallScore: 1 }
         );
 
-        // Fetch Manager Evaluation converted rating
-        const managerRating = await ManagerEvaluation.findOne(
-            {
-                employeeId,
-                timePeriod: { $all: [start, end] }, // Match directly as dates
-            },
-            { convertedRating: 1, _id: 0 }
-        );
-
+       
         const managerEvaluations = {};
 
-        if (selfAssesment && selfAssesment.overallScore !== undefined) {
-            managerEvaluations.selfAssesment = selfAssesment.overallScore;
+        if (selfAssesment && selfAssesment.selfScore !== undefined) {
+            managerEvaluations.selfAssesment = selfAssesment.selfScore;
         }
 
-        // if (goalsOverAll && goalsOverAll.overallGoalScore !== undefined) {
-        //     managerEvaluations.goalsOverAll = goalsOverAll.overallGoalScore;
-        // }
+          if (managerRating && managerRating.managerScore !== undefined) {
+            managerEvaluations.managerRating = managerRating.managerScore;
+        }
+
+
+        if (goalsOverAll && goalsOverAll.overallGoalScore !== undefined) {
+            managerEvaluations.goalsOverAll = goalsOverAll.overallGoalScore;
+        }
 
         if (additionalAreasOverall && additionalAreasOverall.overallScore !== undefined) {
             managerEvaluations.additionalAreasOverall = additionalAreasOverall.overallScore;
         }
 
-        if (managerRating && managerRating.convertedRating !== undefined) {
-            managerEvaluations.managerRating = managerRating.convertedRating;
-        }
+      
 
         if (Object.keys(managerEvaluations).length === 0) {
             return res.status(404).json({ message: 'No evaluations found for the given employee and time period' });
