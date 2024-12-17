@@ -468,7 +468,7 @@ const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
 
     try {
-        const startDateTime = new Date(startDate);
+        const startDateTime = startDate;
         if (isNaN(startDateTime.getTime())) {
             return res.status(400).json({
                 success: false,
@@ -609,7 +609,7 @@ const getApplicationNotification = async (req, res) => {
             const managerName = appraisal.managerName || 'the manager';
             return res.status(200).json({
                 sucess:true,
-                message:`Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed .`,
+                message:`Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed.`,
                 employeeId,
             })
         }

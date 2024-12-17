@@ -522,7 +522,7 @@ const Header = () => {
 
                   {hrNotification && hrNotification.length > 0 ? (
                     hrNotification.map((message, index) => (
-                      <div key={index} className="bg-green-50 p-4 rounded-md mb-4 border-l-4 border-purple-500 text-purple-900 font-normal">
+                      <div key={index} className="bg-purple-50 p-4 rounded-md mb-4 border-l-4 border-purple-500 text-purple-900 font-normal">
                         <p className="text-md">{message}</p>
                       </div>
                     ))
