@@ -8,7 +8,7 @@ app.use(bodyParser.json())
 
 const saveAppraisalDetails = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
-    const { pageData, overallScore } = req.body;
+    const { pageData,  selfScore , managerScore} = req.body;
 
     const isExit = req.query.isExit === 'true';
 
@@ -77,7 +77,8 @@ const saveAppraisalDetails = async (req, res) => {
             {
                 pageData: updatedPageData,
                 status: newStatus,  
-                overallScore,
+                selfScore,
+                managerScore,
                 lastModified: new Date()
             },
             { new: true }

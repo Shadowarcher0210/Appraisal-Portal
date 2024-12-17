@@ -84,7 +84,7 @@ const EvaluationView = () => {
       return;
     }
     try {
-      const overallScore = calculateOverallScore();
+      const managerScore = calculateOverallScore();
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
@@ -94,7 +94,7 @@ const EvaluationView = () => {
           managerEvaluation: item.managerEvaluation || 0
 
         })),
-        overallScore: parseFloat(overallScore),
+        managerScore: parseFloat(managerScore),
       };
 
 
@@ -180,6 +180,7 @@ const EvaluationView = () => {
 
   const handleSaveExit = async () => {
     try {
+      const managerScore = calculateOverallScore();
       const submissionData = {
         pageData: formData[0].pageData.map(item => ({
           questionId: item.questionId,
@@ -188,8 +189,10 @@ const EvaluationView = () => {
           weights: item.weights || '',
           managerEvaluation: item.managerEvaluation || 0
 
-        }))
+        })),
+        managerScore: parseFloat(managerScore),
       };
+
       await axios.put(
         `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
         submissionData,
@@ -243,7 +246,7 @@ const EvaluationView = () => {
       return sum + (item.managerEvaluation || 0);
     }, 0);
 
-    const overallScore = (totalManagerEvaluation / totalPercentage) * 10;
+    const overallScore = (totalManagerEvaluation / totalPercentage) * 30;
     return overallScore.toFixed(2);
   };
 
