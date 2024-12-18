@@ -9,32 +9,15 @@ const PerformanceHR = () => {
   const [appraisals, setAppraisals] = useState([]);
   const [uniqueManagers, setUniqueManagers] = useState([]);
   const navigate = useNavigate();
-  const [employees, setEmployees] = useState([
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' },
-    { id: 3, name: 'Michael Johnson' },
-    { id: 4, name: 'Emily Brown' },
-    { id: 5, name: 'David Wilson' },
-    { id: 6, name: 'Sarah Davis' },
-    { id: 7, name: 'Robert Taylor' },
-    { id: 8, name: 'Linda Martinez' },
-    { id: 9, name: 'James Anderson' },
-    { id: 10, name: 'Patricia Thomas' },
-    { id: 11, name: 'William Jackson' },
-    { id: 12, name: 'Elizabeth White' },
-    { id: 13, name: 'Richard Harris' },
-    { id: 14, name: 'Jennifer Martin' },
-    { id: 15, name: 'Charles Thompson' },
-    { id: 16, name: 'Maria Garcia' },
-    { id: 17, name: 'Thomas Rodriguez' },
-    { id: 18, name: 'Nancy Lee' },
-    { id: 19, name: 'Christopher Clark' },
-    { id: 20, name: 'Margaret Walker' }
-  ]);
+
+  const currentYear= new Date().getFullYear()
+  const AppraisalstartDate = `${currentYear}-04-01`;
+  const AppraisalendDate = `${parseInt(currentYear) + 1}-03-31`;
+  const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [timePeriod, setTimePeriod] = useState(['', '']);
   const [selectionType, setSelectionType] = useState('none');
-  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [showPopup, setShowPopup] = useState(false); 
 
   const managerName = localStorage.getItem('empName');
 
@@ -52,17 +35,18 @@ const PerformanceHR = () => {
     const yearString = `${defaultYear}-${defaultYear + 1}`;
     setSelectedYear(yearString);
 
-    // Fetch appraisals and employee data when managerName is present
     if (managerName) {
       fetchAllAppraisalDetails(yearString);
-      fetchEmployees();
     }
-  }, [managerName]);
+    fetchEmployees();
+
+  }, []);
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:3003/employees'); // Replace with your employee API
-      setEmployees(response.data);
+      const response = await axios.get('http://localhost:3003/appraisal/allEmployees'); 
+      setEmployees(response.data.data);
+      console.log("emp ", response.data.data)
     } catch (error) {
       console.error('Error fetching employee data:', error);
     }
@@ -119,6 +103,7 @@ const PerformanceHR = () => {
     }
   }, [selectedYear, selectedManager]);
 
+  
   const handleViewClick = async (appraisal) => {
     const { employeeId, timePeriod, status } = appraisal;
 
@@ -157,7 +142,7 @@ const PerformanceHR = () => {
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      const allEmployeeIds = employees.map((employee) => employee.id.toString());
+      const allEmployeeIds = employees.map((employee) => employee.employeeId);
       setSelectedEmployees(allEmployeeIds);
       setSelectionType('all');
     } else {
@@ -168,12 +153,12 @@ const PerformanceHR = () => {
 
   const handleCreateClick = async () => {
     const payload = {
-      employeeIds: selectedEmployees,
-      timePeriod: timePeriod,
+      employeeId: selectedEmployees,
+      timePeriod: [AppraisalstartDate,AppraisalendDate],
     };
 
     try {
-      const response = await axios.post('http://localhost:3003/appraisal/create', payload);
+      const response = await axios.post('http://localhost:3003/form/createAppraisal', payload);
       console.log('Create successful:', response.data);
       setShowPopup(false);
     } catch (error) {
@@ -243,14 +228,12 @@ const PerformanceHR = () => {
               <div className="flex space-x-4">
                 <input
                   type="date"
-                  value={timePeriod[0]}
-                  onChange={(e) => setTimePeriod([e.target.value, timePeriod[1]])}
+                  value={AppraisalstartDate}
                   className="w-full px-4 py-2 border border-gray-300 rounded"
                 />
                 <input
                   type="date"
-                  value={timePeriod[1]}
-                  onChange={(e) => setTimePeriod([timePeriod[0], e.target.value])}
+                  value={AppraisalendDate}
                   className="w-full px-4 py-2 border border-gray-300 rounded"
                 />
               </div>
@@ -269,19 +252,19 @@ const PerformanceHR = () => {
                   Select All Employees
                 </label>
                 </div>
-                {employees.map((employee) => (
-                  <label key={employee.id} className="inline-flex items-center">
+                {employees.map((employee,index) => (
+                  <label key={index} className="inline-flex items-center">
                     <input
                       type="radio"
-                      value={employee.id}
+                      value={employee.employeeId}
                       checked={
                         selectionType === 'all' || 
-                        selectedEmployees.includes(employee.id.toString())
+                        selectedEmployees.includes(employee.employeeId)
                       }
                       onChange={handleEmployeeChange}
                       className="mr-2"
                     />
-                    {employee.name}
+                    {employee.empName}
                   </label>
                 ))}
               </div>
