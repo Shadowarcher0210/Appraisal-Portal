@@ -1,12 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Modal from '../hrManager/Modal';
 import { Calendar, Target } from "lucide-react";
 import TeamMembersSidebar from './TeamMembers';
 
 const M_Dashboard = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
@@ -102,24 +100,32 @@ const M_Dashboard = () => {
     }).toUpperCase();
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
+ 
+ 
+
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-  
-    const navigatePath = ["Submitted", "Under Review", "Under HR Review", "Completed"].includes(status)
-      ? `/empview/${employeeId}`  
-      : "/form"; 
-  
+
+    console.log("Status in EMP Dashboard", status);
+
+    let navigatePath = "";
+
+    if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
+      navigatePath = `/empview/${employeeId}`;
+    } else if (status === "In Progress") {
+      navigatePath = `/form?activeTab=1`;
+    } else if (status === "Completed") {
+      navigatePath = `/CE/${employeeId}`;
+    }
+
     if (status === "To Do") {
       try {
         const response = await axios.put(
           `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
           { status: "In Progress" }
         );
-  
+
         if (response.status === 200) {
           console.log(`Status updated to In Progress successfully:`, response.data);
           fetchAppraisalDetails(); // Fetch updated data after status change
@@ -129,28 +135,12 @@ const M_Dashboard = () => {
       } catch (error) {
         console.error(`Error updating status:`, error);
       }
+      navigatePath = `/form`;
     }
-  
+
     navigate(navigatePath, { state: { timePeriod } });
   };
-  const getInitials = (name) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-
-  const bgColors = [
-    'bg-blue-500',
-    'bg-red-500',
-    'bg-green-500',
-    'bg-yellow-500',
-    'bg-orange-500'
-  ];
-
+ 
   return (
     <div className="flex flex-1 items-start mt-20 ml-6">
       <div className='w-10/12'>
@@ -216,7 +206,6 @@ className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-color
               )}
             </tbody>
           </table>
-          <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         </div>
         {/* Cards Grid with improved spacing */}
         <div className="grid gap-6  lg:grid-cols-4 mb-8 mt-10 ml-4">

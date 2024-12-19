@@ -1,18 +1,13 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Modal from './Modal';
 import { Calendar, Target } from 'lucide-react';
-import TeamMembersSidebar from '../manager/TeamMembers';
 
 const DashboardHR = () => {
     const [date, setDate] = useState(new Date());
-    const [isModalOpen, setModalOpen] = useState(false);
     const [userData, setUserData] = useState(null);
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const [employees, setEmployees] = useState([]);
-
     const employeeName = localStorage.getItem('empName');
     const navigate = useNavigate();
     const wishing = () => {
@@ -32,9 +27,7 @@ const DashboardHR = () => {
             hour12: true
         }).toUpperCase();
     };
-    const handleCloseModal = () => {
-        setModalOpen(false);
-    };
+   
     const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
     const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
     const appraisalDueDate = new Date(`${currentYear}-03-15`);
@@ -79,48 +72,52 @@ const DashboardHR = () => {
     fetchAppraisalDetails();
     // allEmployees();
   }, []);
+
+  useEffect(() => {
+      const timer = setInterval(() => {
+        setDate(new Date());
+      }, 1000);
+      return () => clearInterval(timer);
+    }, []);
+   
     const handleButtonClick = async (appraisal) => {
         const { timePeriod, status } = appraisal;
         const employeeId = localStorage.getItem('employeeId')?.trim();
-        const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-        const navigatePath = status === "Submitted" ? `/empview/${employeeId}` : "/hr-Form";
-
-        try {
-            const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-                { status: newStatus }
-            );
-
-            if (response.status === 200) {
-                console.log(`Status ${newStatus} Successfully:`, response.data);
-                fetchAppraisalDetails();
-            } else {
-                console.error('Failed to update status:', response.statusText);
-            }
-        } catch (error) {
-            console.error(`Error updating status to ${newStatus}:, error`);
+    
+        console.log("Status in EMP Dashboard", status);
+    
+        let navigatePath = "";
+    
+        if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
+          navigatePath = `/empview/${employeeId}`;
+        } else if (status === "In Progress") {
+          navigatePath = `/hr-Form?activeTab=1`;
+        } else if (status === "Completed") {
+          navigatePath = `/CE/${employeeId}`;
         }
-
+    
+        if (status === "To Do") {
+          try {
+            const response = await axios.put(
+              `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+              { status: "In Progress" }
+            );
+    
+            if (response.status === 200) {
+              console.log(`Status updated to In Progress successfully:`, response.data);
+              fetchAppraisalDetails(); // Fetch updated data after status change
+            } else {
+              console.error('Failed to update status:', response.statusText);
+            }
+          } catch (error) {
+            console.error(`Error updating status:`, error);
+          }
+          navigatePath = `/hr-Form`;
+        }
+    
         navigate(navigatePath, { state: { timePeriod } });
-    };
-
-    const getInitials = (name) => {
-        return name
-            .split(' ')
-            .map(word => word[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    };
-
-
-    const bgColors = [
-        'bg-blue-500',
-        'bg-red-500',
-        'bg-green-500',
-        'bg-yellow-500',
-        'bg-orange-500'
-    ];
-
+      };
+   
     return (
         <div className="flex flex-1 items-start mt-20 ml-6">
             <div className='w-full'>
@@ -166,11 +163,11 @@ const DashboardHR = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button
-                                                className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16'
+                                                className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-4 py-2 '
                                                 onClick={() => handleButtonClick(appraisal)}
                                             >
-    {["Submitted", "Under Review","Completed"].includes(appraisal.status) ? "View" : "Start"}
-    </button>
+                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) ? "View" : appraisal.status==="In Progress"?"Continue": "Start"}
+                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -183,7 +180,6 @@ const DashboardHR = () => {
                             )}
                         </tbody>
                     </table>
-                    <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
                 </div>
                 {/* Cards Grid with improved spacing */}
                 <div className="grid gap-6  lg:grid-cols-4 mb-8 mt-10 ml-4">
@@ -235,10 +231,13 @@ const DashboardHR = () => {
                 </div>
             </div>
 
-            {/* <TeamMembersSidebar employees={employees} /> */}
         </div>
 
     )
 }
+
+
+
+ 
 
 export default DashboardHR

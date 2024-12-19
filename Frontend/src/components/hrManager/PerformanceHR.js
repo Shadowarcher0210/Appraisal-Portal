@@ -128,7 +128,7 @@ const PerformanceHR = () => {
     if (status === 'Under HR Review' || status==="Pending HR Review") {
       navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
     } else if (status === 'Completed') {
-      navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
+      navigate(`/CE/${employeeId}`, { state: { timePeriod } });
     }
   };
 

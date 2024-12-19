@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion'
 
-const M_Performance = () => {
+const TeamAppraisals = () => {
     const [selectedYear, setSelectedYear] = useState('');
     const [academicYears, setAcademicYears] = useState([]);
     const [appraisals, setAppraisals] = useState([]);
@@ -196,4 +196,4 @@ const M_Performance = () => {
     );
 };
 
-export default M_Performance;
+export default TeamAppraisals;
