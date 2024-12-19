@@ -56,7 +56,7 @@ const saveAppraisalDetails = async (req, res) => {
 
         let newStatus = existingAppraisal ? existingAppraisal.status : null;
         if (existingAppraisal && existingAppraisal.status === 'Under HR Review') {
-            newStatus = existingAppraisal.status; 
+            newStatus = existingAppraisal.status;
         } else {
             const hasManagerEvaluation = pageData.some(question => question.managerEvaluation);
             newStatus = hasManagerEvaluation ? 'Under Review' : (isExit ? 'In Progress' : 'Submitted');
@@ -100,6 +100,8 @@ const saveAppraisalDetails = async (req, res) => {
         });
     }
 };
+
+
 
 const updateAppraisalStatus = async (req, res) => {
     const { employeeId, startDate, endDate } = req.params;
@@ -171,7 +173,7 @@ const getAppraisals = async (req, res) => {
         if (!user) {
             return res.status(404).send({ error: 'User not found' });
         }
-       
+
         if (appraisals.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });
         }
@@ -275,10 +277,6 @@ const createAppraisalForm = async (req, res) => {
 
         const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
 
-        if (!timePeriod) {
-            return res.status(400).json({ message: 'Time period is required.' });
-        }
-
         const appraisalPromises = employeeIds.map(async (empId) => {
             const employee = await Employee.findOne({ employeeId: empId });
 
@@ -292,7 +290,11 @@ const createAppraisalForm = async (req, res) => {
             });
 
             if (existingAppraisal) {
-                return { employeeId: empId, message: 'An appraisal already exists for this employee in the specified time period.' };
+                return { 
+                    employeeId: empId, 
+                    employeeName: employee.empName, 
+                    message: 'An appraisal already exists for this employee in the specified time period.' 
+                };
             }
 
             const newAppraisal = new Appraisal({
@@ -309,7 +311,12 @@ const createAppraisalForm = async (req, res) => {
             });
 
             const savedAppraisal = await newAppraisal.save();
-            return { employeeId: empId, message: 'Appraisal created successfully', data: savedAppraisal };
+            return { 
+                employeeId: empId, 
+                employeeName: employee.empName, 
+                message: 'Appraisal created successfully', 
+                data: savedAppraisal 
+            };
         });
 
         const results = await Promise.all(appraisalPromises);
@@ -505,11 +512,11 @@ const getApplicationNotification = async (req, res) => {
                 employeeId,
             })
         }
-        else if (appraisal.status === 'Completed'){
+        else if (appraisal.status === 'Completed') {
             const managerName = appraisal.managerName || 'the manager';
             return res.status(200).json({
-                sucess:true,
-                message:`Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed.`,
+                sucess: true,
+                message: `Your performance appraisal for the year ${appraisalStartDate.getFullYear()} to ${appraisalEndDate.getFullYear()} has been reviewed.`,
                 employeeId,
             })
         }
@@ -557,7 +564,7 @@ const getApplicationNotificationStarts = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 shouldNotify: false,
-               
+
             });
         }
 
@@ -593,7 +600,7 @@ const getApplicationNotificationStarts = async (req, res) => {
         return res.status(200).json({
             success: true,
             shouldNotify: false,
-    
+
         });
 
     } catch (error) {
@@ -792,9 +799,35 @@ const notifyHRForUnderReviewAppraisals = async (req, res) => {
     }
 };
 
+const getUserDetailsFromAppraisal = async (req, res) => {
+    const { employeeId, startDate, endDate } = req.params
+    try {
+        if (!employeeId && !startDate && !endDate) {
+            return res.status(404).send({
+                success: false,
+                message: 'Employee Id and Time Period is not found'
+            })
+        } else {
+
+            const start = new Date(startDate).toISOString().split('T')[0]
+            const end = new Date(endDate).toISOString().split('T')[0]
+
+
+            const user = await Appraisal.findOne({
+                employeeId: employeeId,
+                "timePeriod.0": { $gte: start },
+                "timePeriod.1": { $lte: end },
+            },{empName:1,managerName:1,designation:1,status:1,_id:0})
+            res.status(200).json(user)
+        }
+    } catch (error) {
+        console.error('Error fetching appraisal User Details:', error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+
+}
 
 
 
 
-
-module.exports = { notifyHRForUnderReviewAppraisals, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, getApplicationNotificationStarts, getApplicationNotification, saveAppraisalDetails, updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned }
+module.exports = { notifyHRForUnderReviewAppraisals, notifyManagersOfSubmittedAppraisals, deleteAppraisalForm, getApplicationNotificationStarts, getApplicationNotification, saveAppraisalDetails, updateAppraisalStatus, getAppraisals, getAppraisalAnswers, getEmployeeAppraisal, createAppraisalForm, sendExpiringAppraisalNotification, notifyGoalsAssaigned, getUserDetailsFromAppraisal }

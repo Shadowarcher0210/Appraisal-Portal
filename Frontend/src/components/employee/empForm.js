@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   instructionsList,
@@ -11,7 +11,13 @@ import SelfAppraisal2 from "../Tabs/selfAppraisalTab";
 const TABS = ["Introduction", "Self Appraisal"];
 
 const EmpForm = () => {
-const [activeTab, setActiveTab] = useState(0);
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+
+  const initialActiveTab = parseInt(queryParams.get("activeTab")) || 0;
+
+const [activeTab, setActiveTab] = useState(initialActiveTab);
 const [selfAppraisalPage, setSelfAppraisalPage] = useState(0);
 const navigate = useNavigate();
 

@@ -139,10 +139,10 @@ const EvaluationView1 = () => {
     if (employeeId) {
       try {
         const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
+          `http://localhost:3003/form/userDetailsAppraisal/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         )
-        setUserData(response.data.user)
-        console.log("User Details in evaluation view 1",response.data.user)
+        setUserData(response.data)
+        console.log("User Details in evaluation view 1",response.data)
       } catch (error) {
         console.error("Error fetching user details:", error);
       }
