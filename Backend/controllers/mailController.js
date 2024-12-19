@@ -2,6 +2,86 @@ const nodemailer = require('nodemailer');
 const UserModel = require('../models/Email');
 const Appraisal = require('../models/Appraisal');
 
+
+const createAppraisalEmail = async (req, res) => {
+  try {
+    const { employeeId } = req.body;
+
+    if (!employeeId || !Array.isArray(employeeId) || employeeId.length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: 'Employee ID(s) are required and must be an array.',
+      });
+    }
+
+    const startDateTime = new Date();
+    startDateTime.setHours(0, 0, 0, 0);
+
+    const notificationEndDate = new Date(startDateTime);
+    notificationEndDate.setDate(notificationEndDate.getDate() + 7);
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const presentYear = new Date().getFullYear();
+    const nextYear = presentYear + 1;
+
+    const failedEmails = [];
+    const successEmails = [];
+
+    for (const id of employeeId) {
+      try {
+        const user = await UserModel.findOne({ employeeId: id });
+
+        if (!user) {
+          failedEmails.push({ employeeId: id, reason: 'User not found' });
+          continue;
+        }
+
+        if (!user.email) {
+          failedEmails.push({ employeeId: id, reason: 'User email is missing' });
+          continue;
+        }
+
+        const userMailOptions = {
+          from: process.env.EMAIL_USER,
+          to: user.email,
+          subject: `Your Appraisal has been initiated for the year: ${presentYear}-${nextYear}`,
+          html: `Dear ${user.empName},<br><br>
+                 This is to inform you that your appraisal has been successfully created for the year <strong>${presentYear} - ${nextYear}</strong> Appraisal cycle.
+                 Please complete your self-appraisal by <strong>${notificationEndDate.toISOString().split('T')[0]}</strong>. You can access the portal through <a href="http://localhost:3000/employee-dashboard">http://localhost:3000/employee-dashboard</a>.<br><br>
+                 If you have any questions or require assistance, please feel free to reach out to your HR representative.<br><br>
+                 Best regards,<br>
+                 BlueSpire`,
+        };
+
+        await transporter.sendMail(userMailOptions);
+        successEmails.push({ employeeId: id, email: user.email });
+      } catch (emailError) {
+        failedEmails.push({ employeeId: id, reason: emailError.message });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Emails sent successfully.',
+  
+    });
+  } catch (error) {
+    console.error('Error processing emails:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Error processing emails.',
+      error: error.message,
+    });
+  }
+};
 const sendConfirmationEmails = async (req, res) => {
   try {
     const { email } = req.body;
@@ -230,5 +310,6 @@ const sendGoalsAddedEmails = async (req, res) => {
     }
   };
   
+  
 
-module.exports ={sendConfirmationEmails,sendCompletedEmails, sendGoalsAddedEmails,sendFinalHREmails};
+module.exports ={sendConfirmationEmails,sendCompletedEmails, sendGoalsAddedEmails,sendFinalHREmails, createAppraisalEmail};
