@@ -9,34 +9,14 @@ const PerformanceHR = () => {
   const [appraisals, setAppraisals] = useState([]);
   const [uniqueManagers, setUniqueManagers] = useState([]);
   const navigate = useNavigate();
-  const [employees, setEmployees] = useState([
-    { id: 1, name: 'John Doe' },
-    { id: 2, name: 'Jane Smith' },
-    { id: 3, name: 'Michael Johnson' },
-    { id: 4, name: 'Emily Brown' },
-    { id: 5, name: 'David Wilson' },
-    { id: 6, name: 'Sarah Davis' },
-    { id: 7, name: 'Robert Taylor' },
-    { id: 8, name: 'Linda Martinez' },
-    { id: 9, name: 'James Anderson' },
-    { id: 10, name: 'Patricia Thomas' },
-    { id: 11, name: 'William Jackson' },
-    { id: 12, name: 'Elizabeth White' },
-    { id: 13, name: 'Richard Harris' },
-    { id: 14, name: 'Jennifer Martin' },
-    { id: 15, name: 'Charles Thompson' },
-    { id: 16, name: 'Maria Garcia' },
-    { id: 17, name: 'Thomas Rodriguez' },
-    { id: 18, name: 'Nancy Lee' },
-    { id: 19, name: 'Christopher Clark' },
-    { id: 20, name: 'Margaret Walker' }
-  ]);
+  const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [timePeriod, setTimePeriod] = useState(['', '']);
   const [selectionType, setSelectionType] = useState('none');
-  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+  const [showPopup, setShowPopup] = useState(false); 
 
   const managerName = localStorage.getItem('empName');
+  const [timePeriod, setTimePeriod] = useState(['', '']);
+
 
   useEffect(() => {
     const currentYear = new Date().getFullYear();
@@ -52,22 +32,41 @@ const PerformanceHR = () => {
     const yearString = `${defaultYear}-${defaultYear + 1}`;
     setSelectedYear(yearString);
 
-    // Fetch appraisals and employee data when managerName is present
+  
     if (managerName) {
       fetchAllAppraisalDetails(yearString);
-      fetchEmployees();
+      
     }
   }, [managerName]);
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await axios.get('http://localhost:3003/employees'); // Replace with your employee API
-      setEmployees(response.data);
-    } catch (error) {
-      console.error('Error fetching employee data:', error);
-    }
-  };
+  
 
+const fetchEmployees = async () => {
+  try {
+    console.log('Fetching employees...');
+    const response = await axios.get('http://localhost:3003/appraisal/allEmployees');
+    console.log('Response Data:', response.data);
+
+    const formattedEmployees = response.data.data.map(employee => ({
+      ...employee,
+      empName: employee.empName || `Employee ${employee.employeeId}`,
+      employeeId: employee.employeeId,
+    }));
+
+    setEmployees(formattedEmployees);
+
+    
+    setSelectedEmployees(formattedEmployees.map(employee => employee.employeeId));
+    console.error('employeeID:', formattedEmployees.map(employee => employee.employeeId));
+
+
+  } catch (error) {
+    console.error('Error fetching employee data:', error);
+    setEmployees([]);
+    setSelectedEmployees([]);
+  }
+};
+  
   const fetchAllAppraisalDetails = async (year) => {
     const [yearStart] = (year || selectedYear).split('-');
     const startDate = `${yearStart}-04-01`;
@@ -81,14 +80,14 @@ const PerformanceHR = () => {
 
       let allAppraisals = response.data.data || [];
 
-      // Extract unique managers
+      
       const managers = [
         ...new Set(allAppraisals.map((appraisal) => appraisal.managerName).filter(Boolean)),
       ];
       console.log('Unique Managers:', managers);
       setUniqueManagers(managers);
 
-      // Filter by manager if selected
+     
       if (selectedManager) {
         allAppraisals = allAppraisals.filter(
           (appraisal) => appraisal.managerName === selectedManager
@@ -97,12 +96,12 @@ const PerformanceHR = () => {
 
       const sortedAppraisals = allAppraisals.sort((a, b) => {
         if (a.status === 'Submitted' || a.status === 'Under Review') {
-          return -1; // Move to the top
+          return -1; 
         }
         if (b.status === 'Submitted' || b.status === 'Under Review') {
           return 1; 
         }
-        return 0; // No change
+        return 0;
       });
 
       setAppraisals(sortedAppraisals);
@@ -131,7 +130,7 @@ const PerformanceHR = () => {
 
         if (response.status === 200) {
           console.log('Status updated to Under Review:', response.data);
-          fetchAllAppraisalDetails(); // Refresh the list after status update
+          fetchAllAppraisalDetails(); 
         } else {
           console.error('Failed to update status:', response.statusText);
         }
@@ -149,6 +148,12 @@ const PerformanceHR = () => {
 
   const formatDate = (isoString) => new Date(isoString).toISOString().split('T')[0];
 
+  const handleCreateAppraisalClick = () => {
+    fetchEmployees(); 
+    setShowPopup(true);
+  };
+
+ 
   const handleEmployeeChange = (e) => {
     const { value } = e.target;
     setSelectedEmployees([value]);
@@ -157,7 +162,7 @@ const PerformanceHR = () => {
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      const allEmployeeIds = employees.map((employee) => employee.id.toString());
+      const allEmployeeIds = employees.map((employee) => employee.employeeId.toString());
       setSelectedEmployees(allEmployeeIds);
       setSelectionType('all');
     } else {
@@ -166,20 +171,27 @@ const PerformanceHR = () => {
     }
   };
 
+  
   const handleCreateClick = async () => {
+    await fetchEmployees();
     const payload = {
-      employeeIds: selectedEmployees,
+      employeeId: selectedEmployees,
       timePeriod: timePeriod,
     };
 
     try {
-      const response = await axios.post('http://localhost:3003/appraisal/create', payload);
+      const response = await axios.post('http://localhost:3003/form/createAppraisal', payload);
       console.log('Create successful:', response.data);
       setShowPopup(false);
+      fetchAllAppraisalDetails(selectedYear);
     } catch (error) {
       console.error('Error creating appraisal:', error);
+    
     }
-  };
+  }; 
+
+  
+
   return (
     <div className="justify-center items-start mt-20 ml-6">
       <div className="flex justify-between items-end w-full mb-4">
@@ -227,8 +239,8 @@ const PerformanceHR = () => {
 
         <div className="mr-10">
           <button
-            className="bg-orange-300 text-white px-3 py-2 rounded hover:bg-orange-600"
-            onClick={() => setShowPopup(true)}
+            className="bg-orange-600 text-white px-3 py-2 rounded "
+            onClick={handleCreateAppraisalClick}
           >
             Create Appraisal
           </button>
@@ -270,18 +282,18 @@ const PerformanceHR = () => {
                 </label>
                 </div>
                 {employees.map((employee) => (
-                  <label key={employee.id} className="inline-flex items-center">
+                  <label key={employee.employeeId} className="inline-flex items-center">
                     <input
                       type="radio"
-                      value={employee.id}
+                      value={employee.employeeId}
                       checked={
                         selectionType === 'all' || 
-                        selectedEmployees.includes(employee.id.toString())
+                        selectedEmployees.includes(employee.employeeId.toString())
                       }
                       onChange={handleEmployeeChange}
                       className="mr-2"
                     />
-                    {employee.name}
+                    {employee.empName}
                   </label>
                 ))}
               </div>
