@@ -277,10 +277,6 @@ const createAppraisalForm = async (req, res) => {
 
         const employeeIds = Array.isArray(employeeId) ? employeeId : [employeeId];
 
-        if (!timePeriod) {
-            return res.status(400).json({ message: 'Time period is required.' });
-        }
-
         const appraisalPromises = employeeIds.map(async (empId) => {
             const employee = await Employee.findOne({ employeeId: empId });
 
@@ -294,7 +290,11 @@ const createAppraisalForm = async (req, res) => {
             });
 
             if (existingAppraisal) {
-                return { employeeId: empId, message: 'An appraisal already exists for this employee in the specified time period.' };
+                return { 
+                    employeeId: empId, 
+                    employeeName: employee.empName, 
+                    message: 'An appraisal already exists for this employee in the specified time period.' 
+                };
             }
 
             const newAppraisal = new Appraisal({
@@ -311,7 +311,12 @@ const createAppraisalForm = async (req, res) => {
             });
 
             const savedAppraisal = await newAppraisal.save();
-            return { employeeId: empId, message: 'Appraisal created successfully', data: savedAppraisal };
+            return { 
+                employeeId: empId, 
+                employeeName: employee.empName, 
+                message: 'Appraisal created successfully', 
+                data: savedAppraisal 
+            };
         });
 
         const results = await Promise.all(appraisalPromises);
