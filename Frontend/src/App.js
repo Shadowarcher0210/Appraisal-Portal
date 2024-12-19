@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Viewallappraisals from './components/Viewallappraisals.js';
 import ConfigureAppraisalForms from './components/hrManager/ConfigureAppraisalForms.js'; 
 import Header from './components/Header.js';
 import PerformancePage from './components/employee/empPerformance.js';
@@ -35,11 +34,11 @@ import EvaluationView2 from './components/manager/EvaluationView2.js';
 import Self from './components/Tabs/selfAppraisalTab.js'
 import EvaluationView3 from './components/manager/EvaluationView3.js';
 
-import CEvaluation from './components/CEvaluation.js';
-import CEvaluation1 from './components/CEvaluation1.js';
-import CEvaluation2 from './components/CEvaluation2.js';
-import CEvaluation3 from './components/CEvaluation3.js';
-import CEvaluationSummary from './components/CEvaluationSummary.js';
+import CEvaluation from './components/View Pages/CEvaluation.js';
+import CEvaluation1 from './components/Tabs/CEvaluation1.js';
+import CEvaluation2 from './components/View Pages/CEvaluation2.js';
+import CEvaluation3 from './components/View Pages/CEvaluation3.js';
+import CEvaluationSummary from './components/View Pages/CEvaluationSummary.js';
 
 const App = () => {
   const location = useLocation();
@@ -63,7 +62,6 @@ const App = () => {
           <Route path='/profile' element={<Profile />} /> 
           <Route path='/forgotpassword' element={<ForgotPassword />} /> 
           <Route path='/resetPassword/:id/:token' element={<ResetPassword />} /> 
-          <Route path="/viewallappraisals" element={<Viewallappraisals />} />
           <Route path="/form" element={<EmpForm />} />
           <Route path="/selfform" element={<SelfAppraisal/>} />
           <Route path="/intro" element={<Introduction/>} />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
-import tick from '../assets/tick.svg'
+import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const CEvaluation = () => {

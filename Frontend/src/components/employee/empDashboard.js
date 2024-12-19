@@ -91,7 +91,7 @@ const Dashboard = () => {
     if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
       navigatePath = `/empview/${employeeId}`;
     } else if (status === "In Progress") {
-      navigatePath = `/form`;
+      navigatePath = `/form?activeTab=1`;
     } else if (status === "Completed") {
       navigatePath = `/CE/${employeeId}`;
     }
@@ -184,7 +184,7 @@ const Dashboard = () => {
   }`}
                             onClick={() => handleButtonClick(appraisal)}
                           >
-                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) ? "View" : "Start"}
+                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) ? "View" : appraisal.status==="In Progress"?"Continue": "Start"}
                           </button>
                         </td>
 
