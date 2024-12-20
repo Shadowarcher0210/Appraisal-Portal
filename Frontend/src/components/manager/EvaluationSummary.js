@@ -8,6 +8,7 @@ const EvaluationSummary = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
+  const [performanceRating, setPerformanceRating] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
   const [fileSelected, setFileSelected] = useState(false);
@@ -20,6 +21,13 @@ const EvaluationSummary = () => {
   const empType = localStorage.getItem("empType");
   const [overallWeightage, setOverallWeightage] = useState('N/A');
 
+  const performanceOptions = [
+    { value: 'exceptional', label: 'Exceptional ', color: 'bg-green-100 text-green-800' },
+    { value: 'exceedsExpectations', label: 'Exceeds Expectations ', color: 'bg-blue-100 text-blue-800' },
+    { value: 'meetsExpectations', label: 'Meets Expectations ', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'needsImprovement', label: 'Needs Improvement ', color: 'bg-orange-100 text-orange-800' },
+    { value: 'unsatisfactory', label: 'Unsatisfactory ', color: 'bg-red-100 text-red-800' }
+  ];
 
   const [tableData, setTableData] = useState([
     {
@@ -85,6 +93,21 @@ const EvaluationSummary = () => {
     }
   }, [employeeId]);
 
+  // useEffect(() => {
+  //   if (overallWeightage && overallWeightage !== 'N/A') {
+  //     const weight = parseFloat(overallWeightage);
+  //     if (weight >= 90) setPerformanceRating('exceptional');
+  //     else if (weight >= 80) setPerformanceRating('exceedsExpectations');
+  //     else if (weight >= 70) setPerformanceRating('meetsExpectations');
+  //     else if (weight >= 60) setPerformanceRating('needsImprovement');
+  //     else setPerformanceRating('unsatisfactory');
+  //   }
+  // }, [overallWeightage]);
+
+  const handlePerformanceChange = (e) => {
+    setPerformanceRating(e.target.value);
+  };
+
 
   useEffect(() => {
     const fetchAllEvaluations = async () => {
@@ -109,6 +132,10 @@ const EvaluationSummary = () => {
           const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
           const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          if (evaluationData.performanceRating) {
+            setPerformanceRating(evaluationData.performanceRating);
+            console.log("Setting performance rating from backend:", evaluationData.performanceRating);
+          }
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
 
           const updatedTableData = [
@@ -238,7 +265,7 @@ useEffect(() => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ overallWeightage: calculatedWeightage }),
+            body: JSON.stringify({ overallWeightage: calculatedWeightage ,performanceRating}),
           }
         );
 
@@ -280,6 +307,42 @@ useEffect(() => {
       console.error("Error updating status or sending email:", error);
     } finally {
       setIsModalOpen(false);
+    }
+  };
+
+  const handleSaveAndExit = async () => {
+    if (!token) {
+      console.log("No token found. Please log in.");
+      return;
+    }
+  
+    try {
+      const calculatedWeightage = overallWeightage || "N/A";
+  
+      const weightageResponse = await fetch(
+        `http://localhost:3003/appraisal/overAllWeightage/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 
+            overallWeightage: calculatedWeightage,
+            performanceRating 
+          }),
+        }
+      );
+  
+      if (weightageResponse.ok) {
+        console.log("Overall weightage saved successfully");
+        navigate('/manager-performance');
+      } else {
+        const weightageError = await weightageResponse.json();
+        console.log(`Error saving weightage: ${weightageError.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
     }
   };
 
@@ -348,6 +411,7 @@ useEffect(() => {
 
       <div className="mb-6">
         {userData ? (
+           <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
@@ -395,6 +459,47 @@ useEffect(() => {
               </div>
             </div>
           </div>
+          {/* <div className="mt-6 mx-2">
+  <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
+    <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
+    <select
+      value={performanceRating}
+      onChange={handlePerformanceChange}
+      className="w-2/6 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+    >
+      <option value="">Select Performance Rating</option>
+      {performanceOptions.map((option) => (
+        <option
+          key={option.value}
+          value={option.value}
+        >
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+</div> */}
+<div className="mt-6 mx-2">
+  <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
+    <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
+    <select
+      value={performanceRating}
+      onChange={handlePerformanceChange}
+      className="w-2/6 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+    >
+      <option value="">Select Performance Rating</option>
+      {performanceOptions.map((option) => (
+        <option
+          key={option.value}
+          value={option.value}
+        >
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+          </>
         ) : (
           <div />
         )}
@@ -571,12 +676,10 @@ useEffect(() => {
             <button
               type="button"
               className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={() => {
+              onClick={
 
-                const empType = localStorage.getItem('empType')
-                if (empType === 'Manager') navigate('/manager-performance');
-                else if (empType === 'HR') navigate('/hr-performance')
-              }}
+                handleSaveAndExit
+              }
             >
 
               Save & Exit

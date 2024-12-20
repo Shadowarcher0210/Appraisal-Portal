@@ -19,6 +19,10 @@ const overallWeightageSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  performanceRating:{
+    type: String,
+    required: true,
+  }
 });
 
 module.exports = mongoose.model("OverallWeightage",overallWeightageSchema);
