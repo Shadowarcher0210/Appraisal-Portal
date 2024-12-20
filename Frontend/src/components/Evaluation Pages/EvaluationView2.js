@@ -205,7 +205,8 @@ const EvaluationView2 = () => {
   
   useEffect(() => {
     fetchUserDetails();
-  }, []);
+  }, [
+  ]);
 
 
   const fetchUserDetails = async () => {

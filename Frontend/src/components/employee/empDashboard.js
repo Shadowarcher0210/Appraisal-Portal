@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from '../hrManager/Modal';
 import axios from 'axios';
 import { Calendar, Clock, User } from "lucide-react";
 
 const Dashboard = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
   const [date, setDate] = useState(new Date());
   const [userData, setUserData] = useState(null);
   const employeeName = localStorage.getItem('empName');
@@ -76,9 +74,7 @@ const Dashboard = () => {
     }).toUpperCase();
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
+  
 
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
@@ -227,7 +223,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };
