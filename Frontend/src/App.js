@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import ConfigureAppraisalForms from './components/hrManager/ConfigureAppraisalForms.js'; 
 import Header from './components/Header.js';
 import Login from './components/Login.js';
 import Profile from './components/Profile.js';
@@ -10,7 +9,7 @@ import Dashboard from './components/employee/EmployeeDashboard.js';
 import EmpViewPage from './components/employee/EmployeeView.js';
 
 import EmpForm from './components/employee/EmployeeForm.js';
-import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
+import SelfAppraisal from './components/Tabs/SelfAppraisalTab.js';
 import Introduction from './components/Tabs/Intro2.js';
 // import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
@@ -67,7 +66,6 @@ const App = () => {
           <Route path="/intro" element={<Introduction/>} />
 
 =
-          <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
           <Route path="/stausBar" element={<StatusTracker/>} />
 
@@ -89,7 +87,6 @@ const App = () => {
           <Route path='hr-myperformance' element={<MyPerformanceHR/>}/>
           <Route path='hr-performance' element={<PerformanceHR/>}/>
           <Route path='hr-view/:employeeId' element={<ViewHR/>}/>
-          <Route path="/selfemp" element={<Self/>} />
 
           <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
           <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />

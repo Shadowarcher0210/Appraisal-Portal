@@ -6,7 +6,8 @@ import {
   impInstructions,
 } from "./EmpAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
-import SelfAppraisal2 from "../Tabs/SelfAppraisalTab";
+import SelfAppraisal from "../Tabs/SelfAppraisalTab";
+import SelfAppraisalTab from "../Tabs/SelfAppraisalTab";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
@@ -56,7 +57,7 @@ const navigate = useNavigate();
           />
         )}
         {activeTab === 1 && (
-          <SelfAppraisal2
+          <SelfAppraisalTab
             selfAppraisalPage={selfAppraisalPage}
             handlePreviousForm={handlePreviousForm}
           />

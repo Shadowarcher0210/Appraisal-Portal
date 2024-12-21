@@ -7,7 +7,7 @@ import {
 } from "../manager/MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import { useLocation } from "react-router-dom";
-import SelfAppraisal2 from "../Tabs/SelfAppraisalTab";
+import SelfAppraisal from "../Tabs/SelfAppraisalTab";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
@@ -88,7 +88,7 @@ const FormHR = () => {
           />
         )}
         {activeTab === 1 && (
-          <SelfAppraisal2
+          <SelfAppraisal
             selfAppraisalPage={selfAppraisalPage}
             handlePreviousForm={handlePreviousForm}
           />
