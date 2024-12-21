@@ -19,7 +19,7 @@ import FormHR from './components/hrManager/FormHR.js';
 import DashboardHR from './components/hrManager/DashboardHR.js'
 import MyPerformanceHR from './components/hrManager/MyPerformanceHR.js';
 import PerformanceHR from './components/hrManager/PerformanceHR.js';
-import ViewHR from './components/hrManager/ViewHR.js';
+// import ViewHR from './components/hrManager/ViewHR.js';
 import EvaluationView1 from './components/Evaluation Pages/EvaluationView1.js';
 import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/Evaluation Pages/EvaluationView2.js';
@@ -82,7 +82,6 @@ const App = () => {
           <Route path='hr-form' element={<FormHR/>}/>
           <Route path='hr-myperformance' element={<MyPerformanceHR/>}/>
           <Route path='hr-performance' element={<PerformanceHR/>}/>
-          <Route path='hr-view/:employeeId' element={<ViewHR/>}/>
           <Route path="/selfemp" element={<Self/>} />
 
           <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
