@@ -1,8 +1,6 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import ConfigureAppraisalForms from './components/hrManager/ConfigureAppraisalForms.js'; 
 import Header from './components/Header.js';
-import PerformancePage from './components/employee/empPerformance.js';
 import Login from './components/Login.js';
 import Profile from './components/Profile.js';
 import ForgotPassword from './components/ForgotPassword.js';
@@ -13,31 +11,31 @@ import EmpViewPage from './components/employee/empViewPage.js';
 import EmpForm from './components/employee/empForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
-// import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
-import M_Performance from './components/manager/M_Performance.js';
-import M_myPerformance from './components/manager/M_myPerformance.js';
-import E_PerformancePage from './components/employee/empPerformance.js';
-import M_Goals from './components/manager/M_Goals';
 import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
-import EvaluationView from './components/manager/EvaluationView.js';
-import DashboardHR from './components/hrManager/DashboardHR.js';
+import EvaluationView from './components/Evaluation Pages/EvaluationView.js';
 import FormHR from './components/hrManager/FormHR.js';
+import DashboardHR from './components/hrManager/DashboardHR.js'
 import MyPerformanceHR from './components/hrManager/MyPerformanceHR.js';
 import PerformanceHR from './components/hrManager/PerformanceHR.js';
-import EvaluationView1 from './components/manager/EvaluationView1.js';
+import ViewHR from './components/hrManager/ViewHR.js';
+import EvaluationView1 from './components/Evaluation Pages/EvaluationView1.js';
 import EvaluationSummary from './components/manager/EvaluationSummary.js';
-import EvaluationView2 from './components/manager/EvaluationView2.js';
+import EvaluationView2 from './components/Evaluation Pages/EvaluationView2.js';
 
 import Self from './components/Tabs/selfAppraisalTab.js'
-import EvaluationView3 from './components/manager/EvaluationView3.js';
+import EvaluationView3 from './components/Evaluation Pages/EvaluationView3.js';
 
 import CEvaluation from './components/View Pages/CEvaluation.js';
-import CEvaluation1 from './components/Tabs/CEvaluation1.js';
+import CEvaluation1 from './components/View Pages/CEvaluation1.js';
 import CEvaluation2 from './components/View Pages/CEvaluation2.js';
 import CEvaluation3 from './components/View Pages/CEvaluation3.js';
 import CEvaluationSummary from './components/View Pages/CEvaluationSummary.js';
+import TeamAppraisals from './components/manager/TeamAppraisals.js';
+import M_PerformanceInsights from './components/manager/M_PerformanceInsights.js';
+import EmployeeGoals from './components/manager/EmployeeGoals.js';
+import PerformanceInsights from './components/employee/PerformanceInsights.js';
 
 const App = () => {
   const location = useLocation();
@@ -66,17 +64,15 @@ const App = () => {
           <Route path="/intro" element={<Introduction/>} />
 
 =
-          <Route path="/performance" element={<PerformancePage />} />
-          <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
 
           <Route path="/employee-dashboard" element={<Dashboard />} />
-          <Route path="/employee-performance" element={<E_PerformancePage />} />
+          <Route path="/employee-performance" element={<PerformanceInsights />} />
           
           <Route path="/manager-dashboard" element={<M_Dashboard/>} />
-          <Route path='/manager-performance' element={<M_Performance/>}/>
-          <Route path='/manager-my-performance' element={<M_myPerformance/>}/>
-          <Route path='/manager-Goals' element ={ < M_Goals />}  />
+          <Route path='/manager-performance' element={<TeamAppraisals/>}/>
+          <Route path='/manager-my-performance' element={<M_PerformanceInsights/>}/>
+          <Route path='/manager-Goals' element ={ < EmployeeGoals />}  />
           <Route path='/manager-Form' element ={<M_Form />} />
           <Route path='/manager-View' element ={<M_ViewPage />} />
           <Route path='/evaluationView/:employeeId' element ={<EvaluationView />} />
@@ -99,7 +95,6 @@ const App = () => {
           <Route path='/CE2/:employeeId' element={< CEvaluation2 />} />
           <Route path='/CE3/:employeeId' element={< CEvaluation3 />} />
           <Route path='/CES/:employeeId' element={< CEvaluationSummary />} />
-
 
 
           

@@ -4,24 +4,20 @@ import {
   User,
   Briefcase,
   TrendingUp,
-  Award,
+
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const CEvaluation2 = () => {
-  const [showHelpPopup, setShowHelpPopup] = useState(false);
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [additionalAreaData, setadditionalAreaData] = useState(null);
-  const [additionalAreas, setadditionalAreas] = useState(null);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { employeeId } = useParams();
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [attainments, setAttainments] = useState(Array(5).fill(''));
-  const [overallScore, setOverallScore] = useState(0);
   const [comments, setComments] = useState(Array(5).fill(''));
   const questionsAndAnswers = [
     { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },

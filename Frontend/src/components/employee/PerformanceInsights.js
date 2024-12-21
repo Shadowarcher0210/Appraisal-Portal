@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Target, TrendingUp, Briefcase, Plus, Users, Send, Calendar, ArrowRight, Award, BarChart, Edit2 } from 'lucide-react';
 
-const E_PerformancePage = () => {
+const PerformanceInsights = () => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [academicYears, setAcademicYears] = useState([]);
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
@@ -271,4 +271,4 @@ const E_PerformancePage = () => {
   );
 };
 
-export default E_PerformancePage;
+export default PerformanceInsights;

@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Target, TrendingUp, Briefcase, Plus, Users, Sen
 
 
 
-const M_myPerformance = () => {
+const M_PerformanceInsights = () => {
     const [selectedYear, setSelectedYear] = useState(null);
     const [, setAcademicYears] = useState([]);
     const [, setOpenMenuIndex] = useState(null);
@@ -272,4 +272,4 @@ const M_myPerformance = () => {
     )
 }
 
-export default M_myPerformance
+export default M_PerformanceInsights

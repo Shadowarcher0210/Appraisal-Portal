@@ -6,6 +6,10 @@ const pageDataSchema = new mongoose.Schema(
             type: Number,
             required: true
         },
+        question: {
+            type: String,
+            required: true
+        },
         answer: {
             type: String,
             required: true
@@ -20,12 +24,12 @@ const pageDataSchema = new mongoose.Schema(
         },
         managerEvaluation: {
             type: Number,
-            min:1,
-            max:100,
+            min: 1,
+            max: 100,
             default: null
         }
     },
-  
+
 );
 
 const appraisalSchema = new mongoose.Schema({
@@ -85,20 +89,20 @@ const appraisalSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    
+
     selfScore: {
         type: Number,
         default: null
     },
-    managerScore:{
-        type:Number,
-        default:null
+    managerScore: {
+        type: Number,
+        default: null
     },
-    appraisalLetter: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'File' 
+    appraisalLetter: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'File'
     },
-    
+
 });
 
 module.exports = mongoose.model('Appraisal', appraisalSchema);

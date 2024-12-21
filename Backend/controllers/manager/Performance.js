@@ -315,6 +315,14 @@ const getOverallEvaluation = async (req, res) => {
             },
             { overallScore: 1 }
         );
+        
+        const overAllEvaluation = await OverallWeightage.findOne(
+            {
+                employeeId,
+                timePeriod :{ $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] },
+            },
+            {overallWeightage:1,performanceRating:1}
+        )
 
        
         const managerEvaluations = {};
@@ -335,7 +343,11 @@ const getOverallEvaluation = async (req, res) => {
         if (additionalAreasOverall && additionalAreasOverall.overallScore !== undefined) {
             managerEvaluations.additionalAreasOverall = additionalAreasOverall.overallScore;
         }
-
+ 
+        if(overAllEvaluation && overAllEvaluation.overallWeightage && overAllEvaluation.performanceRating!== undefined){
+            managerEvaluations.overallWeightage = overAllEvaluation.overallWeightage;
+            managerEvaluations.performanceRating = overAllEvaluation.performanceRating;
+        }
       
 
         if (Object.keys(managerEvaluations).length === 0) {
@@ -352,7 +364,7 @@ const getOverallEvaluation = async (req, res) => {
 
 const postOverAllWeightage = async (req, res)=>{
     const { employeeId, startDate, endDate } = req.params;
-    const {overallWeightage } = req.body;
+    const {overallWeightage,performanceRating } = req.body;
 
     if (!employeeId) {
         return res.status(400).json({ error: 'Employee ID is required.' });
@@ -381,6 +393,7 @@ const postOverAllWeightage = async (req, res)=>{
         if (existingRecord){
             
             existingRecord.overallWeightage = overallWeightage;
+            existingRecord.performanceRating=performanceRating
             await existingRecord.save();
             return res.status(200).json({
                 message: 'Additional details updated successfully!',
@@ -391,6 +404,7 @@ const postOverAllWeightage = async (req, res)=>{
                 employeeId,
                 timePeriod,
                 overallWeightage,
+                performanceRating
             });
             await newAdditional.save();
             return res.status(201).json({
@@ -428,7 +442,7 @@ const getOverAllPercentage = async (req, res) => {
         const records = await OverallWeightage.find({
             employeeId,
             timePeriod
-        });
+        },{overallWeightage:1,performanceRating:1});
 
         if (!records || records.length === 0) {
             return res.status(404).json({

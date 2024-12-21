@@ -13,7 +13,7 @@ import {
   Edit2,
 } from "lucide-react";
 
-const M_Goals = () => {
+const EmployeeGoals = () => {
   const [categories, setCategories] = useState([]);
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -598,4 +598,4 @@ const M_Goals = () => {
   );
 };
 
-export default M_Goals;
+export default EmployeeGoals;

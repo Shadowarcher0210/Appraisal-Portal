@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import { User, Briefcase, TrendingUp } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 
 const CEvaluation = () => {
-  const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -32,72 +30,17 @@ const CEvaluation = () => {
     { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
     { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
   ];
-  const toggleHelpPopup = () => {
-    setShowHelpPopup(!showHelpPopup);
-  };
-
-  useEffect(() => {
-    fetchuserDetails();
-  }, []);
-
-  const fetchuserDetails = async () => {
-    if (employeeId) {
-      try {
-        const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    } else {
-      console.log("User ID not found in local storage.");
-    }
-  };
-
   const handleBack = () => {
-    setIsModalVisible(false);
-    // navigate("/manager-performance");
     const empType = localStorage.getItem('empType')
     if(empType==='Manager') navigate('/manager-performance');
     else if(empType==='HR') navigate('/hr-performance')
+      else{navigate('/employee-dashboard')
+    }
   };
 
   const handleContinue =  async () => {
-    // if (!formData || !formData[0] || !formData[0].pageData) return;
-  
-    // try {
-    //   const overallScore = calculateOverallScore();
-    //   const submissionData = {
-    //     pageData: formData[0].pageData.map(item => ({
-    //       questionId: item.questionId,
-    //       answer: item.answer || '',
-    //       notes: item.notes || '',
-    //       weights: item.weights || '',
-    //       managerEvaluation: item.managerEvaluation|| 0
-          
-    //     })),
-    //     overallScore: parseFloat(overallScore),
-    //   };
-      
-  
-    // //   await axios.put(
-    // //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-    // //     submissionData,
-    // //     { headers: { "Content-Type": "application/json" } }
-    // //   );
-    //   console.log("PUT request successful.");
-  
-     
-    // } catch (error) {
-    //   console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-    //   setError("Error submitting evaluation");
-    // }
-  
-  
-    navigate(`/CE1/${employeeId}`,{state:{timePeriod}}); 
-   
-  }
+   navigate(`/CE1/${employeeId}`,{state:{timePeriod}}); 
+   }
 
   useEffect(() => {
     const fetchAppraisalDetails = async () => {
@@ -129,6 +72,7 @@ const CEvaluation = () => {
           }))
         };
 
+        console.log("Appraisal Answers in CEvaluation", response.data)
         setFormData([initialFormData]);
         setLoading(false);
       } catch (error) {
@@ -140,57 +84,6 @@ const CEvaluation = () => {
 
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
-
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
-
-    const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
-
-
-  // const handleSaveExit = async () => {
-  //   try {
-     
-  //     const submissionData = {
-  //       pageData: formData[0].pageData.map(item => ({
-  //         questionId: item.questionId,
-  //         answer: item.answer || '',
-  //         notes: item.notes || '',
-  //         weights: item.weights || '',
-  //         managerEvaluation: item.managerEvaluation|| 0
-          
-  //       }))
-  //     };
-      
-  
-  //   //   await axios.put(
-  //   //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-  //   //     submissionData,
-  //   //     { headers: { "Content-Type": "application/json" } }
-  //   //   );
-  //     console.log("PUT request successful.");
-  
-     
-  //   } catch (error) {
-  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-  //     setError("Error submitting evaluation");
-  //   }
-  
-  
-  //   navigate('/manager-performance'); 
-   
-    
-  // };
-
 
   if (loading) {
     return (
@@ -395,14 +288,7 @@ const CEvaluation = () => {
               Back
             </button>
           </div>
-          {/* <div  className='mr-2'>
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSaveExit}
-            >
-             Save & Exit
-            </button>
-          </div> */}
+         
           <div >
             <button
               className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
@@ -413,25 +299,7 @@ const CEvaluation = () => {
           </div>  
         </div>
 
-        {isModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-              <div className="p-6">
-                <p className="mt-3 text-gray-600 text-center">
-                  Thank you for submitting
-                </p>
-                <div className="mt-6 flex justify-center space-x-4">
-                  <button
-                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    onClick={() => handleBack()}
-                  >
-                    back
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+       
       </div>
     </div>
   );
