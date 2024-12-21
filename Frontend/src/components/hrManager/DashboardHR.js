@@ -1,244 +1,244 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from './Modal';
-import { Calendar, Target } from 'lucide-react';
-import TeamMembersSidebar from '../manager/TeamMembers';
+import Modal from '../hrManager/Modal';
+import axios from 'axios';
+import { Calendar, Clock, User, ChevronRight, Activity,Target } from "lucide-react";
+import StatusTracker from '../employee/StatusTracker';
 
-const DashboardHR = () => {
-    const [date, setDate] = useState(new Date());
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [userData, setUserData] = useState(null);
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const [employees, setEmployees] = useState([]);
+const Dashboard = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [userData, setUserData] = useState(null);
+  const employeeName = localStorage.getItem('empName');
 
-    const employeeName = localStorage.getItem('empName');
-    const navigate = useNavigate();
-    const wishing = () => {
-        const hour = date.getHours();
-        if (hour < 12) return 'Good Morning';
-        if (hour < 18) return 'Good Afternoon';
-        return 'Good Evening';
-    };
-    const formatDate = (date) => {
-        const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString(undefined, options);
-    };
-    const formatTime = (date) => {
-        return date.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        }).toUpperCase();
-    };
-    const handleCloseModal = () => {
-        setModalOpen(false);
-    };
-    const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
-    const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
-    const appraisalDueDate = new Date(`${currentYear}-03-15`);
-    const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const navigate = useNavigate();
+  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
+  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
+  const appraisalDueDate = new Date(`${currentYear}-03-15`);
+  const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
   
-    const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-    const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-    const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
-    const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
-  
-  
-
+  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
+  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
     if (employeeId) {
       try {
         const response = await axios.get(`http://localhost:3003/form/display/${employeeId}`);
-
         const currentYear = new Date().getFullYear();
         const sortedData = response.data
           .filter(appraisal => {
             const startYear = parseInt(appraisal.timePeriod[0]);
             return startYear >= currentYear && startYear <= currentYear + 1;
           })
-          .sort((a, b) => {
-            const startYearA = parseInt(a.timePeriod[0]);
-            const startYearB = parseInt(b.timePeriod[0]);
-            return startYearA - startYearB;
-          });
-
+          .sort((a, b) => parseInt(a.timePeriod[0]) - parseInt(b.timePeriod[0]));
         setUserData(sortedData);
-        console.log("userdata", sortedData);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
-    } else {
-      console.log('User ID not found in local storage.');
     }
   };
+
   useEffect(() => {
     fetchAppraisalDetails();
-    // allEmployees();
+    const timer = setInterval(() => setDate(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
-    const handleButtonClick = async (appraisal) => {
-        const { timePeriod, status } = appraisal;
-        const employeeId = localStorage.getItem('employeeId')?.trim();
-        const newStatus = status === "Submitted" ? "Submitted" : "In Progress";
-        const navigatePath = status === "Submitted" ? `/empview/${employeeId}` : "/hr-Form";
 
-        try {
-            const response = await axios.put(`http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-                { status: newStatus }
-            );
+  const wishing = () => {
+    const hour = date.getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
-            if (response.status === 200) {
-                console.log(`Status ${newStatus} Successfully:`, response.data);
-                fetchAppraisalDetails();
-            } else {
-                console.error('Failed to update status:', response.statusText);
-            }
-        } catch (error) {
-            console.error(`Error updating status to ${newStatus}:, error`);
-        }
+  const formatDate = (date) => {
+    return date.toLocaleDateString(undefined, { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
-        navigate(navigatePath, { state: { timePeriod } });
+  const formatTime = (date) => {
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).toUpperCase();
+  };
+
+  const handleButtonClick = async (appraisal) => {
+    const { timePeriod, status } = appraisal;
+    const employeeId = localStorage.getItem('employeeId')?.trim();
+    let navigatePath = "";
+
+    if (["Submitted", "Under Review", "Pending HR Review", "Under HR Review"].includes(status)) {
+      navigatePath = `/empview/${employeeId}`;
+    } else if (status === "In Progress") {
+      navigatePath = `/form?activeTab=1`;
+    } else if (status === "Completed") {
+      navigatePath = `/CE/${employeeId}`;
+    }
+
+    if (status === "To Do") {
+      try {
+        await axios.put(
+          `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
+          { status: "In Progress" }
+        );
+        fetchAppraisalDetails();
+        navigatePath = `/form`;
+      } catch (error) {
+        console.error(`Error updating status:`, error);
+      }
+    }
+
+    navigate(navigatePath, { state: { timePeriod } });
+  };
+
+  const getStatusStyle = (status) => {
+    const styles = {
+      "Submitted": "bg-blue-100 text-blue-700",
+      "Under Review": "bg-purple-100 text-purple-700",
+      "Under HR Review": "bg-orange-100 text-orange-700",
+      "Completed": "bg-green-100 text-green-700",
+      "In Progress": "bg-amber-100 text-amber-700",
+      "To Do": "bg-yellow-100 text-yellow-800",
+      "Pending HR Review": "bg-indigo-100 text-indigo-700",
+      
     };
+    return styles[status] || "bg-gray-100 text-gray-700";
+  };
 
-    const getInitials = (name) => {
-        return name
-            .split(' ')
-            .map(word => word[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2);
-    };
-
-
-    const bgColors = [
-        'bg-blue-500',
-        'bg-red-500',
-        'bg-green-500',
-        'bg-yellow-500',
-        'bg-orange-500'
-    ];
-
-    return (
-        <div className="flex flex-1 items-start mt-20 ml-6">
-            <div className='w-full'>
-
-                <div>
-                    <label className='font-bold text-4xl w-full ml-2 mb-4 text-orange-600'>{wishing()}</label>
-                    <label className='ml-2 text-3xl font-bold text-cyan-800'>
-                        {employeeName}
-                    </label>
-                    <p className='ml-2 mt-3 text-gray-700'>{formatDate(date)} <span>, </span>{formatTime(date)}</p>
-                </div>
-                <br />
-
-                <div className="w-12/12 p-3 bg-white border border-gray-300 shadow-lg rounded-lg ml-4 mr-8">
-                    <h2 className="text-2xl font-bold text-white bg-cyan-900 p-2 rounded mb-4">Appraisal</h2>
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Employee Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Assessment Year</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Initiated On</th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
-
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {userData ? (
-                                userData.map((appraisal, index) => (
-                                    <tr key={index}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.empName}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                                            {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.initiatedOn}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.managerName}</td>
-
-                                        <td className="px-2 py-2 mt-2 inline-flex whitespace-nowrap text-sm font-medium">
-                                            <span className={appraisal.status === 'Submitted' ? 'bg-green-100 text-green-700 rounded-lg p-2' : 'text-yellow-800 bg-yellow-100 rounded-lg p-2'}>
-                                                {appraisal.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button
-                                                className='bg-cyan-800 text-white hover:bg-cyan-700 rounded-md px-2 py-2 w-16'
-                                                onClick={() => handleButtonClick(appraisal)}
-                                            >
-    {["Submitted", "Under Review","Completed"].includes(appraisal.status) ? "View" : "Start"}
-    </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
-                                        No appraisals found for this user.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                    <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
-                </div>
-                {/* Cards Grid with improved spacing */}
-                <div className="grid gap-6  lg:grid-cols-4 mb-8 mt-10 ml-4">
-                    {/* Appraisal Cycle Card */}
-                    <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-orange-300 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="p-6">
-                            <div className="flex items-center mb-4">
-                                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-                                <h2 className="font-semibold text-gray-800">Appraisal Cycle</h2>
-                            </div>
-                            <div className="space-y-3">
-                                {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
-                                    <div className="bg-orange-50 rounded-md p-4">
-                                        <p className="text-sm text-gray-600">Due Date</p>
-                                        <p className="font-medium text-gray-800">{appraisalDueDate.toLocaleDateString()}</p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-orange-50 rounded-md p-4">
-                                        <p className="text-sm text-gray-600">Cycle Period</p>
-                                        <p className="font-medium text-gray-800">{appraisalStartDate} to {appraisalEndDate}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Goal Setting Card */}
-                    <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-green-400 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="p-6">
-                            <div className="flex items-center mb-4">
-                                <Target className="h-5 w-5 text-green-500 mr-2" />
-                                <h2 className="font-semibold text-gray-800">Goal Setting</h2>
-                            </div>
-                            <div className="space-y-3">
-                                {currentDate >= goalSettingVisibleStart && currentDate <= goalSettingDueDate ? (
-                                    <div className="bg-green-50 rounded-md p-4">
-                                        <p className="text-sm text-gray-600">Due Date</p>
-                                        <p className="font-medium text-gray-800">{goalSettingDueDate.toLocaleDateString()}</p>
-                                    </div>
-                                ) : (
-                                    <div className="bg-green-50 rounded-md p-4">
-                                        <p className="text-sm text-gray-600">Setting Period</p>
-                                        <p className="font-medium text-gray-800">{goalSettingStartDate} to {goalSettingEndDate}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="min-h-screen bg-blue-50 mt-10">
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg  shadow-lg mt-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+           
+            <div>
+              <div className="flex items-baseline space-x-3 mb-2  ">
+                <h1 className="text-3xl md:text-4xl font-bold text-yellow-200">{wishing()},</h1>
+                <h2 className="text-2xl md:text-3xl font-bold text-white ">
+                  {employeeName}
+                </h2>
+              </div>
+              <div className="flex items-center text-white">
+                <Clock className="h-4 w-4 mr-2" />
+                <span>{formatDate(date)}</span>
+                <span className="mx-2">•</span>
+                <span>{formatTime(date)}</span>
+              </div>
             </div>
 
-            {/* <TeamMembersSidebar employees={employees} /> */}
+            
+             <div className="mt-4 md:mt-0 flex space-x-4">
+                          <div className="bg-white rounded-lg border border-gray-200 p-4">
+                            <div className="flex items-center space-x-3">
+                              <Calendar className="h-5 w-5 text-blue-500" />
+                              <div>
+                                <p className="text-sm font-medium text-gray-500">Appraisal Period</p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                  {`${appraisalStartDate} - ${appraisalEndDate}`}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+            
+                         
+                        </div>
+            
+          </div>
         </div>
 
-    )
-}
+     
+        <div className="bg-white rounded-lg shadow-lg">
+          <div className="p-6 space-y-6">
+           
+          <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <Activity className="h-5 w-5 text-blue-500" />
+      <h2 className="text-xl font-bold text-blue-900">
+        Self Appraisal Overview
+      </h2>
+    </div>
 
-export default DashboardHR
+
+            <div className="overflow-x-auto ">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee name</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Manager</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {userData ? (
+                    userData.map((appraisal, index) => (
+                      <tr key={index} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                              <User className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <span className=" text-gray-900">{appraisal.empName}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">
+                          {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
+                        </td>
+                        <td className="px-6 py-4 text-gray-500">{appraisal.initiatedOn}</td>
+                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1  text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
+                            {appraisal.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => handleButtonClick(appraisal)}
+                            className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
+                          >
+                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) 
+                              ? "View" 
+                              : appraisal.status === "In Progress" 
+                                ? "Continue" 
+                                : "View"
+                            }
+                            <ChevronRight className="ml-1 h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                        No appraisals found for this user.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {userData && userData.length > 0 && (
+              <div className='p-4'>
+                <StatusTracker currentStatus={userData[0].status} />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+    </div>
+  );
+};
+
+export default Dashboard;

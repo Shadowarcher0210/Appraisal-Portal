@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
 import axios from 'axios';
-import { Calendar, Clock, User } from "lucide-react";
+import { Calendar, Clock, User, ChevronRight, Activity } from "lucide-react";
+import StatusTracker from './StatusTracker';
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -17,42 +18,29 @@ const Dashboard = () => {
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
+
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
     if (employeeId) {
       try {
         const response = await axios.get(`http://localhost:3003/form/display/${employeeId}`);
-
         const currentYear = new Date().getFullYear();
         const sortedData = response.data
           .filter(appraisal => {
             const startYear = parseInt(appraisal.timePeriod[0]);
             return startYear >= currentYear && startYear <= currentYear + 1;
           })
-          .sort((a, b) => {
-            const startYearA = parseInt(a.timePeriod[0]);
-            const startYearB = parseInt(b.timePeriod[0]);
-            return startYearA - startYearB;
-          });
-
+          .sort((a, b) => parseInt(a.timePeriod[0]) - parseInt(b.timePeriod[0]));
         setUserData(sortedData);
-        console.log("userdata", sortedData);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
-    } else {
-      console.log('User ID not found in local storage.');
     }
   };
 
   useEffect(() => {
     fetchAppraisalDetails();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDate(new Date());
-    }, 1000);
+    const timer = setInterval(() => setDate(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -64,8 +52,12 @@ const Dashboard = () => {
   };
 
   const formatDate = (date) => {
-    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    return date.toLocaleDateString(undefined, { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
   const formatTime = (date) => {
@@ -76,19 +68,12 @@ const Dashboard = () => {
     }).toUpperCase();
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-
-    console.log("Status in EMP Dashboard", status);
-
     let navigatePath = "";
 
-    if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
+    if (["Submitted", "Under Review", "Pending HR Review", "Under HR Review"].includes(status)) {
       navigatePath = `/empview/${employeeId}`;
     } else if (status === "In Progress") {
       navigatePath = `/form?activeTab=1`;
@@ -98,101 +83,140 @@ const Dashboard = () => {
 
     if (status === "To Do") {
       try {
-        const response = await axios.put(
+        await axios.put(
           `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
           { status: "In Progress" }
         );
-
-        if (response.status === 200) {
-          console.log(`Status updated to In Progress successfully:`, response.data);
-          fetchAppraisalDetails(); // Fetch updated data after status change
-        } else {
-          console.error('Failed to update status:', response.statusText);
-        }
+        fetchAppraisalDetails();
+        navigatePath = `/form`;
       } catch (error) {
         console.error(`Error updating status:`, error);
       }
-      navigatePath = `/form`;
     }
 
     navigate(navigatePath, { state: { timePeriod } });
   };
+
+  const getStatusStyle = (status) => {
+    const styles = {
+      "Submitted": "bg-blue-100 text-blue-700",
+      "Under Review": "bg-purple-100 text-purple-700",
+      "Under HR Review": "bg-orange-100 text-orange-700",
+      "Completed": "bg-green-100 text-green-700",
+      "In Progress": "bg-amber-100 text-amber-700",
+      "To Do": "bg-yellow-100 text-yellow-800",
+      "Pending HR Review": "bg-indigo-100 text-indigo-700",
+      
+    };
+    return styles[status] || "bg-gray-100 text-gray-700";
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header Section with improved layout */}
-      <div className="px-8 py-16 pt-20  bg-white ">
-        <div className=" mx-auto">
-          <div className="flex items-baseline space-x-2">
-            <h1 className="text-4xl font-bold">{wishing()}</h1>
-            <h2 className="text-3xl font-bold text-orange-600">{employeeName}</h2>
-          </div>
-          <div className="flex items-center mt-3 text-gray-600">
-            <Clock className="h-4 w-4 mr-2" />
-            <span>{formatDate(date)}</span>
-            <span className="mx-2">•</span>
-            <span>{formatTime(date)}</span>
+    <div className="min-h-screen bg-blue-50 mt-10">
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg  shadow-lg mt-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+           
+            <div>
+              <div className="flex items-baseline space-x-3 mb-2  ">
+                <h1 className="text-3xl md:text-4xl font-bold text-yellow-200">{wishing()},</h1>
+                <h2 className="text-2xl md:text-3xl font-bold text-white ">
+                  {employeeName}
+                </h2>
+              </div>
+              <div className="flex items-center text-white">
+                <Clock className="h-4 w-4 mr-2" />
+                <span>{formatDate(date)}</span>
+                <span className="mx-2">•</span>
+                <span>{formatTime(date)}</span>
+              </div>
+            </div>
+
+            <div className="mt-4 md:mt-0 bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center space-x-3">
+                <Calendar className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate 
+                      ? "Due Date" 
+                      : "Appraisal Period"}
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate
+                      ? appraisalDueDate.toLocaleDateString()
+                      : `${appraisalStartDate} - ${appraisalEndDate}`}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="  px-8 -mt-12">
-        {/* Cards Grid with improved spacing */}
-        <div className=" ">
-          {/* Appraisal Table Section */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8  border-b">
-            <div className=" py-4 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-white bg-blue-500 p-3 rounded">Appraisal</h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+     
+        <div className="bg-white rounded-lg shadow-lg">
+          <div className="p-6 space-y-6">
+           
+          <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <Activity className="h-5 w-5 text-blue-500" />
+      <h2 className="text-xl font-bold text-blue-900">
+        Self Appraisal Overview
+      </h2>
+    </div>
+
+
+            <div className="overflow-x-auto ">
+              <table className="w-full">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                  <tr className="border-b border-gray-200">
+                  <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee name</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Manager</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-100">
                   {userData ? (
                     userData.map((appraisal, index) => (
                       <tr key={index} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <User className="h-4 w-4 text-gray-400 mr-2" />
-                            <span className="text-sm text-gray-900">{appraisal.empName}</span>
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                              <User className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <span className=" text-gray-900">{appraisal.empName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 text-gray-500">
                           {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appraisal.initiatedOn}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appraisal.managerName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center  py-1.5 px-2 rounded-lg text-sm font-medium
-                          ${appraisal.status === "Submitted" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        <td className="px-6 py-4 text-gray-500">{appraisal.initiatedOn}</td>
+                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1  text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                             {appraisal.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4">
                           <button
-                            className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
-  
-  }`}
                             onClick={() => handleButtonClick(appraisal)}
+                            className="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
                           >
-                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) ? "View" : appraisal.status==="In Progress"?"Continue": "Start"}
+                            {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status) 
+                              ? "View" 
+                              : appraisal.status === "In Progress" 
+                                ? "Continue" 
+                                : "View"
+                            }
+                            <ChevronRight className="ml-1 h-4 w-4" />
                           </button>
                         </td>
-
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
                         No appraisals found for this user.
                       </td>
                     </tr>
@@ -200,34 +224,15 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-          {/* Appraisal Cycle Card */}
-          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-orange-300 shadow-sm hover:shadow-md transition-shadow w-80">
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-                <h2 className="font-semibold text-gray-800">Appraisal Cycle</h2><br />
-
+            {userData && userData.length > 0 && (
+              <div className='p-4'>
+                <StatusTracker currentStatus={userData[0].status} />
               </div>
-              <div className="space-y-3">
-                {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
-                  <div className="bg-orange-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600">Due Date</p>
-                    <p className="font-medium text-gray-800">{appraisalDueDate.toLocaleDateString()}</p>
-                  </div>
-                ) : (
-                  <div className="bg-orange-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600 mb-2">Cycle Period</p>
-
-                    <p className="font-medium text-gray-700">{appraisalStartDate} to {appraisalEndDate}</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

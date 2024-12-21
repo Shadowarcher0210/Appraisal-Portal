@@ -39,6 +39,7 @@ import CEvaluation1 from './components/Tabs/CEvaluation1.js';
 import CEvaluation2 from './components/View Pages/CEvaluation2.js';
 import CEvaluation3 from './components/View Pages/CEvaluation3.js';
 import CEvaluationSummary from './components/View Pages/CEvaluationSummary.js';
+import StatusTracker from './components/employee/StatusTracker.js';
 
 const App = () => {
   const location = useLocation();
@@ -70,6 +71,8 @@ const App = () => {
           <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
+          <Route path="/stausBar" element={<StatusTracker/>} />
+
 
           <Route path="/employee-dashboard" element={<Dashboard />} />
           <Route path="/employee-performance" element={<E_PerformancePage />} />

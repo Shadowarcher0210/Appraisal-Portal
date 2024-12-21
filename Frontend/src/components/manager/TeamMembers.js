@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Users } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 
 const TeamMembersDisplay = ({ employees }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,13 +17,13 @@ const TeamMembersDisplay = ({ employees }) => {
   );
 
   return (
-    <div className="w-64 bg-white shadow-lg rounded-lg">
+    <div className=" bg-white shadow-lg rounded-lg  ">
       <div className="p-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <Users className="w-5 h-5 text-cyan-800 mr-2" />
-            <h2 className="text-lg font-semibold text-cyan-800">Team Members</h2>
+          <User className="h-4 w-4 text-orange-600" />
+            <h2 className="text-lg font-semibold text-orange-600">Team Members</h2>
           </div>
           <span className="text-orange-600 text-sm font-medium">
             Total: {filteredEmployees.length}
@@ -35,7 +35,7 @@ const TeamMembersDisplay = ({ employees }) => {
           <input
             type="text"
             placeholder="Search members..."
-            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-800 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -51,11 +51,11 @@ const TeamMembersDisplay = ({ employees }) => {
               key={index}
               className="flex items-center p-2 hover:bg-gray-50 rounded-md transition-colors duration-200"
             >
-              <div className="w-8 h-8 bg-cyan-800 rounded-full flex items-center justify-center text-white text-xs font-medium">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-medium">
                 {getInitials(emp.empName)}
               </div>
               <div className="ml-3">
-                <div className="font-medium text-gray-900">{emp.empName}</div>
+                <div className="font-medium text-blue-800">{emp.empName}</div>
               </div>
             </div>
           ))}
