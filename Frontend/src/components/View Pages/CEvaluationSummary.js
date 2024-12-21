@@ -4,28 +4,24 @@ import { User, Briefcase, TrendingUp } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const CEvaluationSummary = () => {
-  const [userData , setUserData]= useState(null)
+  const [userData, setUserData] = useState(null)
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const { employeeId } = useParams();
   const [performanceRating, setPerformanceRating] = useState('');
+  const [areasOfGrowth,setareasOfGrowth] = useState('');
   const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
   const [documentName, setDocumentName] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+ 
   const empType = localStorage.getItem("empType");
   const [overallWeightage, setOverallWeightage] = useState('N/A');
+  
 
-  const performanceOptions = [
-    { value: 'exceptional', label: 'Exceptional ', color: 'bg-green-100 text-green-800' },
-    { value: 'exceedsExpectations', label: 'Exceeds Expectations ', color: 'bg-blue-100 text-blue-800' },
-    { value: 'meetsExpectations', label: 'Meets Expectations ', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'needsImprovement', label: 'Needs Improvement ', color: 'bg-orange-100 text-orange-800' },
-    { value: 'unsatisfactory', label: 'Unsatisfactory ', color: 'bg-red-100 text-red-800' }
-  ];
+ 
 
   const [tableData, setTableData] = useState([
     {
@@ -52,7 +48,7 @@ const CEvaluationSummary = () => {
       weightage: "25%",
       attainment: "",
     },
-   
+
     {
       id: 5,
       category: "Overall Weightage",
@@ -61,16 +57,13 @@ const CEvaluationSummary = () => {
     },
   ]);
 
-
-
-  
   useEffect(() => {
     const fetchFilename = async () => {
-        try {
-            const response = await axios.head(`http://localhost:3003/letter/fetch/${employeeId}`);
-            const contentDisposition = response.headers['content-disposition'];
-            const match = contentDisposition && contentDisposition.match(/filename="(.+?)"/);
-            const extractedFilename = match ? match[1] : null;
+      try {
+        const response = await axios.head(`http://localhost:3003/letter/fetch/${employeeId}`);
+        const contentDisposition = response.headers['content-disposition'];
+        const match = contentDisposition && contentDisposition.match(/filename="(.+?)"/);
+        const extractedFilename = match ? match[1] : null;
 
         console.log("Response Headers:", response.headers);
 
@@ -91,7 +84,9 @@ const CEvaluationSummary = () => {
     }
   }, [employeeId]);
 
+
  
+
 
   useEffect(() => {
     const fetchAllEvaluations = async () => {
@@ -102,8 +97,6 @@ const CEvaluationSummary = () => {
       }
 
       try {
-
-
         const overallEvaluationResponse = await axios.get(
           `http://localhost:3003/appraisal/overAllEvaluation/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
@@ -120,6 +113,11 @@ const CEvaluationSummary = () => {
             setPerformanceRating(evaluationData.performanceRating);
             console.log("Setting performance rating from backend:", evaluationData.performanceRating);
           }
+          if (evaluationData.areasOfGrowth) {
+            setareasOfGrowth(evaluationData.areasOfGrowth);
+            console.log("Setting areas of growth from backend:", evaluationData.areasOfGrowth);
+          }
+  
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
 
           const updatedTableData = [
@@ -172,7 +170,8 @@ const CEvaluationSummary = () => {
 
     fetchAllEvaluations();
   }, [employeeId, timePeriod]);
-useEffect(() => {
+
+  useEffect(() => {
     fetchUserDetails();
   }, []);
 
@@ -193,11 +192,7 @@ useEffect(() => {
   };
 
   const handleBack = () => {
-    navigate(`/evaluationView2/${employeeId}`, { state: { timePeriod } });
-  };
-
-  const handleSubmit= () => {
-    navigate('/manager-performance')
+    navigate(`/CE2/${employeeId}`, { state: { timePeriod } });
   };
 
   if (loading) {
@@ -208,9 +203,12 @@ useEffect(() => {
     return <div className="text-red-600 text-center p-4">{error}</div>;
   }
 
-
-
   
+const handleReturntoDashboard = () =>{
+  navigate('/manager-my-performance')
+}
+
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
 
@@ -248,80 +246,83 @@ useEffect(() => {
         <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
-            
-              <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
-                  {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
-                  {new Date(timePeriod[1]).toISOString().slice(0, 10)}
-                </span>
-              </div>
-          
-              <div />
-           
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
+                {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
+                {new Date(timePeriod[1]).toISOString().slice(0, 10)}
+              </span>
+            </div>
+
+            <div />
+
           </div>
         </div>
       </div>
 
       <div className="mb-6">
         {userData ? (
-           <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
-            <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-              <div className="p-3 bg-blue-100 rounded-lg shrink-0">
-                <User className="text-blue-600" size={24} />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4">
+              <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
+                <div className="p-3 bg-blue-100 rounded-lg shrink-0">
+                  <User className="text-blue-600" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Employee Name</p>
+                  <p className="font-medium text-gray-900">{userData.empName}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-400 mb-1">Employee Name</p>
-                <p className="font-medium text-gray-900">{userData.empName}</p>
+
+              <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
+                <div className="p-3 bg-purple-100 rounded-lg shrink-0">
+                  <Briefcase className="text-purple-600" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Designation</p>
+                  <p className="font-medium text-gray-900">
+                    {userData.designation}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
+                <div className="p-3 bg-green-100 rounded-lg shrink-0">
+                  <User className="text-green-600" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">Manager Name</p>
+                  <p className="font-medium text-gray-900">
+                    {userData.managerName}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
+                <div className="p-3 bg-orange-100 rounded-lg shrink-0">
+                  <TrendingUp className="text-orange-600" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 mb-1">
+                    Manager's Evaluation
+                  </p>
+                  <p className="font-medium text-gray-900">{overallWeightage}</p>
+                </div>
               </div>
             </div>
+            <div className="mt-6 mx-2">
+              <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
+                <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
+               {performanceRating}
+                  
+      
+                <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Areas of Growth</h2>
+         {areasOfGrowth}
+            
+        
 
-            <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-              <div className="p-3 bg-purple-100 rounded-lg shrink-0">
-                <Briefcase className="text-purple-600" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400 mb-1">Designation</p>
-                <p className="font-medium text-gray-900">
-                  {userData.designation}
-                </p>
               </div>
             </div>
-
-            <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-              <div className="p-3 bg-green-100 rounded-lg shrink-0">
-                <User className="text-green-600" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400 mb-1">Manager Name</p>
-                <p className="font-medium text-gray-900">
-                  {userData.managerName}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
-              <div className="p-3 bg-orange-100 rounded-lg shrink-0">
-                <TrendingUp className="text-orange-600" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400 mb-1">
-                  Manager's Evaluation
-                </p>
-                <p className="font-medium text-gray-900">{overallWeightage}</p>
-              </div>
-            </div>
-          </div>
-          
-<div className="mt-6 mx-2">
-  <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
-    <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
-    <div className="w-2/6 p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700">
-      {performanceOptions.find((option) => option.value === performanceRating)?.label || "No Rating Selected"}
-    </div>
-  </div>
-</div>
-
           </>
         ) : (
           <div />
@@ -364,15 +365,14 @@ useEffect(() => {
                       <span
                         className={`
                         px-3 py-1 rounded-lg text-sm font-semibold
-                        ${
-                          row.attainment === "N/A"
+                        ${row.attainment === "N/A"
                             ? "bg-gray-100 text-gray-600"
                             : parseFloat(row.attainment) >= 80
-                            ? "bg-green-100 text-green-800"
-                            : parseFloat(row.attainment) >= 50
-                            ? "bg-red-100 text-red-800 "
-                            : "bg-yellow-100 text-yellow-800"
-                        }
+                              ? "bg-green-100 text-green-800"
+                              : parseFloat(row.attainment) >= 50
+                                ? "bg-red-100 text-red-800 "
+                                : "bg-yellow-100 text-yellow-800"
+                          }
                       `}
                       >
                         {row.attainment}
@@ -433,21 +433,21 @@ useEffect(() => {
             </button>
           </div>
 
-    
+        
 
           <div>
             <button
               className={`px-6 py-2 text-white bg-cyan-800 rounded-lg`}
-              onClick={handleSubmit}
+              onClick={handleReturntoDashboard}
             >
-              Next
+             handleReturntoDashboard
             </button>
           </div>
         </div>
       </div>
 
-      
-      
+     
+     
     </div>
   );
 };

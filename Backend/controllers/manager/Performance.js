@@ -321,7 +321,7 @@ const getOverallEvaluation = async (req, res) => {
                 employeeId,
                 timePeriod :{ $all: [start.toISOString().split('T')[0], end.toISOString().split('T')[0]] },
             },
-            {overallWeightage:1,performanceRating:1}
+            {overallWeightage:1,performanceRating:1,areasOfGrowth:1}
         )
 
        
@@ -347,6 +347,7 @@ const getOverallEvaluation = async (req, res) => {
         if(overAllEvaluation && overAllEvaluation.overallWeightage && overAllEvaluation.performanceRating!== undefined){
             managerEvaluations.overallWeightage = overAllEvaluation.overallWeightage;
             managerEvaluations.performanceRating = overAllEvaluation.performanceRating;
+            managerEvaluations.areasOfGrowth=overAllEvaluation.areasOfGrowth;
         }
       
 
@@ -364,7 +365,7 @@ const getOverallEvaluation = async (req, res) => {
 
 const postOverAllWeightage = async (req, res)=>{
     const { employeeId, startDate, endDate } = req.params;
-    const {overallWeightage,performanceRating } = req.body;
+    const {overallWeightage,performanceRating,areasOfGrowth}=req.body;
 
     if (!employeeId) {
         return res.status(400).json({ error: 'Employee ID is required.' });
@@ -394,6 +395,7 @@ const postOverAllWeightage = async (req, res)=>{
             
             existingRecord.overallWeightage = overallWeightage;
             existingRecord.performanceRating=performanceRating
+            existingRecord.areasOfGrowth=areasOfGrowth
             await existingRecord.save();
             return res.status(200).json({
                 message: 'Additional details updated successfully!',
@@ -404,7 +406,8 @@ const postOverAllWeightage = async (req, res)=>{
                 employeeId,
                 timePeriod,
                 overallWeightage,
-                performanceRating
+                performanceRating,
+                areasOfGrowth,
             });
             await newAdditional.save();
             return res.status(201).json({

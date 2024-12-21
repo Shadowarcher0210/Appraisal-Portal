@@ -22,6 +22,9 @@ const overallWeightageSchema = new mongoose.Schema({
   performanceRating:{
     type: String,
     required: true,
+  },
+  areasOfGrowth:{
+    type: String,
   }
 });
 

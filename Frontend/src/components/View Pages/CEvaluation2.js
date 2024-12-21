@@ -302,7 +302,7 @@ const CEvaluation2 = () => {
     // } catch (error) {
     //   console.error('Error updating status:', error);
     // }
-    navigate(`/CE3/${employeeId}`, { state: { timePeriod } });
+    navigate(`/CES/${employeeId}`, { state: { timePeriod } });
   };
 
 
