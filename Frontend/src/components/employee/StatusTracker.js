@@ -1,16 +1,15 @@
-//Status Tracker
 
 import React from 'react';
 
 const StatusTracker = ({ currentStatus }) => {
   const statuses = [
-    { name: "To Do", color: "bg-indigo-600" },
-    { name: "In Progress", color: "bg-blue-600" },
-    { name: "Submitted", color: "bg-cyan-600" },
-    { name: "Under Review", color: "bg-teal-600" },
-    { name: "Pending HR Review", color: "bg-emerald-600" },
-    { name: "Under HR Review", color: "bg-green-600" },
-    { name: "Completed", color: "bg-lime-600" }
+    { name: "To Do", color: "bg-indigo-300" },
+    { name: "In Progress", color: "bg-blue-300" },
+    { name: "Submitted", color: "bg-cyan-300" },
+    { name: "Under Review", color: "bg-teal-300" },
+    { name: "Pending HR Review", color: "bg-emerald-300" },
+    { name: "Under HR Review", color: "bg-green-300" },
+    { name: "Completed", color: "bg-lime-300" }
   ];
 
   const getStatusIndex = (status) => {
@@ -20,14 +19,14 @@ const StatusTracker = ({ currentStatus }) => {
   const currentIndex = getStatusIndex(currentStatus);
 
   return (
-    <div className="w-11/12 mb-12 px-2 pt-1 ml-14">
+    <div className="w-11/12 mb-10 px-2 mt-4 ml-14">
       <div className="relative">
         <div className="h-2 bg-gray-200 rounded-full">
           <div 
             className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${(currentIndex / (statuses.length - 1)) * 100}%`,
-              background: 'linear-gradient(to right, #4f46e5, #0284c7, #0d9488, #059669, #65a30d)'
+              background: 'linear-gradient(to right, #a3bffa, #7dd3fc, #81e6d9, #34d399, #d9f99d)' // lighter gradient
             }}
           />
         </div>
@@ -36,9 +35,8 @@ const StatusTracker = ({ currentStatus }) => {
           {statuses.map((status, index) => (
             <div
               key={status.name}
-              className="relative group "
+              className="relative group"
             >
-             
               <div 
                 className={`w-4 h-4 rounded-full ${
                   index <= currentIndex 
@@ -52,7 +50,7 @@ const StatusTracker = ({ currentStatus }) => {
                 <div 
                   className={`whitespace-nowrap px-1.5 py-0.5 rounded text-sm
                   ${index <= currentIndex 
-                    ? 'text-gray-900 font-bold' 
+                    ? 'text-gray-900 font-semibold' 
                     : 'text-gray-600'
                   } transition-all duration-300`}
                 >

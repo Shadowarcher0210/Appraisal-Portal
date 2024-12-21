@@ -5,13 +5,17 @@ import Login from './components/Login.js';
 import Profile from './components/Profile.js';
 import ForgotPassword from './components/ForgotPassword.js';
 import ResetPassword from './components/ResetPassword.js';
-import Dashboard from './components/employee/empDashboard.js';
-import EmpViewPage from './components/employee/empViewPage.js';
+import Dashboard from './components/employee/EmployeeDashboard.js';
+import EmpViewPage from './components/employee/EmployeeView.js';
 
-import EmpForm from './components/employee/empForm.js';
+import EmpForm from './components/employee/EmployeeForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
+import M_Performance from './components/manager/M_Performance.js';
+import M_myPerformance from './components/manager/M_myPerformance.js';
+import E_PerformancePage from './components/employee/EmployeePerformance.js';
+import M_Goals from './components/manager/M_Goals';
 import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
 import EvaluationView from './components/Evaluation Pages/EvaluationView.js';
@@ -24,18 +28,15 @@ import EvaluationView1 from './components/Evaluation Pages/EvaluationView1.js';
 import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/Evaluation Pages/EvaluationView2.js';
 
-import Self from './components/Tabs/selfAppraisalTab.js'
-import EvaluationView3 from './components/Evaluation Pages/EvaluationView3.js';
+import Self from './components/Tabs/SelfAppraisalTab.js'
+import EvaluationView3 from './components/manager/EvaluationView3.js';
 
 import CEvaluation from './components/View Pages/CEvaluation.js';
 import CEvaluation1 from './components/View Pages/CEvaluation1.js';
 import CEvaluation2 from './components/View Pages/CEvaluation2.js';
 import CEvaluation3 from './components/View Pages/CEvaluation3.js';
 import CEvaluationSummary from './components/View Pages/CEvaluationSummary.js';
-import TeamAppraisals from './components/manager/TeamAppraisals.js';
-import M_PerformanceInsights from './components/manager/M_PerformanceInsights.js';
-import EmployeeGoals from './components/manager/EmployeeGoals.js';
-import PerformanceInsights from './components/employee/PerformanceInsights.js';
+import StatusTracker from './components/employee/StatusTracker.js';
 
 const App = () => {
   const location = useLocation();
@@ -64,7 +65,10 @@ const App = () => {
           <Route path="/intro" element={<Introduction/>} />
 
 =
+          <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
+          <Route path="/stausBar" element={<StatusTracker/>} />
+
 
           <Route path="/employee-dashboard" element={<Dashboard />} />
           <Route path="/employee-performance" element={<PerformanceInsights />} />

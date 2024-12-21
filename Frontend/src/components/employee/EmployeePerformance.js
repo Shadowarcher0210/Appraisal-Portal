@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart, Award, Users } from "lucide-react";
 import axios from 'axios';
 
-const M_MyPerformanceHR = () => {
+const E_PerformancePage = () => {
   const [date, setDate] = useState(new Date());
   const [appraisals, setAppraisals] = useState(null);
   const [employeeGoals, setEmployeeGoals] = useState([]);
@@ -288,4 +288,5 @@ const M_MyPerformanceHR = () => {
   );
 };
 
-export default M_MyPerformanceHR;
+
+export default E_PerformancePage;

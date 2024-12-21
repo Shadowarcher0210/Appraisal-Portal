@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../hrManager/Modal';
 import axios from 'axios';
-import { Calendar, Clock, User, ChevronRight, Activity,Target } from "lucide-react";
-import StatusTracker from '../employee/StatusTracker';
+import { Calendar, Clock, User, ChevronRight, Activity } from "lucide-react";
+import StatusTracker from './StatusTracker';
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -19,9 +18,6 @@ const Dashboard = () => {
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
   const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
-  
-  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
@@ -136,23 +132,23 @@ const Dashboard = () => {
               </div>
             </div>
 
-            
-             <div className="mt-4 md:mt-0 flex space-x-4">
-                          <div className="bg-white rounded-lg border border-gray-200 p-4">
-                            <div className="flex items-center space-x-3">
-                              <Calendar className="h-5 w-5 text-blue-500" />
-                              <div>
-                                <p className="text-sm font-medium text-gray-500">Appraisal Period</p>
-                                <p className="text-lg font-semibold text-gray-900">
-                                  {`${appraisalStartDate} - ${appraisalEndDate}`}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-            
-                         
-                        </div>
-            
+            <div className="mt-4 md:mt-0 bg-white rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center space-x-3">
+                <Calendar className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate 
+                      ? "Due Date" 
+                      : "Appraisal Period"}
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate
+                      ? appraisalDueDate.toLocaleDateString()
+                      : `${appraisalStartDate} - ${appraisalEndDate}`}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

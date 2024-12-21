@@ -1,17 +1,24 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Target } from "lucide-react";
+import Modal from '../hrManager/Modal';
+import { Calendar, Clock, User, ChevronRight, Activity, Target } from "lucide-react";
 import TeamMembersSidebar from './TeamMembers';
+import axios from 'axios';
+import StatusTracker from '../employee/StatusTracker';
+
+
 
 const M_Dashboard = () => {
   const [date, setDate] = useState(new Date());
   const [userData, setUserData] = useState(null);
-  const employeeName = localStorage.getItem('empName');
   const [employees, setEmployees] = useState([]);
+  const employeeName = localStorage.getItem('empName');
+
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const navigate = useNavigate();
+  
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const appraisalDueDate = new Date(`${currentYear}-03-15`);
@@ -22,33 +29,22 @@ const M_Dashboard = () => {
   const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
   const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
-
-
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
-    if (employeeId ) {
+    if (employeeId) {
       try {
         const response = await axios.get(`http://localhost:3003/form/display/${employeeId}`);
-
         const currentYear = new Date().getFullYear();
         const sortedData = response.data
           .filter(appraisal => {
             const startYear = parseInt(appraisal.timePeriod[0]);
             return startYear >= currentYear && startYear <= currentYear + 1;
           })
-          .sort((a, b) => {
-            const startYearA = parseInt(a.timePeriod[0]);
-            const startYearB = parseInt(b.timePeriod[0]);
-            return startYearA - startYearB;
-          });
-
+          .sort((a, b) => parseInt(a.timePeriod[0]) - parseInt(b.timePeriod[0]));
         setUserData(sortedData);
-        console.log("userdata", sortedData);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
-    } else {
-      console.log('User ID not found in local storage.');
     }
   };
 
@@ -58,10 +54,8 @@ const M_Dashboard = () => {
       try {
         const response = await axios.get(`http://localhost:3003/employees/${managerName}`)
         setEmployees(response.data.data);
-
-        console.log('Employee List :', response.data.data)
       } catch (error) {
-        console.error('Error fetching employees in  Dashboard page :', error)
+        console.error('Error fetching employees:', error)
       }
     }
   }
@@ -69,17 +63,10 @@ const M_Dashboard = () => {
   useEffect(() => {
     fetchAppraisalDetails();
     allEmployees();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDate(new Date());
-    }, 1000); 
+    const timer = setInterval(() => setDate(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // END POINT for fetching all employees 
-  
   const wishing = () => {
     const hour = date.getHours();
     if (hour < 12) return 'Good Morning';
@@ -88,8 +75,12 @@ const M_Dashboard = () => {
   };
 
   const formatDate = (date) => {
-    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    return date.toLocaleDateString(undefined, { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   };
 
   const formatTime = (date) => {
@@ -100,38 +91,24 @@ const M_Dashboard = () => {
     }).toUpperCase();
   };
 
- 
- 
-
   const handleButtonClick = async (appraisal) => {
     const { timePeriod, status } = appraisal;
     const employeeId = localStorage.getItem('employeeId')?.trim();
-
-    console.log("Status in EMP Dashboard", status);
-
     let navigatePath = "";
 
-    if (status === "Submitted" || status === "Under Review" ||  status === "Pending HR Review" || status === "Under HR Review") {
+    if (["Submitted", "Under Review", "Under HR Review", "Completed"].includes(status)) {
       navigatePath = `/empview/${employeeId}`;
-    } else if (status === "In Progress") {
-      navigatePath = `/form?activeTab=1`;
-    } else if (status === "Completed") {
-      navigatePath = `/CE/${employeeId}`;
+    } else {
+      navigatePath = `/form`;
     }
 
     if (status === "To Do") {
       try {
-        const response = await axios.put(
+        await axios.put(
           `http://localhost:3003/form/status/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
           { status: "In Progress" }
         );
-
-        if (response.status === 200) {
-          console.log(`Status updated to In Progress successfully:`, response.data);
-          fetchAppraisalDetails(); // Fetch updated data after status change
-        } else {
-          console.error('Failed to update status:', response.statusText);
-        }
+        fetchAppraisalDetails();
       } catch (error) {
         console.error(`Error updating status:`, error);
       }
@@ -140,126 +117,145 @@ const M_Dashboard = () => {
 
     navigate(navigatePath, { state: { timePeriod } });
   };
- 
+
+  const getStatusStyle = (status) => {
+    const styles = {
+      "Submitted": "bg-blue-100 text-blue-700",
+      "Under Review": "bg-purple-100 text-purple-700",
+      "Under HR Review": "bg-orange-100 text-orange-700",
+      "Completed": "bg-green-100 text-green-700",
+      "In Progress": "bg-amber-100 text-amber-700",
+      "To Do": "bg-yellow-100 text-yellow-800",
+      "Pending HR Review": "bg-indigo-100 text-indigo-700",
+    };
+    return styles[status] || "bg-gray-100 text-gray-700";
+  };
+
   return (
-    <div className="flex flex-1 items-start mt-20 ml-6">
-      <div className='w-10/12'>
-
-        <div>
-          <label className='font-bold text-4xl w-full ml-2 mb-4 text-orange-600'>{wishing()}</label>
-          <label className='ml-2 text-3xl font-bold text-cyan-800'>
-            {employeeName}
-          </label>
-          <p className='ml-2 mt-3 text-gray-700'>{formatDate(date)} <span>, </span>{formatTime(date)}</p>
-        </div>
-        <br />
-
-        <div className="w-12/12 p-3 bg-white border border-gray-300 shadow-lg rounded-lg ml-4 mr-8">
-          <h2 className="text-2xl font-bold text-white bg-cyan-900 p-2 rounded mb-4">Appraisal</h2>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Employee Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Assessment Year</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Initiated On</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
-
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {userData ? (
-                userData.map((appraisal, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.empName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                      {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.initiatedOn}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">{appraisal.managerName}</td>
-                    <td className="px-2 py-2 mt-2 inline-flex whitespace-nowrap text-sm font-medium">
-                      <span className={appraisal.status === 'Submitted' ? 'bg-green-100 text-green-700 rounded-lg p-2' : 'text-yellow-800 bg-yellow-100 rounded-lg p-2'}>
-                        {appraisal.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-className={`bg-blue-500 text-white rounded-md px-4 py-2 text-sm transition-colors 
-  ${["Under Review", "Under HR Review"].includes(appraisal.status) 
-      ? "opacity-50 cursor-not-allowed bg-blue-300" 
-      : "hover:bg-blue-600" 
-  }`}                         onClick={() => handleButtonClick(appraisal)}
-                        disabled={['Under Review','Under HR Review'].includes(appraisal.status)}
-                      >
-    {["Submitted", "Under Review", "Under HR Review","Completed"].includes(appraisal.status) ? "View" : "Start"}
-    </button>
-                    </td>
-                  </tr> 
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
-                    No appraisals found for this user.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* Cards Grid with improved spacing */}
-        <div className="grid gap-6  lg:grid-cols-4 mb-8 mt-10 ml-4">
-          {/* Appraisal Cycle Card */}
-          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-orange-300 shadow-sm hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-                <h2 className="font-semibold text-gray-800">Appraisal Cycle</h2>
+    <div className="min-h-screen bg-blue-50 mt-10">
+      <div className="p-6">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+            <div>
+              <div className="flex items-baseline space-x-3 mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold text-yellow-200">{wishing()},</h1>
+                <h2 className="text-2xl md:text-3xl font-bold text-white">
+                  {employeeName}
+                </h2>
               </div>
-              <div className="space-y-3">
-                {currentDate >= appraisalVisibleStart && currentDate <= appraisalDueDate ? (
-                  <div className="bg-orange-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600">Due Date</p>
-                    <p className="font-medium text-gray-800">{appraisalDueDate.toLocaleDateString()}</p>
-                  </div>
-                ) : (
-                  <div className="bg-orange-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600">Cycle Period</p>
-                    <p className="font-medium text-gray-800">{appraisalStartDate} to {appraisalEndDate}</p>
-                  </div>
-                )}
+              <div className="flex items-center text-white">
+                <Clock className="h-4 w-4 mr-2" />
+                <span>{formatDate(date)}</span>
+                <span className="mx-2">•</span>
+                <span>{formatTime(date)}</span>
               </div>
+            </div>
+
+            <div className="mt-4 md:mt-0 flex space-x-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Self Appraisal Period</p>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {`${appraisalStartDate} - ${appraisalEndDate}`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+             
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+          <div className="lg:col-span-3 bg-white rounded-lg shadow-lg">
+            <div className="p-6 space-y-6">
+              <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <Activity className="h-5 w-5 text-blue-500" />
+                <h2 className="text-xl font-bold text-blue-900">
+                 Self Appraisals Overview
+                </h2>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee Name</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {userData ? (
+                      userData.map((appraisal, index) => (
+                        <tr key={index} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center">
+                              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <User className="h-4 w-4 text-blue-600" />
+                              </div>
+                              <span className="text-gray-900">{appraisal.empName}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">
+                            {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
+                          </td>
+                          <td className="px-6 py-4 text-gray-500">{appraisal.initiatedOn}</td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center px-2.5 py-1 text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
+                              {appraisal.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => handleButtonClick(appraisal)}
+                              className={`inline-flex items-center px-3 py-1.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors ${
+                                ["Under Review", "Under HR Review"].includes(appraisal.status)
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }`}
+                              disabled={["Under Review", "Under HR Review"].includes(appraisal.status)}
+                            >
+                              {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status)
+                                ? "View"
+                                : "Start"}
+                              <ChevronRight className="ml-1 h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                          No appraisals found for this user.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
+            <StatusTracker currentStatus={userData ? userData[0]?.status : "No Status"} />
+          </div>
+             
             </div>
           </div>
 
-          {/* Goal Setting Card */}
-          <div className="bg-white rounded-lg border border-gray-200 border-l-8 border-l-green-400 shadow-sm hover:shadow-md transition-shadow">
-            <div className="p-6">
-              <div className="flex items-center mb-4">
-                <Target className="h-5 w-5 text-green-500 mr-2" />
-                <h2 className="font-semibold text-gray-800">Goal Setting</h2>
-              </div>
-              <div className="space-y-3">
-                {currentDate >= goalSettingVisibleStart && currentDate <= goalSettingDueDate ? (
-                  <div className="bg-green-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600">Due Date</p>
-                    <p className="font-medium text-gray-800">{goalSettingDueDate.toLocaleDateString()}</p>
-                  </div>
-                ) : (
-                  <div className="bg-green-50 rounded-md p-4">
-                    <p className="text-sm text-gray-600">Setting Period</p>
-                    <p className="font-medium text-gray-800">{goalSettingStartDate} to {goalSettingEndDate}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="">
+  <TeamMembersSidebar employees={employees} />
+</div>
+
         </div>
       </div>
-
-      <TeamMembersSidebar employees={employees} />
+      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </div>
-  )
-}
+  );
+};
 
-export default M_Dashboard
+export default M_Dashboard;
