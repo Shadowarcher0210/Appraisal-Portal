@@ -361,10 +361,7 @@ const EvaluationView2 = () => {
                     .toISOString()
                     .slice(0, 10)}
                 </span>
-              </div>
-           
-              <div />
-            
+              </div>            
           </div>
         </div>
       </div>

@@ -332,16 +332,13 @@ useEffect(() => {
         <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
-            
+          
               <div className="flex items-center gap-2">
                 <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
                   {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
                   {new Date(timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
-              </div>
-          
-              <div />
-           
+              </div>           
           </div>
         </div>
       </div>
@@ -603,7 +600,7 @@ useEffect(() => {
               </h2>
 
               <p className="mt-3 text-gray-600 text-center">
-                Are you sure you want to submit your appraisal?
+                Are you sure you want to submit this appraisal?
               </p>
               <div className="mt-6 flex justify-center space-x-4">
                 <button
@@ -631,10 +628,12 @@ useEffect(() => {
               <h2 className="text-xl font-semibold text-gray-900 text-center">
                 Appraisal Submission Confirmation
               </h2>
+              {userData ? (
 
               <p className="my-3 text-gray-600 text-center">
-                Please check your email for further updates.
+                You have successfully reviewed the appraisal for {userData.empName}.
               </p>
+              ):(<div/>)}
               <div className="mt-6 flex justify-center">
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded w-3/4"

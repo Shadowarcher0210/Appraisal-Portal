@@ -86,7 +86,7 @@ const E_PerformancePage = () => {
   const handleViewClick = (appraisal) => {
     const { employeeId, timePeriod, status } = appraisal;
     //navigate(`/empview/${employeeId}`, { state: { timePeriod } });
-    if (status === "Submitted" || status === "Under Review" || status === "Under HR Review") {
+    if (status === "Submitted" || status === "Under Review" || status === "Under HR Review" || status === "Pending HR Review") {
       navigate(`/empView/${employeeId}`, { state: { timePeriod } })
     }
     else if (status === "Completed") {

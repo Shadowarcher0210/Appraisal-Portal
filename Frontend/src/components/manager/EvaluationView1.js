@@ -327,7 +327,6 @@ const handleSaveExit= async ()=>{
                             </span>
                         </div>
                   
-                        <div />
                     
                 </div>
             </div>

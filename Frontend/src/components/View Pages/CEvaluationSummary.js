@@ -51,6 +51,8 @@ const CEvaluationSummary = () => {
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const empType = localStorage.getItem('empType')
+  console.log("emptype", empType)
   const navigate = useNavigate();
 
   
@@ -220,6 +222,16 @@ const CEvaluationSummary = () => {
     }
   };
 
+  const handleReturnBack = () => {
+    if (empType === 'Manager') {
+      navigate('/manager-performance');
+    } else if (empType === 'HR') {
+      navigate('/hr-performance');
+    } else {
+      navigate('/employee-performance')
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full">
       <div className="mb-2">
@@ -343,81 +355,134 @@ const CEvaluationSummary = () => {
             </table>
           </div>
         </div>
-
-<div className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 mb-10 transform transition-all duration-300 hover:shadow-xl">
-  <div className="flex items-center mb-4 border-b pb-4">
-    <div className="bg-green-100 p-3 rounded-full mr-4">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    </div>
-    <h2 className="text-xl font-bold text-cyan-800">Your Performance Appraisal Letter</h2>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-    <div className="space-y-2">
-      <p className="text-gray-600 text-sm">
-        Your comprehensive performance evaluation is now ready. Download your official appraisal letter to review your achievements, feedback, and professional growth insights.
-      </p>
-      <div className="flex items-center space-x-2 text-sm text-gray-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
-        </svg>
-        <span>PDF Document</span>
+      
+        <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 mb-10 transform transition-all duration-300 hover:shadow-xl">
+  {empType === "Employee" && (
+    <>
+      <div className="flex items-center mb-4 border-b pb-4">
+        <div className="bg-green-100 p-3 rounded-full mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-cyan-800">Your Performance Appraisal Letter</h2>
       </div>
-    </div>
+      <div className="flex justify-between">
+        <div className="space-y-1">
+          <p className="text-gray-600 text-md">
+            Your HR has uploaded your performance appraisal letter. You can download it below to review your achievements, feedback, and professional growth insights.
+          </p>
+          <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 10.586V7z" clipRule="evenodd" />
+            </svg>
+            <span>PDF Document</span>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="
+              px-8  
+              bg-gradient-to-r from-green-500 to-green-600 
+              text-white 
+              rounded-lg 
+              shadow-md 
+              hover:shadow-lg 
+              transform hover:-translate-y-1 
+              transition-all 
+              duration-300 
+              flex 
+              items-center 
+              gap-3
+              group
+            "
+            onClick={handleDownloadLetter}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-6 w-6 group-hover:animate-bounce" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" 
+              />
+            </svg>
+            Download 
+            <span className="ml-2 text-xs bg-green-700 px-2 py-1 rounded-full group-hover:animate-pulse">
+              Letter
+            </span>
+          </button>
+        </div>
+      </div>
+    </>
+  )}
 
-    <div className="flex justify-end">
-      <button
-        type="button"
-        className="
-          px-8 py-3 
-          bg-gradient-to-r from-green-500 to-green-600 
-          text-white 
-          rounded-lg 
-          shadow-md 
-          hover:shadow-lg 
-          transform hover:-translate-y-1 
-          transition-all 
-          duration-300 
-          flex 
-          items-center 
-          gap-3
-          group
-        "
-        onClick={handleDownloadLetter}
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="h-6 w-6 group-hover:animate-bounce" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" 
-          />
-        </svg>
-        Download 
-        <span className="ml-2 text-xs bg-green-700 px-2 py-1 rounded-full group-hover:animate-pulse">
-          Letter
-        </span>
-      </button>
-    </div>
-  </div>
-
-  {downloadError && (
-    <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2">
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-      <span>{downloadError}</span>
+  {empType === "HR" && (
+    <div className="p-2">
+      {/* <h2 className="text-lg font-bold text-blue-800 mb-4">Performance Appraisal Letter</h2>
+      <p className="text-gray-600 text-sm mb-4">
+      </p> */}
+         <div className="flex items-center mb-4 border-b pb-4">
+        <div className="bg-green-100 p-3 rounded-full mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-cyan-800"> Performance Appraisal Letter</h2>
+      </div>
+      <div className="flex justify-between">
+      <p className="text-gray-600 text-md">
+          You have successfully uploaded the appraisal letter for the employee. Use the link below to download the uploaded document.
+          </p>
+          <button
+            type="button"
+            className="
+              px-8 py-3 
+              bg-gradient-to-r from-green-500 to-green-600 
+              text-white 
+              rounded-lg 
+              shadow-md 
+              hover:shadow-lg 
+              transform hover:-translate-y-1 
+              transition-all 
+              duration-300 
+              flex 
+              items-center 
+              gap-3
+              group
+            "
+            onClick={handleDownloadLetter}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="h-6 w-6 group-hover:animate-bounce" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" 
+              />
+            </svg>
+            Download 
+            <span className="ml-2 text-xs bg-green-700 px-2 py-1 rounded-full group-hover:animate-pulse">
+              Letter
+            </span>
+          </button>
+        </div>
     </div>
   )}
 </div>
+
 
 
 
@@ -432,20 +497,15 @@ const CEvaluationSummary = () => {
               </button>
             </div>
 
-            <div className='mr-2'>
-              <button
-                type="button"
-                className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-                onClick={() => {
-                  // navigate("/manager-dashboard");
-                  const empType = localStorage.getItem('empType')
-                  if(empType==='Manager') navigate('/manager-performance');
-                  else if(empType==='HR') navigate('/hr-performance')
-                }}
-              >
-                Return to Dashboard
-              </button>
-            </div>
+            <div className="mr-2">
+      <button
+        type="button"
+        className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+        onClick={handleReturnBack}
+      >
+        Return Back
+      </button>
+    </div>
           </div>
       </div>
     </div>
