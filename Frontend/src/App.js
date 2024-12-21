@@ -19,7 +19,7 @@ import FormHR from './components/hrManager/FormHR.js';
 import DashboardHR from './components/hrManager/DashboardHR.js'
 import MyPerformanceHR from './components/hrManager/MyPerformanceHR.js';
 import PerformanceHR from './components/hrManager/PerformanceHR.js';
-import ViewHR from './components/hrManager/ViewHR.js';
+// import ViewHR from './components/hrManager/ViewHR.js';
 import EvaluationView1 from './components/Evaluation Pages/EvaluationView1.js';
 import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/Evaluation Pages/EvaluationView2.js';
