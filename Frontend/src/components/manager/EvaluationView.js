@@ -308,7 +308,7 @@ const EvaluationView = () => {
                     Response</th>
                   <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Notes</th>
-                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                  <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Attainment</th>
                   <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Manager Evaluation</th>
@@ -367,7 +367,7 @@ const EvaluationView = () => {
                           onInput={(e) => handleManagerEvaluationChange(e, index)}  
                         />
                       </td> */}
-                      <td className="p-2 text-sm text-gray-600 text-center">
+                      <td className="p-2 text-sm text-gray-600 text-left">
                         <select
                           className="w-20 p-1 border border-gray-300 rounded"
                           value={formData[0].pageData[index].managerEvaluation || ''}

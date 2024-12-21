@@ -132,62 +132,12 @@ const PerformanceHR = () => {
     if (status === 'Under HR Review' || status==="Pending HR Review") {
       navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
     } else if (status === 'Completed') {
-      navigate(`/hr-view/${employeeId}`, { state: { timePeriod } });
+      navigate(`/CE/${employeeId}`, { state: { timePeriod } });
     }
   };
 
   const formatDate = (isoString) => new Date(isoString).toISOString().split('T')[0];
 
-  // const handleEmployeeChange = (e) => {
-  //   const { value } = e.target;
-  //   setSelectedEmployees([value]);
-  //   setSelectionType('individual');
-  // };
-
-  // const handleSelectAll = (checked) => {
-  //   if (checked) {
-  //     const allEmployeeIds = employees.map((employee) => employee.employeeId);
-  //     setSelectedEmployees(allEmployeeIds);
-  //     setSelectionType('all');
-  //   } else {
-  //     setSelectedEmployees([]);
-  //     setSelectionType('individual');
-  //   }
-  // };
-
-  // const handleCreateClick = async () => {
-  //   const payload = {
-  //     employeeId: selectedEmployees,
-  //     timePeriod: [AppraisalstartDate,AppraisalendDate],
-  //   };
-
-  //   try {
-  //     const response = await axios.post('http://localhost:3003/form/createAppraisal', payload);
-  //     console.log('Create successful:', response.data);
-  //     setShowPopup(false);
-  //     setSelectedEmployees([]); 
-  //     setSelectionType('');
-
-  //     if (response.data?.data?.length) {
-  //       const messages = response.data.data
-  //           .map((item) => `${item.employeeName || 'No name'} - ${item.message}`)
-  //           .join('\n');
-  //       setConfirmationMessage(messages);
-  //   }     else {
-  //       const message = response.data.message || 'Appraisals processed successfully.';
-  //       setConfirmationMessage(message);
-  //   }
-    
-  //     setShowPopup2(true);
-  //   } catch (error) {
-  //     console.error('Error creating appraisal:', error);
-  //     setConfirmationMessage('Failed to create appraisal(s). Please try again.');
-  //     setShowPopup2(true);
-  //   } finally {
-  //     setShowPopup(false); 
-  //     setShowPopup2(true); 
-  //   }
-  // };
   const handleCreateClick = async () => {
     const payload = {
         employeeId: selectedEmployees,
@@ -250,6 +200,24 @@ const PerformanceHR = () => {
     }
   };
   
+  const CalendarIcon = () => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor"
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        strokeWidth={2} 
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
+      />
+    </svg>
+  );
+
+  
   return (
     <div className="justify-center items-start mt-20 ml-6">
       <div className="flex justify-between items-end w-full mb-4">
@@ -260,7 +228,7 @@ const PerformanceHR = () => {
       </div>
 
       <div className="flex justify-between items-center">
-        <div className="mt-2 ml-2 flex space-x-4">
+        {/* <div className="mt-2 ml-2 flex space-x-4">
           <div className="border-black border-1 rounded-full py-1 px-9 bg-slate-100">
             <label htmlFor="time-period" className="mr-2">Time Period:</label>
             <select
@@ -293,7 +261,45 @@ const PerformanceHR = () => {
               ))}
             </select>
           </div>
-        </div>
+        </div> */}
+<div className="mt-4 ml-4 flex flex-wrap gap-6">
+  <div className="border rounded-lg py-2 px-6 shadow-sm bg-white flex items-center space-x-4">
+    <label htmlFor="time-period" className="text-gray-600 font-medium">
+      Time Period:
+    </label>
+    <select
+      id="time-period"
+      value={selectedYear || ''}
+      onChange={(e) => setSelectedYear(e.target.value)}
+      className="bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-blue-500 focus:border-blue-500 p-1.5"
+    >
+      {academicYears.map((year) => (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div className="border rounded-lg py-2 px-6 shadow-sm bg-white flex items-center space-x-4">
+    <label htmlFor="reporting-manager" className="text-gray-600 font-medium">
+      Reporting Manager:
+    </label>
+    <select
+      id="reporting-manager"
+      value={selectedManager || ''}
+      onChange={(e) => setSelectedManager(e.target.value)}
+      className="bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-blue-500 focus:border-blue-500 p-1.5"
+    >
+      <option value="">All Managers</option>
+      {uniqueManagers.map((manager) => (
+      <option key={manager} value={manager}>
+        {manager}
+      </option>
+    ))}
+    </select>
+  </div>
+</div>
 
         <div className="mr-10">
           <button
@@ -303,7 +309,7 @@ const PerformanceHR = () => {
             Create Appraisal
           </button>
         </div>
-
+{/* 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-xl w-1/2 h-4/5 overflow-hidden flex flex-col">
@@ -375,8 +381,110 @@ const PerformanceHR = () => {
             </div>
           </div>
         </div>
-      )}
-  
+      )} */}
+ { showPopup && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl transform transition-all">
+        {/* Header */}
+        <div className="border-b px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800">Create Appraisal</h2>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {/* Date Selection */}
+          <div className="mb-8">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Appraisal Period
+            </label>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+              <CalendarIcon />
+                <input
+                  type="date"
+                  value={AppraisalstartDate}
+                  readOnly
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg "
+                />
+              </div>
+              <div className="relative flex-1">
+              <CalendarIcon />
+                <input
+                  type="date"
+                  value={AppraisalendDate}
+                  readOnly
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Employee Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Select Employees
+            </label>
+            
+            {/* Select All */}
+            <div className="bg-orange-50 p-4 rounded-lg mb-4">
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedEmployees.length === employees.length}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Select All Employees</span>
+              </label>
+            </div>
+
+            {/* Employee Grid */}
+            <div className="max-h-64 overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {employees.map((employee) => (
+                  <label
+                    key={employee.employeeId}
+                    className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      value={employee.employeeId}
+                      checked={selectedEmployees.includes(employee.employeeId)}
+                      onChange={(e) => {
+                        const updatedSelection = e.target.checked
+                          ? [...selectedEmployees, employee.employeeId]
+                          : selectedEmployees.filter((id) => id !== employee.employeeId);
+                        setSelectedEmployees(updatedSelection);
+                      }}
+                      className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 mr-3"
+                    />
+                    <span className="text-sm text-gray-700">{employee.empName}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end space-x-4">
+          <button
+            onClick={() => setShowPopup(false)}
+            className="px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-400 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleCreateClick}
+            className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+          >
+            Create Appraisal
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
       {showPopup2 && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 mt-10">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto scrollbar-thin">
