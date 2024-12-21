@@ -133,12 +133,12 @@ const MyPerformanceHR = () => {
             </div>
           </div>
         
-          <div className="bg-white rounded-lg border border-gray-200 p-4 self-end mt-auto">
+          <div className="bg-white rounded-lg border border-gray-200 p-3">
             <div className="flex items-center space-x-3">
               <Target className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Goal Setting Period</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm font-medium text-green-600">Goal Setting Period</p>
+                <p className="text-sm mt-1 font-semibold text-gray-600">
                   {`${goalSettingStartDate} - ${goalSettingEndDate}`}
                 </p>
               </div>
@@ -161,13 +161,13 @@ const MyPerformanceHR = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee Name</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Manager</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Actions</th>
-                  </tr>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+         </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {appraisals && appraisals.length > 0 ? (
@@ -178,14 +178,14 @@ const MyPerformanceHR = () => {
                             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                               <User className="h-4 w-4 text-blue-600" />
                             </div>
-                            <span className="text-gray-900">{employeeName}</span>
+                            <span className="text-gray-700">{employeeName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-500">
+                        <td className="px-6 py-4 text-gray-700">
                           {formatDate(appraisal.timePeriod[0])} to {formatDate(appraisal.timePeriod[1])}
                         </td>
-                        <td className="px-6 py-4 text-gray-500">{formatDate(appraisal.timePeriod[0])}</td>
-                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName}</td>
+                        <td className="px-6 py-4 text-gray-700">{formatDate(appraisal.timePeriod[0])}</td>
+                        <td className="px-6 py-4 text-gray-700">{appraisal.managerName}</td>
                         <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1  text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                             {appraisal.status}

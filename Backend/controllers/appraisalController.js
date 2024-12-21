@@ -380,7 +380,7 @@ const sendExpiringAppraisalNotification = async (req, res) => {
     const { employeeId, startDate } = req.params;
 
     try {
-        const startDateTime = startDate;
+        const startDateTime = new Date(startDate);
         if (isNaN(startDateTime.getTime())) {
             return res.status(400).json({
                 success: false,
@@ -471,11 +471,9 @@ const getApplicationNotification = async (req, res) => {
         if (isNaN(startDateTime.getTime())) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid date format. Please use YYYY-MM-DD format'
+                message: 'Invalid date format. Please use YYYY-MM-DD format.'
             });
         }
-
-
         const appraisal = await Appraisal.findOne({
             employeeId,
             timePeriod: {
@@ -648,6 +646,8 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
                 const appraisalStartDate = new Date(timePeriod[0]);
                 const appraisalEndDate = new Date(timePeriod[1]);
 
+                const startYear = appraisalStartDate.getFullYear();
+                const endYear = appraisalEndDate.getFullYear();
 
                 const timeDifference = appraisalStartDate - currentDate;
                 const daysUntilStart = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
@@ -670,7 +670,7 @@ const notifyManagersOfSubmittedAppraisals = async (req, res) => {
                     employeeName: empName,
                     managerName: managerName,
                     submissionDate: new Date(),
-                    message: `${empName} has submitted their appraisal on ${new Date().toISOString().split('T')[0]} for the year ${appraisalStartDate.toISOString().split('T')[0]} to ${appraisalEndDate.toISOString().split('T')[0]}.`,
+                    message: `${empName} has submitted their appraisal on ${new Date().toISOString().split('T')[0]} for the year ${startYear} - ${endYear}.`,
 
                 });
             }

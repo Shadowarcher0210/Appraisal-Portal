@@ -22,13 +22,13 @@ const M_Dashboard = () => {
   
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
-  const appraisalDueDate = new Date(`${currentYear}-03-15`);
-  const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
+  // const appraisalDueDate = new Date(`${currentYear}-03-15`);
+  // const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
 
-  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-  const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
-  const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
+  // const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
+  // const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
+  // const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
+  // const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
@@ -151,17 +151,15 @@ const M_Dashboard = () => {
               </div>
             </div>
 
-            <div className="mt-4 md:mt-0 flex space-x-4">
-              <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-blue-500" />
+            <div className="mt-4 md:mt-0  bg-white rounded-lg border border-gray-200 p-3">
+              <div className="flex space-x-3 items-center">
+                  <Calendar className="h-5 w-5 text-blue-700" />
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Self Appraisal Period</p>
-                    <p className="text-lg font-semibold text-gray-900">
+                    <p className="text-sm font-medium text-blue-600">Self Appraisal Period</p>
+                    <p className="text-sm mt-1 font-semibold text-gray-600">
                       {`${appraisalStartDate} - ${appraisalEndDate}`}
                     </p>
                   </div>
-                </div>
               </div>
 
              
@@ -169,13 +167,13 @@ const M_Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 ">
           <div className="lg:col-span-3 bg-white rounded-lg shadow-lg">
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-4">
               <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
                 <Activity className="h-5 w-5 text-blue-500" />
                 <h2 className="text-xl font-bold text-blue-900">
-                 Self Appraisals Overview
+                 Self Appraisal Overview
                 </h2>
               </div>
 
@@ -183,11 +181,11 @@ const M_Dashboard = () => {
                 <table className="w-full">
                   <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee Name</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Actions</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Employee Name</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Initiated On</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Status</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Actions</th>
                   </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -199,13 +197,13 @@ const M_Dashboard = () => {
                               <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                                 <User className="h-4 w-4 text-blue-600" />
                               </div>
-                              <span className="text-gray-900">{appraisal.empName}</span>
+                              <span className="text-gray-700">{appraisal.empName}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-gray-500">
+                          <td className="px-6 py-4 text-gray-700">
                             {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
                           </td>
-                          <td className="px-6 py-4 text-gray-500">{appraisal.initiatedOn}</td>
+                          <td className="px-6 py-4 text-gray-700">{appraisal.initiatedOn}</td>
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center px-2.5 py-1 text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                               {appraisal.status}
@@ -223,7 +221,11 @@ const M_Dashboard = () => {
                             >
                               {["Submitted", "Under Review", "Under HR Review", "Completed"].includes(appraisal.status)
                                 ? "View"
-                                : "Start"}
+                                : appraisal.status === "In Progress" 
+                                ? "Continue" 
+                                : appraisal.status === "To Do" 
+                                  ? "Start" 
+                                  : "View"                                }
                               <ChevronRight className="ml-1 h-4 w-4" />
                             </button>
                           </td>
@@ -239,10 +241,11 @@ const M_Dashboard = () => {
                   </tbody>
                 </table>
               </div>
-
-              <div className="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
-            <StatusTracker currentStatus={userData ? userData[0]?.status : "No Status"} />
-          </div>
+              {userData && userData.length > 0 && (
+              <div className='pt-10'>
+                <StatusTracker currentStatus={userData[0].status} />
+              </div>
+            )}
              
             </div>
           </div>

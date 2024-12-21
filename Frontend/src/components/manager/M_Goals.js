@@ -215,7 +215,7 @@ const M_Goals = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between">
             <div className="mb-2">
               <h1 className="text-4xl font-bold text-yellow-200">
-                Team Performance Management
+                Team Goals Management
               </h1>
               <p className="text-white font-medium mt-2">
                 Set and track meaningful goals for your team members
@@ -227,11 +227,21 @@ const M_Goals = () => {
         <div className="bg-white rounded-lg shadow-lg mb-6">
           <div className="p-6">
             <div className="p-2 space-y-6">
+              
               <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 ">
                 <Activity className="h-5 w-5 text-blue-500" />
                 <h2 className="text-xl font-bold text-blue-900">
                   Team Goals Overview
                 </h2>
+              </div>
+              <div className="relative  my-1">
+                <div className="bg-orange-50 border-l-4 border-orange-600 rounded-r-lg p-2 shadow-sm">
+                  <div className="flex items-start">
+                    <span className="text-orange-700 font-semibold mr-2">*Note:</span>
+                    <p className="text-orange-700">
+                    Ensure all employee goals are added before clicking on submit.                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -245,7 +255,7 @@ const M_Goals = () => {
                       onClick={() => toggleEmployee(employee.employeeId)}
                     >
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-400 rounded-lg flex items-center justify-center text-white shadow-inner">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center text-white shadow-inner">
                           <User className="w-6 h-6 " />
                         </div>
                         <div>
@@ -267,8 +277,7 @@ const M_Goals = () => {
                                 e.stopPropagation();
                                 handleAddGoalClick(employee.employeeId);
                               }}
-                              className="flex items-center px-4 py-2 text-sm font-medium bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 shadow-sm"
-                            >
+                              className="flex items-center px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-200 shadow-sm " >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Goal
                             </button>
@@ -278,7 +287,7 @@ const M_Goals = () => {
                                 handleSubmitConfirm(employee.employeeId);
                               }}
                               disabled={submitting[employee.employeeId]}
-                              className="flex items-center px-4 py-2 text-sm bg-white border border-blue-500 text-blue-500 font-medium rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
+                              className="flex items-center px-4 py-2 text-sm bg-orange-600 border border-orange-500 text-white font-medium rounded-lg hover:bg-orange-500 hover:text-white transition-colors duration-200 shadow-sm disabled:opacity-50"
                             >
                               <Send className="w-4 h-4 mr-2" />
                               Submit Goals
@@ -302,18 +311,18 @@ const M_Goals = () => {
                     </div>
 
                     {expandedEmployees[employee.employeeId] && (
-                      <div className="p-6 border-t border-blue-100 bg-gray-50">
+                      <div className="p-6 border-t border-blue-100 bg-white">
                         {goals[employee.employeeId]?.length > 0 || submittedEmployees.includes(employee.employeeId) ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {goals[employee.employeeId]?.map((goal, index) => (
                               <div
                                 key={index}
                                 className="group bg-blue-50 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
                               >
                                 <div className="p-6">
-                                  <div className="flex items-center justify-between mb-4">
+                                  <div className="flex  justify-between  items-center mb-4">
                                     <div className="flex items-center space-x-2">
-                                      <div className="p-2 bg-blue-50 rounded-lg">
+                                      <div className="p-2 bg-white text-blue-900 rounded-lg">
                                         {categoryIcons[goal.category]}
                                       </div>
                                       <span className="text-sm font-semibold text-blue-900 uppercase tracking-wide">
@@ -333,21 +342,21 @@ const M_Goals = () => {
                                     )}
                                   </div>
 
-                                  <h4 className="text-md text-gray-700 mb-3">
+                                  <h4 className="text-md text-gray-700 mb-3 ml-2">
                                     {goal.description}
                                   </h4>
 
-                                  <div className="flex flex-wrap gap-4 mt-4">
+                                  <div className="flex flex-wrap justify-between gap-4 mt-4">
                                     <div className="flex items-center">
-                                      <BarChart className="w-4 h-4 text-gray-400 mr-2" />
-                                      <span className="text-sm font-medium text-gray-900">
+                                      <BarChart className="w-4 h-4 text-gray-800 mr-2" />
+                                      <span className="text-sm font-medium text-gray-700">
                                         Weight: {goal.weightage}%
                                       </span>
                                     </div>
 
                                 <div className="flex items-center">
-                                  <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-                                  <span className="text-sm text-blue-600">
+                                  <Calendar className="w-4 h-4 text-gray-800 mr-2" />
+                                  <span className="text-sm text-gray-700 font-medium">
                                     Due:{" "}
                                     {new Date(
                                       goal.deadline
@@ -491,7 +500,7 @@ const M_Goals = () => {
                     setShowGoalForm(false);
                     setEditingGoal(null);
                   }}
-                  className="px-4 py-2 text-sm font-medium text-blue-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                  className="px-4 py-2 text-sm font-medium text-blue-500 bg-white border border-blue-500 rounded-lg hover:text-blue-600 hover:border-blue-700"
                 >
                   Cancel
                 </button>

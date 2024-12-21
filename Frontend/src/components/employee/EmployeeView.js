@@ -133,42 +133,8 @@ getAdditionalDetails();
   }
 },[empType, employeeId, error, timePeriod])
 
-// useEffect(() => {
-//   const getAdditionalDetails = async () => {
-//     // Make sure formData is loaded and contains status
-//     if (formData && formData[0]?.status === 'Completed') {
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-//         );
-//         console.log('Getting Additional Areas', response.data);
-//         setAdditionalAreas(response.data.data.areas);
-//         console.log("Additional Areas in EMP view page :",response.data.data.areas)
-//       } catch (error) {
-//         console.error('Error in fetching Additional Areas:', error);
-//       }
-//     } else {
-//       // Optionally handle the case when status is not 'Completed'
-//       console.log('Appraisal status is not completed. Skipping fetching additional details.');
-//     }
-//   };
-
-//   // Only run if formData is loaded
-//   if (formData && formData[0]?.status) {
-//     getAdditionalDetails();
-//   }
-// })
-  // const goals = [
-  //   { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-  //   { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-  //   { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  // ];
-
-
   const handleBack = async () => {
     navigate(`/employee-dashboard`);
-
-
   }
   const status = formData ? formData.status : null
 
@@ -206,11 +172,11 @@ getAdditionalDetails();
         {/* Header Section */}
         <div className="bg-blue-600 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>
+            <h1 className="text-2xl font-bold text-white">Self Appraisal View</h1>
             {formData ? (
 
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-blue-600  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-white text-blue-600  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
 
@@ -439,7 +405,7 @@ getAdditionalDetails();
         
           <div>
          <button
-            className="px-6 py-2 text-white bg-cyan-800 rounded-lg"
+            className="px-6 py-2 text-white bg-blue-500 rounded-lg"
             onClick={handleBack}
           >
             Back

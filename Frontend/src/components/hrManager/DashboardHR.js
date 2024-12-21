@@ -137,16 +137,14 @@ const Dashboard = () => {
             </div>
 
             
-             <div className="mt-4 md:mt-0 flex space-x-4">
-                          <div className="bg-white rounded-lg border border-gray-200 p-4">
-                            <div className="flex items-center space-x-3">
+             <div className="mt-4 md:mt-0 bg-white rounded-lg border border-gray-200 p-3">
+                          <div className="flex items-center space-x-3">
                               <Calendar className="h-5 w-5 text-blue-500" />
                               <div>
-                                <p className="text-sm font-medium text-gray-500">Appraisal Period</p>
-                                <p className="text-lg font-semibold text-gray-900">
+                                <p className="text-sm font-medium text-blue-600">Appraisal Period</p>
+                                <p className="text-sm mt-1 font-semibold text-gray-600">
                                   {`${appraisalStartDate} - ${appraisalEndDate}`}
                                 </p>
-                              </div>
                             </div>
                           </div>
             
@@ -172,12 +170,12 @@ const Dashboard = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                  <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee name</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Manager</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700  tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -189,14 +187,14 @@ const Dashboard = () => {
                             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                               <User className="h-4 w-4 text-blue-600" />
                             </div>
-                            <span className=" text-gray-900">{appraisal.empName}</span>
+                            <span className=" text-gray-700">{appraisal.empName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-500">
+                        <td className="px-6 py-4 text-gray-700">
                           {appraisal.timePeriod[0]} - {appraisal.timePeriod[1]}
                         </td>
-                        <td className="px-6 py-4 text-gray-500">{appraisal.initiatedOn}</td>
-                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName}</td>
+                        <td className="px-6 py-4 text-gray-700">{appraisal.initiatedOn}</td>
+                        <td className="px-6 py-4 text-gray-700">{appraisal.managerName}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2.5 py-1  text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                             {appraisal.status}
@@ -211,7 +209,7 @@ const Dashboard = () => {
                               ? "View" 
                               : appraisal.status === "In Progress" 
                                 ? "Continue" 
-                                : "View"
+                                : "Start"
                             }
                             <ChevronRight className="ml-1 h-4 w-4" />
                           </button>
@@ -229,7 +227,7 @@ const Dashboard = () => {
               </table>
             </div>
             {userData && userData.length > 0 && (
-              <div className='p-4'>
+              <div className='p-2'>
                 <StatusTracker currentStatus={userData[0].status} />
               </div>
             )}

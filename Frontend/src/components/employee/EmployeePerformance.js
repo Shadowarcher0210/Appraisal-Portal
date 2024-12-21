@@ -11,6 +11,7 @@ const E_PerformancePage = () => {
   const [expandedSection, setExpandedSection] = useState('employee');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
 
   const navigate = useNavigate();
   const employeeName = localStorage.getItem('empName');
@@ -47,6 +48,7 @@ const E_PerformancePage = () => {
       try {
         const response = await axios.get(`http://localhost:3003/goals/${employeeId}/${startDate}/${endDate}`);
         setEmployeeGoals(response.data.data[0].goals || []);
+        console.log("goals", response.data.data[0].goals)
         setLoading(false);
       } catch (err) {
         console.error('Error fetching goals:', err);
@@ -55,24 +57,18 @@ const E_PerformancePage = () => {
       }
     };
     fetchEmployeeGoals();
-  }, [currentYear, employeeId]);
+  }, []);
 
   const fetchAppraisalDetails = async () => {
     if (employeeId) {
       try {
         const response = await axios.get(`http://localhost:3003/form/performance/${employeeId}`);
         setAppraisals(response.data);
+        console.log('Fetched Appraisals in Performance Page :', response.data);
       } catch (error) {
         console.error('Error fetching appraisals:', error);
       }
     }
-  };
-
-  const wishing = () => {
-    const hour = date.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
   };
 
   const formatDate = (date) => {
@@ -87,17 +83,21 @@ const E_PerformancePage = () => {
     });
   };
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).toUpperCase();
+  const handleViewClick = (appraisal) => {
+    const { employeeId, timePeriod, status } = appraisal;
+    //navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+    if (status === "Submitted" || status === "Under Review" || status === "Under HR Review") {
+      navigate(`/empView/${employeeId}`, { state: { timePeriod } })
+    }
+    else if (status === "Completed") {
+      navigate(`/CE/${employeeId}`, { state: { timePeriod } });
+    }
+    handleCloseMenu();
   };
 
-  const handleViewClick = (appraisal) => {
-    const { employeeId, timePeriod } = appraisal;
-    navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+  
+  const handleCloseMenu = () => {
+    setOpenMenuIndex(null);
   };
 
   const toggleSection = (section) => {
@@ -133,13 +133,13 @@ const E_PerformancePage = () => {
             </div>
           </div>
         
-          <div className="bg-white rounded-lg border border-gray-200 p-4 self-end mt-auto">
+          <div className="bg-white rounded-lg border border-gray-200 p-3">
             <div className="flex items-center space-x-3">
               <Target className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Goal Setting Period</p>
-                <p className="text-lg font-semibold text-gray-900">
-                  {`${goalSettingStartDate} - ${goalSettingEndDate}`}
+                <p className="text-sm font-medium text-green-600">Goal Setting Period</p>
+                <p className="text-sm mt-1 font-semibold text-gray-600">
+                  {`${goalSettingStartDate} to ${goalSettingEndDate}`}
                 </p>
               </div>
             </div>
@@ -161,12 +161,12 @@ const E_PerformancePage = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee Name</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Initiated On</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Manager</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Actions</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Employee Name</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Assessment Year</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Initiated On</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Manager</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Status</th>
+                    <th className="px-6 py-2 text-left text-sm font-medium text-gray-800 tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -178,14 +178,14 @@ const E_PerformancePage = () => {
                             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                               <User className="h-4 w-4 text-blue-600" />
                             </div>
-                            <span className="text-gray-900">{employeeName}</span>
+                            <span className="text-gray-700">{employeeName}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-500">
+                        <td className="px-6 py-4 text-gray-700">
                           {formatDate(appraisal.timePeriod[0])} to {formatDate(appraisal.timePeriod[1])}
                         </td>
-                        <td className="px-6 py-4 text-gray-500">{formatDate(appraisal.timePeriod[0])}</td>
-                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName}</td>
+                        <td className="px-6 py-4 text-gray-700">{formatDate(appraisal.timePeriod[0])}</td>
+                        <td className="px-6 py-4 text-gray-700">{appraisal.managerName}</td>
                         <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-1  text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                             {appraisal.status}
@@ -219,36 +219,36 @@ const E_PerformancePage = () => {
           <div className="p-6">
              
               <div className="flex flex-col">
-  <div className="flex-grow">
-  </div>
+        <div className="flex-grow">
+        </div>
 
-  <button
-    onClick={() => toggleSection('employee')}
-    className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 "
-  >
-    <div className="flex items-center space-x-3">
-      <Target className="h-6 w-6 text-blue-600" />
-      <h3 className="text-lg font-semibold text-blue-700">Goals for {nextYear}-{nextYear2}</h3>
-    </div>
-    {expandedSection === 'employee' ? (
-      <ChevronUp className="h-5 w-5 text-gray-500" />
-    ) : (
-      <ChevronDown className="h-5 w-5 text-gray-500" />
-    )}
-  </button>
-</div>
+        <button
+          onClick={() => toggleSection('employee')}
+          className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600 "
+        >
+          <div className="flex items-center space-x-3">
+            <Target className="h-6 w-6 text-blue-600" />
+            <h3 className="text-xl font-bold text-blue-900">Goals for {nextYear}-{nextYear2}</h3>
+          </div>
+          {expandedSection === 'employee' ? (
+            <ChevronUp className="h-5 w-5 text-gray-500" />
+          ) : (
+            <ChevronDown className="h-5 w-5 text-gray-500" />
+          )}
+        </button>
+      </div>
 
 
               {expandedSection === 'employee' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 ">
                   {employeeGoals.length > 0 ? employeeGoals.map((goal, index) => (
-                    <div className="bg-white p-6 rounded-lg shadow-md border border-green-50" key={index}>
+                    <div className="bg-white p-5 rounded-lg shadow-md border border-gray-100 hover:border-slate-200 shadow-slate-300" key={index}>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-2">
-                          <div className="p-2 bg-gray-50 rounded-lg">
+                          <div className="p-2 bg-grayrounded-lg group-hover:bg-blue-50 transition-colors duration-200">
                             {categoryIcons[goal.category]}
                           </div>
-                          <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                          <span className="text-md font-semibold text-gray-700 uppercase tracking-wide">
                             {goal.category === 'Others' ? goal.otherText : goal.category}
                           </span>
                         </div>
@@ -260,14 +260,14 @@ const E_PerformancePage = () => {
 
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center space-x-2">
-                          <BarChart className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-600">
+                          <BarChart className="w-4 h-4 text-blue-700" />
+                          <span className="text-sm font-medium text-blue-700">
                             Weight: {goal.weightage}%
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm text-blue-600">
+                          <Calendar className="w-4 h-4 text-blue-700" />
+                          <span className="text-sm font-medium text-blue-700">
                             Due: {new Date(goal.deadline).toLocaleDateString()}
                           </span>
                         </div>
@@ -275,7 +275,7 @@ const E_PerformancePage = () => {
                     </div>
                   )) : (
                     <div className="col-span-3 text-center text-gray-500 py-4">
-                      No goals found for this period.
+                      Goals assigned by your manager will be shown here.
                     </div>
                   )}
                 </div>

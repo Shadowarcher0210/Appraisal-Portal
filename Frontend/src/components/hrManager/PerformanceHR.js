@@ -205,121 +205,166 @@ const PerformanceHR = () => {
     };
     return styles[status] || "bg-gray-100 text-gray-700";
   };
+  const CalendarIcon = () => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor"
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        strokeWidth={2} 
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
+      />
+    </svg>
+  );
 
   return (
     <div className="min-h-screen bg-blue-50 mt-10">
       <div className="p-6">
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
         <div className="mb-2">
-    <label className="text-4xl font-bold text-yellow-200 block">
-    Appraisal Insights for the team
-    </label>
-    <p className="text-white font-medium block mt-2">
-    Key metrics and trends to guide your Team progress.
-    </p>
-  </div>
-        </div>
+            <label className="text-4xl font-bold text-yellow-200 block">
+            Appraisal Insights for the team
+            </label>
+            <p className="text-white font-medium block mt-2">
+            Key metrics and trends to guide your Team progress.
+            </p>
+          </div>
+                </div>
 
-        <div className="bg-white rounded-lg shadow-lg mb-6">
-          <div className="">
+                <div className="bg-white rounded-lg shadow-lg mb-6">
+                  <div className="">
            
 
-<div className="p-6 space-y-6">
-  <div className="flex flex-col bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-    <div className="flex items-center space-x-2">
-      <Activity className="h-5 w-5 text-blue-500" />
-      <h2 className="text-xl font-bold text-blue-900">Team Appraisals Overview</h2>
-    </div>
+      <div className="p-6 space-y-6">
+        <div className="flex flex-col bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+          <div className="flex items-center space-x-2">
+            <Activity className="h-5 w-5 text-blue-500" />
+            <h2 className="text-xl font-bold text-blue-900">Team Appraisals Overview</h2>
+          </div>
 
-    {/* Spacer that grows to push the button to the bottom */}
-    <div className="flex-grow" />
+          <div className="flex-grow" />
 
-    <button
-      className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors self-end -mt-7"
-      onClick={() => setShowPopup(true)}
-    >
-      Create Appraisal
-    </button>
-  </div>
-</div>
-
+          <button
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors self-end -mt-7"
+            onClick={() => setShowPopup(true)}
+          >
+            Create Appraisal
+          </button>
+        </div>
+      </div>
 
 
-        {showPopup && (
-         <div className="fixed inset-0 flex items-center justify-center  bg-blue-50 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-1/2 h-4/5 overflow-hidden flex flex-col">
-            <h2 className="text-2xl font-bold mb-6 text-center">Create Appraisal</h2>
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Time Period</label>
-              <div className="flex space-x-4">
+
+      { showPopup && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl transform transition-all">
+        {/* Header */}
+        <div className="border-b px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800">Create Appraisal</h2>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {/* Date Selection */}
+          <div className="mb-8">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Appraisal Period
+            </label>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+              <CalendarIcon />
                 <input
                   type="date"
                   value={AppraisalstartDate}
-                  className="w-full px-4 py-2 border border-gray-300 rounded"
+                  readOnly
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg "
                 />
+              </div>
+              <div className="relative flex-1">
+              <CalendarIcon />
                 <input
                   type="date"
                   value={AppraisalendDate}
-                  className="w-full px-4 py-2 border border-gray-300 rounded"
+                  readOnly
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
             </div>
-          
-            <div className="flex-grow overflow-y-auto mb-6">
-              <label className="block text-sm font-medium mb-4">Employees</label>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-3 mb-4 bg-orange-100 p-3 rounded-md -ml-3">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={selectionType === 'all'}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="ml-2 mr-2"
-                    />
-                    Select All Employees
-                  </label>
-                </div>
-                {employees.map((employee, index) => (
-                  <label key={index} className="inline-flex items-center">
+          </div>
+
+          {/* Employee Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Select Employees
+            </label>
+            
+            {/* Select All */}
+            <div className="bg-orange-50 p-4 rounded-lg mb-4">
+              <label className="flex items-center space-x-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedEmployees.length === employees.length}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Select All Employees</span>
+              </label>
+            </div>
+
+            {/* Employee Grid */}
+            <div className="max-h-64 overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {employees.map((employee) => (
+                  <label
+                    key={employee.employeeId}
+                    className="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
                     <input
                       type="checkbox"
                       value={employee.employeeId}
                       checked={selectedEmployees.includes(employee.employeeId)}
-                      //onChange={(e) => handleEmployeeChange(e, employee.employeeId)}
                       onChange={(e) => {
                         const updatedSelection = e.target.checked
                           ? [...selectedEmployees, employee.employeeId]
                           : selectedEmployees.filter((id) => id !== employee.employeeId);
                         setSelectedEmployees(updatedSelection);
                       }}
-                      className="mr-2"
+                      className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500 mr-3"
                     />
-                    {employee.empName}
+                    <span className="text-sm text-gray-700">{employee.empName}</span>
                   </label>
                 ))}
               </div>
             </div>
-
-            <div className="flex justify-end space-x-4 mt-3">
-              <button
-                onClick={() => setShowPopup(false)}
-                className="bg-gray-300 text-black px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateClick}
-                className="bg-orange-600 text-white px-4 py-2 rounded"
-              >
-                Create
-              </button>
-            </div>
           </div>
         </div>
-      )}
-  
+
+        {/* Footer */}
+        <div className="border-t px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end space-x-4">
+          <button
+            onClick={() => setShowPopup(false)}
+            className="px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-400 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleCreateClick}
+            className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+          >
+            Create Appraisal
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
       {showPopup2 && (
-        <div className="fixed inset-0 flex items-center justify-center  bg-blue-50 bg-opacity-50 mt-10">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 mt-10">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto scrollbar-thin">
             <h2 className="text-xl font-semibold mb-4 text-center">Appraisal Status</h2>
 
@@ -354,53 +399,79 @@ const PerformanceHR = () => {
           </div>
         </div>
       )}
-            
-          <div className="mt-1 ml-2 flex space-x-4">
-          <div className="border-black border-1 rounded-lg  py-1 px-9 bg-yellow-100">
-            <label htmlFor="time-period" className="mr-2">Time Period:</label>
-            <select
-              id="time-period"
-              value={selectedYear || ''}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="bg-transparent"
-            >
-              {academicYears.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
 
-          <div className="border-black border-1 rounded-lg  py-1 px-9 bg-yellow-100">
-            <label htmlFor="reporting-manager" className="mr-2">Reporting Manager:</label>
-            <select
-              id="reporting-manager"
-              value={selectedManager || ''}
-              onChange={(e) => setSelectedManager(e.target.value)}
-              className="bg-transparent"
-            >
-              <option value="">All Managers</option>
-              {uniqueManagers.map((manager) => (
-                <option key={manager} value={manager}>
-                  {manager}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-            <div className="overflow-x-auto mt-2">
-              <table className="w-full">
-                <thead>
+<div className="mt-6 px-4">
+  <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 transition-all duration-200">
+    <div className="px-4 py-2.5 bg-gray-50 border-r border-gray-200 rounded-l-lg">
+      <label 
+        htmlFor="time-period" 
+        className="text-sm font-medium text-gray-700"
+      >
+        Time Period
+      </label>
+    </div>
+    <div className="">
+      <select
+        id="time-period"
+        value={selectedYear || ''}
+        onChange={(e) => setSelectedYear(e.target.value)}
+        className="px-4 py-2.5 pr-8 text-sm text-gray-900 font-medium "
+      >
+        {academicYears.map((year) => (
+          <option 
+            key={year} 
+            value={year}
+          >
+            {year}
+          </option>
+        ))}
+      </select>
+     
+    </div>
+  </div>
+
+  <div className="inline-flex ml-10 items-center bg-white border border-gray-200 rounded-lg shadow-sm hover:border-gray-300 transition-all duration-200">
+    <div className="px-4 py-2.5 bg-gray-50 border-r border-gray-200 rounded-l-lg">
+      <label 
+        htmlFor="reporting-manager" 
+        className="text-sm font-medium text-gray-700"
+      >
+        Reporting Manager
+      </label>
+    </div>
+    <div className="">
+      <select
+        id="reporting-manager"
+        value={selectedManager || ''}
+        onChange={(e) => setSelectedManager(e.target.value)}
+        className=" px-4 py-2.5 pr-8 text-sm text-gray-900 font-medium "
+      >
+        <option value="">All Managers</option>
+        {uniqueManagers.map((manager) => (
+          <option key={manager} value={manager}>
+            {manager}
+          </option>
+        ))}
+      </select>
+    
+    </div>
+  </div>
+</div>
+
+
+            <div className="overflow-x-auto mt-6">
+            <table className="min-w-full divide-y divide-gray-200">
+            <thead>
                 <tr className="border-b border-gray-200">
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Employee Name</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Assessment Year</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Manager</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-md font-medium text-gray-700 tracking-wider">Actions</th>
-                  </tr>
+                <th className="px-6 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Employee name</th>
+                    <th className="px-6 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Assessment Year</th>
+                    {/* <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Initiated On</th> */}
+                    <th className="px-6 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Manager name</th>
+                    <th className="px-6 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                               </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y bg-white divide-gray-200">
                   {appraisals.length > 0 ? (
                     appraisals.map((appraisal, index) => (
                       <tr key={index} className="hover:bg-gray-50">
@@ -409,13 +480,15 @@ const PerformanceHR = () => {
                             <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
                               <User className="h-4 w-4 text-blue-600" />
                             </div>
-                            <span className="text-gray-900">{appraisal.empName || 'N/A'}</span>
+                            <span className="text-gray-700">{appraisal.empName || 'N/A'}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-500">
+                        <td className="px-6 py-4 text-gray-700">
                           {appraisal.timePeriod ? `${formatDate(appraisal.timePeriod[0])} to ${formatDate(appraisal.timePeriod[1])}` : 'N/A'}
                         </td>
-                        <td className="px-6 py-4 text-gray-500">{appraisal.managerName || 'N/A'}</td>
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{appraisal.initiatedOn}</td> */}
+
+                        <td className="px-6 py-4 text-gray-700">{appraisal.managerName || 'N/A'}</td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center px-2.5 py-1 text-sm rounded-md font-medium ${getStatusStyle(appraisal.status)}`}>
                             {appraisal.status || 'N/A'}
