@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import {
   instructionsList,
   impInstructions,
-} from "../manager/appraisalQuestions";
+} from "../manager/MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import { useLocation } from "react-router-dom";
-import SelfAppraisal2 from "../Tabs/selfAppraisalTab";
+import SelfAppraisal2 from "../Tabs/SelfAppraisalTab";
 
 const TABS = ["Introduction", "Self Appraisal"];
 

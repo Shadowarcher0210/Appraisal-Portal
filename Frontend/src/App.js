@@ -2,22 +2,21 @@ import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import ConfigureAppraisalForms from './components/hrManager/ConfigureAppraisalForms.js'; 
 import Header from './components/Header.js';
-import PerformancePage from './components/employee/empPerformance.js';
 import Login from './components/Login.js';
 import Profile from './components/Profile.js';
 import ForgotPassword from './components/ForgotPassword.js';
 import ResetPassword from './components/ResetPassword.js';
-import Dashboard from './components/employee/empDashboard.js';
-import EmpViewPage from './components/employee/empViewPage.js';
+import Dashboard from './components/employee/EmployeeDashboard.js';
+import EmpViewPage from './components/employee/EmployeeView.js';
 
-import EmpForm from './components/employee/empForm.js';
+import EmpForm from './components/employee/EmployeeForm.js';
 import SelfAppraisal from './components/Tabs/SelfAppraisal2.js';
 import Introduction from './components/Tabs/Intro2.js';
 // import Goals from './components/Tabs/Goals.js';
 import M_Dashboard from './components/manager/M_Dashboard.js';
 import M_Performance from './components/manager/M_Performance.js';
 import M_myPerformance from './components/manager/M_myPerformance.js';
-import E_PerformancePage from './components/employee/empPerformance.js';
+import E_PerformancePage from './components/employee/EmployeePerformance.js';
 import M_Goals from './components/manager/M_Goals';
 import M_Form from './components/manager/M_Form';
 import M_ViewPage from './components/manager/M_ViewPage.js';
@@ -31,7 +30,7 @@ import EvaluationView1 from './components/manager/EvaluationView1.js';
 import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/manager/EvaluationView2.js';
 
-import Self from './components/Tabs/selfAppraisalTab.js'
+import Self from './components/Tabs/SelfAppraisalTab.js'
 import EvaluationView3 from './components/manager/EvaluationView3.js';
 
 import CEvaluation from './components/View Pages/CEvaluation.js';
@@ -68,7 +67,6 @@ const App = () => {
           <Route path="/intro" element={<Introduction/>} />
 
 =
-          <Route path="/performance" element={<PerformancePage />} />
           <Route path="/configure-appraisal-forms" element={<ConfigureAppraisalForms />} />
           <Route path="/empview/:employeeId" element={<EmpViewPage />} />
           <Route path="/stausBar" element={<StatusTracker/>} />

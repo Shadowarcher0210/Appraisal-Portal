@@ -3,9 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   instructionsList,
   impInstructions,
-} from "../manager/appraisalQuestions";
+} from "./MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
-import SelfAppraisalTab from "../Tabs/selfAppraisalTab";
+import SelfAppraisalTab from "../Tabs/SelfAppraisalTab";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
