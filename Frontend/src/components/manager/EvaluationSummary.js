@@ -40,12 +40,6 @@ const EvaluationSummary = () => {
       attainment: "",
     },
     {
-      id: 2,
-      category: "Manager Assessment",
-      weightage: "30%",
-      attainment: "",
-    },
-    {
       id: 3,
       category: "Employee Goals",
       weightage: "35%",
@@ -128,10 +122,9 @@ const EvaluationSummary = () => {
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
-          const managerRating = parseFloat(evaluationData.managerRating || 0);
           const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          const overallWeightage = selfAssessment + additionalAreasOverall  + goalWeight;
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
           }
@@ -152,12 +145,7 @@ const EvaluationSummary = () => {
               weightage: "10%",
               attainment: evaluationData.selfAssesment || "N/A",
             },
-            {
-              id: 2,
-              category: "Manager Assessment",
-              weightage: "30%",
-              attainment: evaluationData.managerRating || "N/A",
-            },
+            
             {
               id: 3,
               category: "Employee Goals",
@@ -573,6 +561,7 @@ const EvaluationSummary = () => {
           </div>
         </div>
 
+       
         {empType === "HR" && (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
             <label

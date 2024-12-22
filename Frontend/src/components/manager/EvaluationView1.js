@@ -15,6 +15,7 @@ const EvaluationView1 = () => {
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [isValid, setIsValid] = useState(false);
 
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
@@ -37,6 +38,7 @@ const EvaluationView1 = () => {
         ...prev,
         [goalId]: null,
       }));
+      setIsValid(false);
       return;
     }
 
@@ -44,17 +46,10 @@ const EvaluationView1 = () => {
       ...prev,
       [goalId]: numericValue,
     }));
+    setTimeout(() => validateAllWeights(), 0);
+    
     console.log("manager weight", managerWeightages)
 
-    // const assignedWeights = employeeGoals.reduce((sum, goal) => {
-    //   const weight = managerWeightages[goal._id];
-    //   return sum + (weight !== null && !isNaN(weight) ? weight : 0);
-    // }, 0);
-
-    // const totalPossibleWeight = employeeGoals.reduce(
-    //   (sum, goal) => sum + goal.weightage,
-    //   0
-    // );
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
@@ -67,6 +62,27 @@ const EvaluationView1 = () => {
     });
     setIsWeightCalculationReady(allWeightsAssigned);
   };
+
+  const validateAllWeights = () => {
+    const isValidWeights = employeeGoals.every((goal) => {
+      const weight = managerWeightages[goal._id];
+      return (
+        weight !== null &&
+        weight !== undefined &&
+        weight !== "" &&
+        !isNaN(weight) &&
+        weight >= 0 &&
+        weight <= goal.weightage
+      );
+    });
+    
+    setIsValid(isValidWeights);
+  };
+
+  // Add effect to validate on mount and when goals/weights change
+  useEffect(() => {
+    validateAllWeights();
+  }, [employeeGoals, managerWeightages]);
   
 
   useEffect(() => {
@@ -452,18 +468,7 @@ const handleSaveExit= async ()=>{
                                                 placeholder="Add goal weightage"
                                                
                                                 />
-{/*                                             
-                                            <input
-                                                type="number"
-                                                className="w-44 p-2 border rounded mb-4"
-                                                value={managerWeightages[goal._id] || ''}                                                
-                                                onChange={(e) => handleWeightageChange(goal._id, e.target.value)} 
-                                                min="1"
-                                                max='100'
-                                                placeholder="Add goal weightage"
-                                               
-                                                /> */}
-                                          
+
                                                 {Number(managerWeightages[goal._id]) > goal.weightage && (
                                                     <div className="absolute -bottom-4 left-0 text-red-500 text-xs ">
                                                         Cannot exceed {goal.weightage}%
@@ -491,10 +496,10 @@ const handleSaveExit= async ()=>{
         )}
 
         {/* Action Buttons */}
-        <div className="sticky mt-20 flex justify-end">
+         <div className="sticky mt-20 flex justify-end">
             <div className="mr-auto">
                 <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-800 text-blue-800 rounded-lg"
               onClick={handleBack}
                 >
                     Back
@@ -509,12 +514,17 @@ const handleSaveExit= async ()=>{
                 </button>
             </div>
             <div>
-                <button
-                    className="px-6 py-2 text-white bg-blue-600 hover:bg rounded-lg"
-                    onClick={handleContinue}
-                >
-                    Next
-                </button>
+            <button
+            className={`px-6 py-2 text-white rounded-lg ${
+              isValid 
+                ? "bg-blue-800 hover:bg-blue-900 cursor-pointer" 
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            onClick={handleContinue}
+            disabled={!isValid}
+          >
+            Next
+          </button>
             </div>
         </div>
     </div>
