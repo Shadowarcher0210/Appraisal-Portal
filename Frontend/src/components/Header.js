@@ -8,14 +8,10 @@ const Header = () => {
   const location = useLocation();
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  // const [activeTab, setActiveTab] = useState(() => 'dashboard');
   const [activeTab, setActiveTab] = useState(() => {
-    // First check localStorage for the saved tab
     const savedTab = localStorage.getItem('activeTab');
-    // Then check the current path to validate/update the tab
     const currentPath = location.pathname;
 
-    // Map paths to tabs for different employee types
     const pathToTabMap = {
       '/employee-dashboard': 'dashboard',
       '/employee-performance': 'performance',
@@ -32,7 +28,6 @@ const Header = () => {
   });
 
   useEffect(() => {
-    // This ensures that the current path is preserved on refresh
     localStorage.setItem('currentPath', location.pathname);
     localStorage.setItem('activeTab', activeTab);
   }, [location.pathname, activeTab]);
@@ -51,7 +46,6 @@ const Header = () => {
     const saved = localStorage.getItem('seenNotifications');
     return saved ? JSON.parse(saved) : {};
   });
-
   const empType = localStorage.getItem('empType');
   const navigate = useNavigate();
   const notificationRef = useRef(null);
@@ -59,7 +53,6 @@ const Header = () => {
   const employeeName = localStorage.getItem('empName');
   const designation = localStorage.getItem('designation');
   const employeeId = localStorage.getItem('employeeId');
-
   const handleClickOutside = (event) => {
     if (notificationRef.current && !notificationRef.current.contains(event.target)) {
       setShowNotificationDropdown(false);
@@ -68,7 +61,6 @@ const Header = () => {
       setShowUserDropdown(false);
     }
   };
-
   const handleMyProfie = () => {
     navigate('/profile');
   };
@@ -77,23 +69,18 @@ const Header = () => {
     localStorage.clear();
     navigate('/');
   };
-
   const handleTabClick = (tabName, path) => {
     setActiveTab(tabName);
     localStorage.setItem('activeTab', tabName);
     localStorage.setItem('currentPath', path);
     navigate(path);
   };
- 
   useEffect(() => {
-    // Check if there's a saved path in localStorage
     const savedPath = localStorage.getItem('currentPath');
     if (savedPath && savedPath !== location.pathname) {
       navigate(savedPath);
     }
   }, []);
-  
-
   const compareNotifications = (current, seen) => {
     switch (empType) {
       case 'Manager':
@@ -123,10 +110,8 @@ const Header = () => {
         return false;
     }
   };
-
   const updateSeenNotifications = (currentNotifications) => {
     const newSeen = { ...seenNotifications };
-    
     switch (empType) {
       case 'Employee':
         if (currentNotifications.appraisalNotification) {
@@ -141,8 +126,7 @@ const Header = () => {
         if (currentNotifications.goalNotification) {
           newSeen.goals = currentNotifications.goalNotification;
         }
-        break;
-      
+        break;   
       case 'Manager':
         if (currentNotifications.managerNotification && Array.isArray(currentNotifications.managerNotification)) {
           currentNotifications.managerNotification.forEach((message, index) => {
@@ -150,36 +134,27 @@ const Header = () => {
           });
         }
         break;
-      
-      case 'HR':
+        case 'HR':
         if (currentNotifications.hrNotification && Array.isArray(currentNotifications.hrNotification)) {
           currentNotifications.hrNotification.forEach((message, index) => {
             newSeen[`hrNotification_${index}`] = message;
           });
         }
-        break;
-      
+        break; 
       default:
         console.warn('Unknown employee type');
     }
-
     setSeenNotifications(newSeen);
     localStorage.setItem('seenNotifications', JSON.stringify(newSeen));
   };
-
-
-
    const fetchNotifications = async () => {
     const startDate = localStorage.getItem('initiatedOn') || new Date().toISOString().split('T')[0];
-
     if (!employeeId) {
       console.warn('No employeeId found in localStorage');
       return;
     }
-
     setIsLoading(true);
     setError(null);
-  
     try {
       let currentNotifications = {
         managerNotification: [],
@@ -189,7 +164,6 @@ const Header = () => {
         goalNotification: '',
         hrNotification: []
       };
-  
       try {
         const submitResponse = await axios.get(`http://localhost:3003/form/getNotification/${employeeId}/${startDate}`);
         if (submitResponse && submitResponse.data) {
@@ -200,7 +174,6 @@ const Header = () => {
       } catch (error) {
         console.error("Error fetching general notifications:", error);
       }
-  
       switch (empType) {
         case 'Manager':
           try {
@@ -214,7 +187,6 @@ const Header = () => {
             console.error("Error fetching manager-specific notifications:", error);
           }
           break;
-  
         case 'Employee':
           try {
             console.log("Employee Type",empType)
@@ -223,35 +195,27 @@ const Header = () => {
         .get(`http://localhost:3003/form/expiry/${employeeId}/${startDate}`)
         .catch((error) => {
             console.error("Error in expiry API:", error);
-            return null; // Return null to indicate failure
+            return null; 
         });
-
     const notiStartsResponse = await axios
         .get(`http://localhost:3003/form/getNotiStarts/${employeeId}`)
         .catch((error) => {
             console.error("Error in notiStarts API:", error);
-            return null; // Return null to indicate failure
+            return null; 
         });
-
     const notifyGoalsResponse = await axios
         .get(`http://localhost:3003/form/notifyGoals/${employeeId}/${managerName}`)
         .catch((error) => {
             console.error("Error in notifyGoals API:", error);
-            return null; // Return null to indicate failure
+            return null; 
         });
-
-    // Process the responses only if they exist
     if (expiryResponse && expiryResponse.data) {
         setAppraisalNotification(expiryResponse.data?.data?.message);
         currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
     } else {
         console.log("No data from expiry API");
     }
-
     console.log("Expiry Response processed");
-  
-           
-
             if (expiryResponse && expiryResponse.data) {
               setAppraisalNotification(expiryResponse.data?.data?.message);
               currentNotifications.appraisalNotification = expiryResponse.data?.data?.message;
@@ -265,14 +229,10 @@ const Header = () => {
               setGoalNotification(notifyGoalsResponse.data.notificationMessage);
               currentNotifications.goalNotification = notifyGoalsResponse.data?.notificationMessage;
             }
-
-            
-
           } catch (error) {
             console.error("Error fetching employee-specific notifications:", error);
           }
           break;
-  
         case 'HR':
           try {
             const hrNotifyResponse = await axios.get(`http://localhost:3003/form/notifyHR/${empType}`);
@@ -284,11 +244,9 @@ const Header = () => {
             console.error("Error fetching HR-specific notifications:", error);
           }
           break;
-  
         default:
           console.warn('Unknown employee type');
       }
-  
       const hasNew = compareNotifications(currentNotifications, seenNotifications);
       setHasNewNotifications(hasNew);
   
@@ -302,13 +260,11 @@ const Header = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   },[]);
-
   useEffect(() => {
     if (showNotificationDropdown) {
       const currentNotifications = {
@@ -329,16 +285,13 @@ const Header = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
   const toggleDropdown = () => {
     setShowNotificationDropdown((prev) => !prev);
     if (!showNotificationDropdown) {
       setHasNewNotifications(false);
     }
   };
-
   const empInitial = employeeName.charAt(0).toUpperCase();
-
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow-md z-50 p-2.5 flex justify-between items-center h-[50px]">
       <div className="logo">

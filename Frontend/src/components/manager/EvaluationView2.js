@@ -345,9 +345,9 @@ const EvaluationView2 = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
-      <div className="mb-2">
+      <div className="mt-14">
         {/* Header Section */}
-        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
            
@@ -361,10 +361,7 @@ const EvaluationView2 = () => {
                     .toISOString()
                     .slice(0, 10)}
                 </span>
-              </div>
-           
-              <div />
-            
+              </div>            
           </div>
         </div>
       </div>
@@ -518,7 +515,7 @@ const EvaluationView2 = () => {
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-cyan-800 text-cyan-800 rounded-lg"
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-800 text-blue-800 rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -534,7 +531,7 @@ const EvaluationView2 = () => {
           </div>
           <div >
             <button
-              className={`px-6 py-2 rounded-lg transition-colors ${isFormComplete() ? 'bg-cyan-800 hover:bg-cyan-700 text-white' : 'bg-gray-400 text-white cursor-not-allowed'
+              className={`px-6 py-2 rounded-lg transition-colors ${isFormComplete() ? 'bg-blue-800 hover:bg-blue-700 text-white' : 'bg-gray-400 text-white cursor-not-allowed'
                 }`}
               onClick={handleContinue}
             >

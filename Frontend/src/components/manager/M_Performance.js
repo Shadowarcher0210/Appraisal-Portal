@@ -81,8 +81,8 @@ const M_Performance = () => {
 
     if (status === "Submitted" || status === "Under Review") {
       navigate(`/evaluationView/${employeeId}`, { state: { timePeriod } });
-    } else if (status === "Under HR Review") {
-      navigate(`/empview/${employeeId}`, { state: { timePeriod } });
+    } else if (status === "Under HR Review" || status === "Pending HR Review") {
+      navigate(`/CE/${employeeId}`, { state: { timePeriod } });
     } else if (status === "Completed") {
       navigate(`/CE/${employeeId}`, { state: { timePeriod } });
     }
@@ -236,12 +236,19 @@ const M_Performance = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm">
                           <button
-                            className={`bg-blue-500 text-white hover:bg-blue-600 rounded-lg px-2 py-1.5 w-20 
-                              ${appraisal.status === "Under HR Review" ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                            disabled={appraisal.status === "Under HR Review"}
+                            className={'bg-blue-500 text-white hover:bg-blue-600 rounded-lg px-2 py-1.5 w-20 '  }
+                       //     disabled={appraisal.status === "Under HR Review"}
                             onClick={() => handleViewClick(appraisal)}
                           >
-                            {appraisal.status === "Completed" ? "View" : "Review"}
+                            {/* {appraisal.status === "Completed" ? "View" : "Review" } */}
+                            {
+  ["Under HR Review", "Pending HR Review", "Completed"].includes(appraisal.status) 
+    ? "View" 
+    : ["Submitted", "Under Review"].includes(appraisal.status) 
+    ? "Review" 
+    : null
+}
+
                           </button>
                         </td>
                       </tr>
