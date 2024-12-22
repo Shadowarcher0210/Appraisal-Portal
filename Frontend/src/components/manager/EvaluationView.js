@@ -38,7 +38,7 @@ const EvaluationView = () => {
     setShowHelpPopup(!showHelpPopup);
   };
 
-
+  
   
 
   const handleBack = () => {
@@ -48,8 +48,24 @@ const EvaluationView = () => {
     else if (empType === 'HR') navigate('/hr-performance')
   };
 
+  const isFormValid = () => {
+    if (!formData || !formData[0] || !formData[0].pageData) return false;
+    
+    return formData[0].pageData.every(item => {
+      const evaluation = item.managerEvaluation;
+      return evaluation !== undefined && 
+             evaluation !== null && 
+             evaluation !== '' && 
+             evaluation !== 0; // Added check for 0 value
+    });
+  };
+
+
   const handleContinue = async () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return;
+    if (!isFormValid()) {
+      return;
+    }
+    // if (!formData || !formData[0] || !formData[0].pageData) return;
 
     try {
       const managerScore = calculateOverallScore();
@@ -393,32 +409,38 @@ const EvaluationView = () => {
           </div>
         </div>
 
-        <div className="mt-20 sticky flex justify-end">
-          <div className='mr-auto'>
-            <button
-              className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
-              onClick={handleBack}
-            >
-              Back
-            </button>
-          </div>
-          <div className='mr-2'>
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSaveExit}
-            >
-              Save & Exit
-            </button>
-          </div>
-          <div >
-            <button
-              className="px-6 py-2 text-white bg-blue-800 rounded-lg"
-              onClick={handleContinue}
-            >
-              Continue
-            </button>
-          </div>
+<div className="mt-20 sticky flex justify-end">
+        <div className='mr-auto'>
+          <button
+            className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
+            onClick={handleBack}
+          >
+            Back
+          </button>
         </div>
+        <div className='mr-2'>
+          <button
+            className="px-6 py-2 text-white bg-orange-500 rounded-lg"
+            onClick={handleSaveExit}
+          >
+            Save & Exit
+          </button>
+        </div>
+        <div>
+          <button
+            className={`px-6 py-2 text-white rounded-lg transition-colors ${
+              isFormValid() 
+                ? 'bg-blue-800 hover:bg-blue-900' 
+                : 'bg-gray-400 cursor-not-allowed'
+            }`}
+            onClick={handleContinue}
+            disabled={!isFormValid()}
+            title={!isFormValid() ? "Please fill all manager evaluations" : ""}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
 
         {isModalVisible && (
           <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">

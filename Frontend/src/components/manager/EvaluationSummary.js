@@ -29,12 +29,6 @@ const EvaluationSummary = () => {
       attainment: "",
     },
     {
-      id: 2,
-      category: "Manager Assessment",
-      weightage: "30%",
-      attainment: "",
-    },
-    {
       id: 3,
       category: "Employee Goals",
       weightage: "35%",
@@ -105,10 +99,9 @@ const EvaluationSummary = () => {
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
-          const managerRating = parseFloat(evaluationData.managerRating || 0);
           const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          const overallWeightage = selfAssessment + additionalAreasOverall + goalWeight;
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
 
           const updatedTableData = [
@@ -118,12 +111,7 @@ const EvaluationSummary = () => {
               weightage: "10%",
               attainment: evaluationData.selfAssesment || "N/A",
             },
-            {
-              id: 2,
-              category: "Manager Assessment",
-              weightage: "30%",
-              attainment: evaluationData.managerRating || "N/A",
-            },
+            
             {
               id: 3,
               category: "Employee Goals",
@@ -454,68 +442,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* {empType === "HR" && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
-            <label
-              htmlFor="file-upload"
-              className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
-            >
-              Upload file
-            </label>
-            <div className="overflow-x-auto">
-              <input
-                type="file"
-                id="file-upload"
-                name="file-upload"
-                className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
-                onChange={handleFileChange}
-              />
-
-              { documentName ? (
-                  <div>
-                     <div className="flex items-center border-gray-300 pt-2">
-                  <div className="text-gray-800 text-sm">
-                    {documentName}
-                  </div>
-
-                  <button
-                    onClick={handleFileDelete}
-                    className="text-red-500 hover:text-red-700 items-end ml-96 -mt-14"
-                    aria-label="Delete file"
-                  >
-                    <img
-                      src={DeleteIcon}
-                      alt="delete"
-                      style={{ width: "20px" }}
-                    />
-                  </button>
-                </div>
-                  </div>
-              ):
-            (fileSelected ? (
-                <div className="flex items-center border-gray-300 pt-2">
-                  <div className="text-gray-800 text-sm">
-                    {fileSelected.name}
-                  </div>
-
-                  <button
-                    onClick={handleFileDelete}
-                    className="text-red-500 hover:text-red-700 items-end ml-96 -mt-14"
-                    aria-label="Delete file"
-                  >
-                    <img
-                      src={DeleteIcon}
-                      alt="delete"
-                      style={{ width: "20px" }}
-                    />
-                  </button>
-                </div>
-              ):(<div/>))
-            }
-            </div>
-          </div>
-        )} */}
+       
         {empType === "HR" && (
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
             <label
