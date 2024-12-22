@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart, Award, Users } from "lucide-react";
+import { Calendar, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart, Award, Users } from "lucide-react";
 import axios from 'axios';
 
 const E_PerformancePage = () => {
@@ -22,8 +22,8 @@ const E_PerformancePage = () => {
   const nextYear = currentYear + 1;
   const nextYear2 = currentYear + 2;
 
-  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
-  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
+  // const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
+  // const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
   const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
 
@@ -85,7 +85,6 @@ const E_PerformancePage = () => {
 
   const handleViewClick = (appraisal) => {
     const { employeeId, timePeriod, status } = appraisal;
-    //navigate(`/empview/${employeeId}`, { state: { timePeriod } });
     if (status === "Submitted" || status === "Under Review" || status === "Under HR Review" || status === "Pending HR Review") {
       navigate(`/empView/${employeeId}`, { state: { timePeriod } })
     }
