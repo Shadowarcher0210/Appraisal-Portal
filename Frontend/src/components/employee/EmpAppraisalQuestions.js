@@ -59,9 +59,41 @@ const data = {
       answer: "Introduced a new workflow process that streamlined operations and reduced turnaround time.",
     },
   ],
+   questionsAndAnswersEmployee : [
+    { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
+    { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
+    { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
+    { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
+    { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
+    { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
+    { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
+    { question: 'Time Management', answer: 'I complete my tasks on time. ' },
+    { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
+    { question: 'Creativity', answer: 'I look for solutions outside the work.' },
+    { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
+    { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
+    { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
+    { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
+  ],
+  generalQuestions : [
+    "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
+    "Team-work: I work effectively and efficiently with team.",
+    "Job-Specific Skills: I demonstrate the aptitude and competence to carry out my job responsibilities.",
+  ],
+  competencyQuestions : [
+    "Adaptability: I am flexible and receptive regarding new ideas and approaches.",
+    "Leadership: I like to take responsibility in managing the team.",
+    "Collaboration: I cultivate positive relationships. I am willing to learn from others.",
+    "Communication: I convey my thoughts clearly and respectfully.",
+    "Time Management: I complete my tasks on time.",
+    "Results: I identify goals that are aligned with the organization’s strategic direction and achieve results accordingly.",
+    "Creativity: I look for solutions outside the work.",
+    "Initiative: I anticipate needs, solve problems, and take action, all without explicit instructions.",
+    "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
+    "Software Development: I am committed to improving my knowledge and skills.",
+    "Growth: I am proactive in identifying areas for self-development.",
+  ],
 };
 
 export default data;
-
-// If you need to export any item individually
-export const { instructionsList, impInstructions, questionsAndAnswers, goalsResponse } = data;
+export const { instructionsList, impInstructions, questionsAndAnswers, goalsResponse, questionsAndAnswersEmployee,  generalQuestions , competencyQuestions} = data;

@@ -2,30 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useNavigate } from "react-router-dom";
+import {generalQuestions, competencyQuestions} from '../employee/EmpAppraisalQuestions';
 
 const SelfAppraisalTab = ({
   handlePreviousForm,
 }) => {
-
-  const generalQuestions = [
-    "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
-    "Team-work: I work effectively and efficiently with team.",
-    "Job-Specific Skills: I demonstrate the aptitude and competence to carry out my job responsibilities.",
-  ];
-
-  const competencyQuestions = [
-    "Adaptability: I am flexible and receptive regarding new ideas and approaches.",
-    "Leadership: I like to take responsibility in managing the team.",
-    "Collaboration: I cultivate positive relationships. I am willing to learn from others.",
-    "Communication: I convey my thoughts clearly and respectfully.",
-    "Time Management: I complete my tasks on time.",
-    "Results: I identify goals that are aligned with the organization’s strategic direction and achieve results accordingly.",
-    "Creativity: I look for solutions outside the work.",
-    "Initiative: I anticipate needs, solve problems, and take action, all without explicit instructions.",
-    "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
-    "Software Development: I am committed to improving my knowledge and skills.",
-    "Growth: I am proactive in identifying areas for self-development.",
-  ];
   const getAttainmentColor = (weight) => {
     if (weight >= 80) return 'bg-orange-100 text-orange-800';
     if (weight >= 60) return 'bg-blue-100 text-blue-800';

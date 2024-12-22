@@ -17,8 +17,32 @@ const EvaluationView2 = () => {
   const { timePeriod } = location.state || {};
   const [attainments, setAttainments] = useState(Array(5).fill(''));
   const [comments, setComments] = useState(Array(5).fill(''));
+  const [validationErrors, setValidationErrors] = useState([]);
  
+  const validateForm = () => {
+    const errors = [];
+    const isValid = AdditionalAreas.every((area, index) => {
+      const attainment = attainments[index];
+      const attainmentValue = parseFloat(attainment);
 
+      // Check if attainment is empty
+      if (!attainment && attainment !== 0) {
+        errors[index] = "Attainment is required";
+        return false;
+      }
+
+      // Check if attainment is a valid number between 1 and 100
+      if (isNaN(attainmentValue) || attainmentValue < 1 || attainmentValue > 100) {
+        errors[index] = "Attainment must be between 1 and 100";
+        return false;
+      }
+
+      return true;
+    });
+
+    setValidationErrors(errors);
+    return isValid;
+  };
 
   useEffect(() => {
     const fetchAdditionalAreas = async () => {
@@ -193,6 +217,10 @@ const EvaluationView2 = () => {
       const newAttainments = [...attainments];
       newAttainments[index] = numValue === '' ? '' : numValue.toString();
       setAttainments(newAttainments);
+
+      const newErrors = [...validationErrors];
+      newErrors[index] = '';
+      setValidationErrors(newErrors);
     }
   };
 
@@ -234,6 +262,7 @@ const EvaluationView2 = () => {
         !isNaN(parseFloat(attainment)) &&
         parseFloat(attainment) >= 1 &&
         parseFloat(attainment) <= 100;
+        return validateForm();
     });
   };
 
@@ -522,13 +551,19 @@ const EvaluationView2 = () => {
             </button>
           </div>
           <div >
+           
             <button
-              className={`px-6 py-2 rounded-lg transition-colors ${isFormComplete() ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-400 text-white cursor-not-allowed'
-                }`}
-              onClick={handleContinue}
-            >
-              Next
-            </button>
+            className={`px-6 py-2 rounded-lg transition-colors ${
+              isFormComplete()
+                ? 'bg-blue-800 hover:bg-blue-700 text-white'
+                : 'bg-gray-400 text-white cursor-not-allowed'
+            }`}
+            onClick={handleContinue}
+            disabled={!isFormComplete()}
+          >
+            Next
+          </button>
+         
           </div>
         </div>
       </div>

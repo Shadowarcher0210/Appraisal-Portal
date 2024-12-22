@@ -151,19 +151,14 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-     
         <div className="bg-white rounded-lg shadow-lg">
           <div className="p-6 space-y-4">
-           
           <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
             <Activity className="h-5 w-5 text-blue-500" />
             <h2 className="text-xl font-bold text-blue-900">
               Self Appraisal Overview
             </h2>
           </div>
-
-
             <div className="overflow-x-auto ">
               <table className="w-full">
                 <thead>
@@ -212,7 +207,6 @@ const Dashboard = () => {
                                   ? "Start" 
                                   : "View"
                           }
-
                             <ChevronRight className="ml-1 h-4 w-4" />
                           </button>
                         </td>
@@ -234,7 +228,6 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-         
         </div>
       </div>
       <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />

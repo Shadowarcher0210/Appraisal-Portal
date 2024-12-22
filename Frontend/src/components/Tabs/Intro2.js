@@ -1,13 +1,8 @@
 import React from 'react';
-import { instructionsList } from '../employee/EmpAppraisalQuestions';
+import { instructionsList , impInstructions} from '../employee/EmpAppraisalQuestions';
 const Introduction = ({ 
   handlePreviousForm, 
-  handleContinue, 
-  impInstructions = [
-    "Is it mandatory to provide ratings and comments for all competencies and goals in the appraisal forms? \n A1. Yes, it is mandatory to provide ratings and comments for all competencies in the Competency Form and for goals in the Goal Sheet form. These ratings help you define your achievements and assist your manager in entering the necessary ratings and comments during the appraisal process.",
-    "Should I review all forms before filling them out? <br/> A2. Yes, it is a good practice to go through all the forms to understand what data needs to be filled in. This will ensure you have all the necessary information ready.",
-    "Can I complete the appraisal forms in multiple sittings? \n A3. Yes, you can complete the appraisal forms in multiple sittings by clicking on the Save & Exit button. However, it may be beneficial to collect all relevant details before you start filling out the forms to streamline the process."
-  ]
+  handleContinue 
 }) => {
   return (
     <div className=" flex flex-col ">
@@ -42,7 +37,6 @@ const Introduction = ({
               </ul>
             </div>
 
-            {/* FAQs Section */}
             <div className="bg-gradient-to-r from-orange-50 to-blue-50 p-5 rounded-lg">
               <h2 className="text-xl font-semibold text-orange-600 mb-4 flex items-center">
                 <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,8 +58,6 @@ const Introduction = ({
           </div>
         </div>
       </div>
-
-      {/* Navigation Buttons */}
       <div className="fixed bottom-0 left-0 right-0 bg-white flex justify-between space-x-4 border-t px-6 py-4">
       <button
           className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
