@@ -80,23 +80,22 @@ const EmpViewPage = () => {
           ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
-        // Initialize the form data with the structure you need
         const initialFormData = {
           empName: response.data[0]?.empName || '',
           designation: response.data[0]?.designation || '',
           managerName: response.data[0]?.managerName || '',
           timePeriod: response.data[0]?.timePeriod || timePeriod,
           status: response.data[0]?.status || '',
+          selfScore: response.data[0]?.selfScore || '',        
           pageData: questionsAndAnswers.map((qa, index) => ({
             questionId: (index + 1).toString(),
             answer: response.data[0]?.pageData[index]?.answer || '',
             notes: response.data[0]?.pageData[index]?.notes || '',
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
-
-          }))
-
+          })),
         };
+        console.log("res ch", response.data)
         console.log("res check for eval", initialFormData);
 
         setFormData([initialFormData]);
@@ -116,19 +115,15 @@ useEffect(()=>{
   
   if(empType === 'Manager'){
   const getAdditionalDetails = async () =>{
-    try{
-      
-      
+    try{  
     const response = await axios.get(`http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`)
     console.log('Getting Additional Areas',response.data)
-setAdditionalAreas(response.data.data.areas)
-       
+    setAdditionalAreas(response.data.data.areas)   
     }catch{
       console.error('Error in fetching Additional Areas:',error)
     }
   
-}
-  
+} 
 getAdditionalDetails();
   }
 },[empType, employeeId, error, timePeriod])
@@ -230,8 +225,8 @@ getAdditionalDetails();
                 <TrendingUp className="text-orange-600" size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-400 mb-1">Manager's Evaluation</p>
-                <p className="font-medium text-gray-900">-</p>
+                <p className="text-sm text-gray-400 mb-1">Self Appraisal Evaluation</p>
+                <p className="font-medium text-gray-900">{formData[0].selfScore}</p>
               </div>
             </div>
           </div>) : (<div />)}

@@ -320,7 +320,7 @@ const handleSaveExit= async ()=>{
                     </h1>
                    
                         <div className="flex items-end gap-2">
-                            <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
+                            <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
                                 {new Date (timePeriod[0]).toISOString().split("T")[0]}{" "}
                                 to{" "}
                                 {new Date (timePeriod[1]).toISOString().split("T")[0]}
@@ -491,7 +491,7 @@ const handleSaveExit= async ()=>{
         )}
 
         {/* Action Buttons */}
-        <div className="sticky mt-20 flex justify-end">
+        <div className="sticky mt-16 flex justify-end">
             <div className="mr-auto">
                 <button
               className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"

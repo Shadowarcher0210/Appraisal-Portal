@@ -18,8 +18,8 @@ const CEvaluation1 = () => {
   const [employeeGoals, setEmployeeGoals] = useState([]);
   const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-  const startDate = new Date(`${currentYear -1}-04-01`).toLocaleDateString('en-CA');
-  const endDate = new Date(`${currentYear}-03-31`).toLocaleDateString('en-CA');
+  const startDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
+  const endDate = new Date(`${currentYear+ 1}-03-31`).toLocaleDateString('en-CA');
 
   const categoryIcons = {
     "Development": <Target className="w-5 h-5" />,
@@ -255,121 +255,13 @@ useEffect(() => {
     fetchAppraisalDetails();
 }, [employeeId, timePeriod]);
 
-// const handleSaveExit= async ()=>{
-//   setLoading(true);
-//   const totalPossibleWeight = employeeGoals.reduce(
-//     (sum, goal) => sum + goal.weightage,
-//     0
-//   );
-//   const totalManagerWeight = Object.values(managerWeightages).reduce(
-//     (sum, weight) => {
-//       const numericWeight = parseFloat(weight);
-//       return isNaN(numericWeight) ? sum : sum + numericWeight;
-//     },
-//     0
-//   );
-
-//   let overallScore = 0;
-//   if (totalManagerWeight <= totalPossibleWeight) {
-//     const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-//     overallScore = (percentageOutOf100 / 100) * 35;
-//   }
-
-//   const payload = {
-//     goals: Object.keys(managerWeightages).map((goalId) => ({
-//       goalId, 
-//       managerWeightage: managerWeightages[goalId],
-//     })),
-//     overallScore, 
-//   };
-
-//   console.log("Payload being sent:", payload);
-
-//   try {
-//     // const response = await axios.put(
-//     //   `http://localhost:3003/goals/managerWeight/${employeeId}/${startDate}/${endDate}?isExit=true`,
-//     //   payload
-//     // );
-
-//     // if (response.data && response.data.length > 0) {
-//     //   const failedResults = response.data.filter(
-//     //     (result) => result.status === "Failed"
-//     //   );
-//     //   if (failedResults.length > 0) {
-//     //     setError(failedResults.map((result) => result.message).join(", "));
-//     //   } else {
-//     //     setSuccessMessage("Manager weightages updated successfully!");
-//     //   }
-//     // }
-//     navigate("/manager-performance", { state: { timePeriod } });
-//   } catch (error) {
-//     console.error("Error updating manager weightage:", error);
-//     setError("An error occurred while updating manager weightage.");
-//   } finally {
-//     setLoading(false);
-//   }
-// }
-
 
   const handleContinue = async () => {
     navigate(`/CE2/${employeeId}`, { state: { timePeriod } });
   };
 
-    // setLoading(true);
-    // const totalPossibleWeight = employeeGoals.reduce(
-    //   (sum, goal) => sum + goal.weightage,
-    //   0
-    // );
-    // const totalManagerWeight = Object.values(managerWeightages).reduce(
-    //   (sum, weight) => {
-    //     const numericWeight = parseFloat(weight);
-    //     return isNaN(numericWeight) ? sum : sum + numericWeight;
-    //   },
-    //   0
-    // );
   
-    // let overallScore = 0;
-    // if (totalManagerWeight <= totalPossibleWeight) {
-    //   const percentageOutOf100 = (totalManagerWeight / totalPossibleWeight) * 100;
-    //   overallScore = (percentageOutOf100 / 100) * 35;
-    // }
-  
-    // const payload = {
-    //   goals: Object.keys(managerWeightages).map((goalId) => ({
-    //     goalId, // Include the goal ID for backend reference
-    //     managerWeightage: managerWeightages[goalId],
-    //   })),
-    //   overallScore, // Add the calculated overall score
-    // };
-  
-    // console.log("Payload being sent:", payload);
-  
-  //  try {
-    //   const response = await axios.put(
-    //     `http://localhost:3003/goals/managerWeight/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`,
-    //     payload
-    //   );
-  
-    //   if (response.data && response.data.length > 0) {
-    //     const failedResults = response.data.filter(
-    //       (result) => result.status === "Failed"
-    //     );
-    //     if (failedResults.length > 0) {
-    //       setError(failedResults.map((result) => result.message).join(", "));
-    //     } else {
-    //       setSuccessMessage("Manager weightages updated successfully!");
-    //     }  
-    //   }
-    
-    // } catch (error) {
-    //   console.error("Error updating manager weightage:", error);
-    //   setError("An error occurred while updating manager weightage.");
-    // } finally {
-    //   setLoading(false);
-    // }
-  
-
-  const previousYear = currentYear - 1;
+  const previousYear = currentYear;
 
   if (loading) {
     return (
@@ -385,11 +277,11 @@ useEffect(() => {
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
         <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-white">
-                        Employee Goals for {previousYear}-{currentYear}
+                        Employee Goals for {previousYear}-{currentYear + 1}
                     </h1>
                     {formData && formData[0] ? (
                         <div className="flex items-center gap-2">
-                            <span className="text-sm bg-blue-50 text-cyan-800 px-3 py-2 font-medium rounded">
+                            <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
                                 {new Date(formData[0].timePeriod[0])
                                     .toISOString()
                                     .slice(0, 10)}{" "}
@@ -559,7 +451,7 @@ useEffect(() => {
         )}
 
         {/* Action Buttons */}
-        <div className="sticky mt-20 flex justify-end">
+        <div className="sticky mt-12 flex justify-end">
             <div className="mr-auto">
                 <button
                     className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg"

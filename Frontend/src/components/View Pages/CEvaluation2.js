@@ -5,6 +5,7 @@ import {
   Briefcase,
   TrendingUp,
   Award,
+  Medal,
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
@@ -387,7 +388,7 @@ const CEvaluation2 = () => {
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
             {formData ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0])
                     .toISOString()
                     .slice(0, 10)}{" "}
@@ -468,13 +469,16 @@ const CEvaluation2 = () => {
       <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
-        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6">
-        <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
-    Additional Areas of Assessment
-  </h2>
-  
+        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-4">
+       
+        <div className="flex items-center mb-4 border-b ">
+           <Medal className="text-cyan-700 mr-2 "/>
+            <h2 className="text-xl font-semibold text-cyan-800 mt-1  pb-2 flex items-center gap-2">
+             Additional Areas of Assessment       </h2>
+       </div>
+               
   <div className="overflow-x-auto">
-    <table className="w-full border-collapse">
+    <table className="w-full border-collapse ">
       <thead>
         <tr className="bg-gray-50">
           <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
@@ -494,7 +498,7 @@ const CEvaluation2 = () => {
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="my-6">
         {AdditionalAreas.map((item, index) => {
           const previousAnswer = formData
             ? formData[0].pageData[index]?.successMetric
@@ -509,9 +513,9 @@ const CEvaluation2 = () => {
           return (
             <tr 
               key={index} 
-              className="hover:bg-gray-50 transition-colors duration-200 group border-b"
+              className="hover:bg-gray-50 transition-colors duration-200 group border-b "
             >
-              <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+              <td className="p-4 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
                 {item.quality}
               </td>
               <td className="p-2">

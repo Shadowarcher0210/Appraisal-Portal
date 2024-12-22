@@ -225,7 +225,7 @@ const M_Goals = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg mb-6">
-          <div className="p-6">
+          <div className="p-4">
             <div className="p-2 space-y-6">
               
               <div className="flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 ">

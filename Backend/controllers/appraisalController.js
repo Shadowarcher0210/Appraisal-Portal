@@ -219,7 +219,7 @@ const getAppraisalAnswers = async (req, res) => {
                 "timePeriod.0": { $gte: start },
                 "timePeriod.1": { $lte: end },
             },
-            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1, status: 1 });
+            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1, status: 1, selfScore: 1 });
 
 
         console.log('Retrieved Appraisals Answers:', appraisalAnswers);
@@ -237,8 +237,8 @@ const getAppraisalAnswers = async (req, res) => {
             timePeriod: appraisal.timePeriod,
             managerName: appraisal.managerName,
             status: appraisal.status,
+            selfScore: appraisal.selfScore,
             pageData: appraisal.pageData
-
         }));
         res.status(200).json(responseData);
     } catch (error) {

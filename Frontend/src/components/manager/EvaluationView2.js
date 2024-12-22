@@ -4,7 +4,7 @@ import {
   User,
   Briefcase,
   TrendingUp,
-  
+  Medal,
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
@@ -352,7 +352,7 @@ const EvaluationView2 = () => {
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
            
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(timePeriod[0])
                     .toISOString()
                     .slice(0, 10)}{" "}
@@ -430,10 +430,12 @@ const EvaluationView2 = () => {
       <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
-        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
-            Additional Areas of Assessment
-          </h2>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-4">
+        <div className="flex items-center mb-4 border-b ">
+           <Medal className="text-cyan-700 mr-2 "/>
+            <h2 className="text-xl font-semibold text-cyan-800 mt-1  pb-2 flex items-center gap-2">
+             Additional Areas of Assessment       </h2>
+       </div>
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -500,16 +502,6 @@ const EvaluationView2 = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Optional Score Display */}
-          {/* <div className="mt-4 bg-gray-50 rounded-lg p-3 flex justify-between items-center">
-    <span className="text-sm text-gray-600 font-medium">
-      Total Weighted Score
-    </span>
-    <span className="text-lg font-bold text-blue-600">
-      {calculateOverallScore()} %
-    </span>
-  </div> */}
         </div>
 
         <div className="mt-20 sticky flex justify-end">

@@ -292,10 +292,13 @@ const EvaluationView = () => {
       <div className="space-y-4 mx-2 rounded-lg ">
         {/* Self Appraisal Section */}
 
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-cyan-800 border-b mb-6  pb-2 flex items-center gap-2">
-            Self Appraisal & Competencies
-          </h2>
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+          <div className="flex items-center mb-4 border-b ">
+           <Award className="text-cyan-700 mr-2"/>
+             <h2 className="text-xl font-semibold text-cyan-800 my-2 mt-3 pb-2 flex items-center gap-2">    
+               Self Appraisal & Competencies
+             </h2>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead className="bg-gray-50">

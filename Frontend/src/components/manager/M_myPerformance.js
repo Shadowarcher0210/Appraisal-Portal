@@ -228,7 +228,8 @@ const M_MyPerformanceHR = () => {
   >
     <div className="flex items-center space-x-3">
       <Target className="h-6 w-6 text-blue-600" />
-      <h3 className="text-lg font-semibold text-blue-700">Goals for {nextYear}-{nextYear2}</h3>
+      <h2 className="text-xl font-bold text-blue-900">
+      Goals for {nextYear}-{nextYear2}</h2>
     </div>
     {expandedSection === 'employee' ? (
       <ChevronUp className="h-5 w-5 text-gray-500" />
