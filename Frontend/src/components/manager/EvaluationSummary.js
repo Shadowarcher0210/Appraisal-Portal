@@ -124,7 +124,7 @@ const EvaluationSummary = () => {
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
           const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          const overallWeightage = selfAssessment + additionalAreasOverall  + goalWeight;
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
           }
