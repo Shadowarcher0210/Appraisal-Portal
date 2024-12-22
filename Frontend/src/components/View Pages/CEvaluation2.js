@@ -306,7 +306,7 @@ const CEvaluation2 = () => {
     // } catch (error) {
     //   console.error('Error updating status:', error);
     // }
-    navigate(`/CE3/${employeeId}`, { state: { timePeriod } });
+    navigate(`/CES/${employeeId}`, { state: { timePeriod } });
   };
 
 
@@ -538,41 +538,24 @@ const CEvaluation2 = () => {
       </tbody>
     </table>
   </div>
-
-  {/* Optional Score Display */}
-  {/* <div className="mt-4 bg-gray-50 rounded-lg p-3 flex justify-between items-center">
-    <span className="text-sm text-gray-600 font-medium">
-      Total Weighted Score
-    </span>
-    <span className="text-lg font-bold text-blue-600">
-      {calculateOverallScore()} %
-    </span>
-  </div> */}
 </div>
 
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
+              className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg"
               onClick={handleBack}
             >
               Back
             </button>
           </div>
-          {/* <div className='mr-2'>
-            <button
-              className="px-6 py-2 text-white bg-orange-500 rounded-lg"
-              onClick={handleSaveExit}
-            >
-              Save & Exit
-            </button>
-          </div> */}
+    
           <div >
             <button
-              className="px-6 py-2 text-white bg-blue-800 rounded-lg"
+              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
               onClick={handleContinue}
             >
-              Continue
+              Next
             </button>
           </div>
         </div>

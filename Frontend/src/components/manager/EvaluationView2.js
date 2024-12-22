@@ -536,7 +536,7 @@ const EvaluationView2 = () => {
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-800 text-blue-800 rounded-lg"
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -561,7 +561,7 @@ const EvaluationView2 = () => {
             onClick={handleContinue}
             disabled={!isFormComplete()}
           >
-            Continue
+            Next
           </button>
          
           </div>

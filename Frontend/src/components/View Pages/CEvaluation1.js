@@ -562,7 +562,7 @@ useEffect(() => {
         <div className="sticky mt-20 flex justify-end">
             <div className="mr-auto">
                 <button
-                    className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
+                    className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg"
                     onClick={handleBack}
                 >
                     Back
@@ -571,7 +571,7 @@ useEffect(() => {
            
             <div>
                 <button
-                    className="px-6 py-2 text-white bg-blue-800 rounded-lg"
+                    className="px-6 py-2 text-white bg-blue-600 rounded-lg"
                     onClick={handleContinue}
                 >
                    Next

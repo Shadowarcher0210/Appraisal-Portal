@@ -437,7 +437,7 @@ const EvaluationView = () => {
             disabled={!isFormValid()}
             title={!isFormValid() ? "Please fill all manager evaluations" : ""}
           >
-            Continue
+            Next
           </button>
         </div>
       </div>

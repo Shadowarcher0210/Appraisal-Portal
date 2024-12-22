@@ -61,6 +61,7 @@ const CEvaluation = () => {
     const empType = localStorage.getItem('empType')
     if(empType==='Manager') navigate('/manager-performance');
     else if(empType==='HR') navigate('/hr-performance')
+      else  navigate('/employee-performance') 
   };
 
   const handleContinue =  async () => {
@@ -389,7 +390,7 @@ const CEvaluation = () => {
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
+              className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -397,7 +398,7 @@ const CEvaluation = () => {
           </div>
           <div >
             <button
-              className="px-6 py-2 text-white bg-blue-800 rounded-lg"
+              className="px-6 py-2 text-white bg-blue-600 rounded-lg"
               onClick={handleContinue}
             >
               Next
