@@ -60,10 +60,10 @@ const M_ViewPage = () => {
 
 
       {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
-      <div className="mb-2">
+      <div className="mt-14">
 
         {/* Header Section */}
-        <div className="bg-blue-600 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>
             {formData ? (

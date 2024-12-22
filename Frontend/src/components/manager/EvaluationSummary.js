@@ -328,9 +328,9 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full">
-      <div className="mb-2">
-        <div className="bg-cyan-800 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
-          <div className="flex justify-between items-center">
+      <div className="mt-14">
+      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
+      <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
           
               <div className="flex items-center gap-2">
@@ -557,7 +557,7 @@ useEffect(() => {
           <div className="mr-auto">
             <button
               type="button"
-              className="px-6 py-2 text-cyan-800 border border-cyan-800 bg-white rounded-lg"
+              className="px-6 py-2 text-blue-800 border border-blue-800 bg-white rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -582,7 +582,7 @@ useEffect(() => {
 
           <div>
             <button
-              className={`px-6 py-2 text-white bg-cyan-800 rounded-lg`}
+              className={`px-6 py-2 text-white bg-blue-800 rounded-lg`}
               onClick={() => setIsModalOpen(true)}
             >
               Submit
