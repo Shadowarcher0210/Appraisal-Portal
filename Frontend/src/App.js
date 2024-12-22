@@ -30,12 +30,10 @@ import EvaluationSummary from './components/manager/EvaluationSummary.js';
 import EvaluationView2 from './components/manager/EvaluationView2.js';
 
 import Self from './components/Tabs/SelfAppraisalTab.js'
-import EvaluationView3 from './components/manager/EvaluationView3.js';
 
 import CEvaluation from './components/View Pages/CEvaluation.js';
-import CEvaluation1 from './components/Tabs/CEvaluation1.js';
+import CEvaluation1 from './components/View Pages/CEvaluation1.js';
 import CEvaluation2 from './components/View Pages/CEvaluation2.js';
-import CEvaluation3 from './components/View Pages/CEvaluation3.js';
 import CEvaluationSummary from './components/View Pages/CEvaluationSummary.js';
 import StatusTracker from './components/employee/StatusTracker.js';
 
@@ -90,14 +88,12 @@ const App = () => {
 
           <Route path='/evaluationView1/:employeeId' element={<EvaluationView1 />} />
           <Route path='/evaluationView2/:employeeId' element={<EvaluationView2 />} />
-          <Route path='/evaluationView3/:employeeId' element={<EvaluationView3 />} />
           <Route path='/evaluationSummary/:employeeId' element={<EvaluationSummary />} />
 
 
           <Route path='/CE/:employeeId' element={< CEvaluation />} />
           <Route path='/CE1/:employeeId' element={< CEvaluation1 />} />
           <Route path='/CE2/:employeeId' element={< CEvaluation2 />} />
-          <Route path='/CE3/:employeeId' element={< CEvaluation3 />} />
           <Route path='/CES/:employeeId' element={< CEvaluationSummary />} />
 
 

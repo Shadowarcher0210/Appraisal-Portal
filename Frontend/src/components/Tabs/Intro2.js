@@ -77,7 +77,7 @@ const Introduction = ({
           className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
           onClick={handleContinue}
         >
-          Continue
+          Next
         </button>
       </div>
     </div>

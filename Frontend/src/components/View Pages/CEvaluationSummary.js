@@ -288,9 +288,6 @@ const CEvaluationSummary = () => {
                 {new Date(timePeriod[1]).toISOString().slice(0, 10)}
               </span>
             </div>
-
-            <div />
-
           </div>
         </div>
       </div>

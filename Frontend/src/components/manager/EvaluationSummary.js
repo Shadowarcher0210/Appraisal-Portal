@@ -344,7 +344,10 @@ const EvaluationSummary = () => {
 
       if (weightageResponse.ok) {
         console.log("Overall weightage saved successfully");
-        navigate('/manager-performance');
+        // navigate('/manager-performance');
+        const empType = localStorage.getItem('empType')
+        if (empType === 'Manager') navigate('/manager-performance');
+        else if (empType === 'HR') navigate('/hr-performance')
       } else {
         const weightageError = await weightageResponse.json();
         console.log(`Error saving weightage: ${weightageError.message}`);
@@ -611,7 +614,7 @@ const EvaluationSummary = () => {
           <div className="mr-auto">
             <button
               type="button"
-              className="px-6 py-2 text-blue-800 border border-blue-800 bg-white rounded-lg"
+              className="px-6 py-2 text-blue-600 border border-blue-600 bg-white rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -634,7 +637,7 @@ const EvaluationSummary = () => {
 
           <div>
             <button
-              className={`px-6 py-2 text-white bg-blue-800 rounded-lg`}
+              className={`px-6 py-2 text-white bg-blue-600 rounded-lg`}
               onClick={() => setIsModalOpen(true)}
             >
               Submit

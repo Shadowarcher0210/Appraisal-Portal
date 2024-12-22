@@ -494,7 +494,7 @@ const handleSaveExit= async ()=>{
         <div className="sticky mt-20 flex justify-end">
             <div className="mr-auto">
                 <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-800 text-blue-800 rounded-lg"
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"
               onClick={handleBack}
                 >
                     Back
@@ -510,10 +510,10 @@ const handleSaveExit= async ()=>{
             </div>
             <div>
                 <button
-                    className="px-6 py-2 text-white bg-blue-800 hover:bg rounded-lg"
+                    className="px-6 py-2 text-white bg-blue-600 hover:bg rounded-lg"
                     onClick={handleContinue}
                 >
-                    Continue
+                    Next
                 </button>
             </div>
         </div>
