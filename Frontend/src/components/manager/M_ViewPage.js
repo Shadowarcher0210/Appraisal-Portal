@@ -30,11 +30,12 @@ const M_ViewPage = () => {
     appraisalDetails()
   }, [])
 
+ 
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
 
-      {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
       <div className="mt-14">
 
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">

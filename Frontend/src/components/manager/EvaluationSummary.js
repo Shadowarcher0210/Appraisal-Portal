@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { User, Briefcase, TrendingUp, BadgeCheck, Upload, File } from "lucide-react";
+import { User, Briefcase, TrendingUp } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 
 const EvaluationSummary = () => {
@@ -13,10 +13,9 @@ const EvaluationSummary = () => {
   const[summary,setsummary] =useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-
+  const [fileSelected, setFileSelected] = useState(false);
   const [fileName, setFileName] = useState("");
   const [documentName, setDocumentName] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -82,13 +81,17 @@ const EvaluationSummary = () => {
         console.log('Failed to fetch the filename.');
       }
     };
-   fetchFilename();
+
+    if (employeeId) {
+      fetchFilename();
+    }
   }, [employeeId]);
 
 
   const handlePerformanceChange = (e) => {
     setPerformanceRating(e.target.value);
   };
+
 
 
   const handleareasOfGrowth = (e) => {
@@ -354,6 +357,9 @@ const EvaluationSummary = () => {
     const file = e.target.files[0];
 
     if (file) {
+      setFileSelected(file);
+      setFileName(file.name);
+
       const formData = new FormData();
       formData.append('appraisalLetter', file);
 
@@ -369,7 +375,6 @@ const EvaluationSummary = () => {
         );
 
         if (response.status === 200) {
-          setFileName(file.name);
           setDocumentName(file.name)
           console.log('File uploaded successfully');
         }
@@ -380,20 +385,23 @@ const EvaluationSummary = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full">
+    <div className="min-h-screen bg-blue-50 p-4 w-full">
       <div className="mt-14">
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
-      <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
+      
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
-                {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
-                {new Date(timePeriod[1]).toISOString().slice(0, 10)}
-              </span>
-            </div>
+ <div className="flex justify-between items-center">
+    <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
+    <div className="flex items-center gap-2">
+      <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
+        {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
+        {new Date(timePeriod[1]).toISOString().slice(0, 10)}
+      </span>
+    </div>
+  </div>
 
-          </div>
+
+
         </div>
       </div>
 
@@ -449,19 +457,11 @@ const EvaluationSummary = () => {
             </div>
             <div className="mt-6 mx-2">
               <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
-                <div className="flex items-center mb-4 border-b ">
-                  <BadgeCheck className="text-cyan-700 mr-2"/>
-                  <h2 className="text-xl font-semibold text-cyan-800 my-2 mt-3 pb-2 flex items-center gap-2">
-                  Performance Review
-                  </h2>
-              </div>
-              <div className="mb-6">
-            <h3 className="text-md font-medium text-gray-600 mb-4">Performance Rating</h3>
-            <div className=" ">
+                <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
                 <select
                   value={performanceRating}
                   onChange={handlePerformanceChange}
-                  className="w-1/4 p-3 border border-gray-300 rounded-lg"
+                  className="w-2/6 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                 >
                   <option value="">Select Performance Rating</option>
                   {performanceOptions.map((option) => (
@@ -473,30 +473,28 @@ const EvaluationSummary = () => {
                     </option>
                   ))}
                 </select>
-                </div>
-                </div>
-
+      
                 <div className="flex gap-6">
-                  <div className="w-1/2">
-                    <h2 className="text-md font-medium text-gray-600 mb-4">Areas of Growth</h2>
-                    <textarea
-                      value={areasOfGrowth}
-                      onChange={handleareasOfGrowth}
-                      className="w-full p-3 border border-gray-300 rounded-lg min-h-[100px] resize-none"
-                      placeholder="Enter Areas of Growth"
-                    />
-                  </div>
+  <div className="w-1/2">
+    <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Areas of Growth</h2>
+    <textarea
+      value={areasOfGrowth}
+      onChange={handleareasOfGrowth}
+      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+      placeholder="Enter Areas of Growth"
+    />
+  </div>
 
-                  <div className="w-1/2">
-                    <h2 className="text-md font-medium text-gray-600 mb-4">Employee Performance Summary</h2>
-                    <textarea
-                      value={summary}
-                      onChange={handlesummary}
-                      className="w-full p-3 border border-gray-300 rounded-lg min-h-[100px] resize-none"
-                      placeholder="Enter Performance Summary"
-                    />
-                  </div>
-                </div>
+  <div className="w-1/2">
+    <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Employee Performance Summary</h2>
+    <textarea
+      value={summary}
+      onChange={handlesummary}
+      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+      placeholder="Enter Performance Summary"
+    />
+  </div>
+</div>
 
               </div>
             </div>
@@ -564,48 +562,38 @@ const EvaluationSummary = () => {
 
        
         {empType === "HR" && (
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-10">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-10">
             <label
               htmlFor="file-upload"
-              className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center gap-2"
+              className="text-xl font-semibold text-cyan-800 mb-4 border-b pb-2 flex items-center"
             >
-             <Upload className="w-5 h-5" />
               Upload file
             </label>
-
-        <div className="mt-4">
-           <div className="relative">             
+            <div className="overflow-x-auto">
               <input
                 type="file"
                 id="file-upload"
                 name="file-upload"
-                className="block w-full text-sm text-gray-800 file:border file:border-blue-100 file:bg-blue-50 file:px-12 file:py-2 file:rounded-md hover:file:bg-blue-100 cursor-pointer"
+                className="block w-full text-sm text-gray-800 file:border file:border-gray-300 file:bg-gray-100 file:px-12 file:py-2 file:rounded-md hover:file:bg-gray-200"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
                 onChange={handleFileChange}
               />
-            <div className="mt-2">
-            {fileName ? (
-        <div className="flex items-center gap-2 p-3 ">
-          {/* <File className="w-4 h-4 text-gray-600" /> */}
-          <div className="text-gray-700 text-sm">
-            {fileName.name}
-          </div>
-        </div>
-      ) : documentName ? (
-        <div className="flex items-center gap-2 p-2">
-          {/* <File className="w-4 h-4 text-gray-600" /> */}
-          <div className="text-gray-700 text-sm">
-            {documentName}
-          </div>
-        </div>
-      ) : (
-        <div className="text-gray-500 text-sm">-</div>
-      )}
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-gray-500">
-        Accepted formats: PDF, DOC, DOCX
-      </div>
+
+              {fileName ? (
+                <div className="flex items-center border-gray-300 pt-2">
+                  <div className="text-gray-800 text-sm">
+                    {fileName.name}
+                  </div>
+                </div>
+              ) : documentName ? (
+                <div className="flex items-center border-gray-300 pt-2">
+                  <div className="text-gray-800 text-sm">
+                    {documentName}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">-</div>
+              )}
             </div>
           </div>
         )}

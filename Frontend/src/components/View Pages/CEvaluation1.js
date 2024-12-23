@@ -40,6 +40,10 @@ const CEvaluation1 = () => {
     }));
     console.log("manager weight", managerWeightages)
 
+<<<<<<< HEAD
+   
+=======
+>>>>>>> ec3fd3a82a4cf42d76c408b756ace941fba6f8b6
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
@@ -231,7 +235,7 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
+      <div className="min-h-screen bg-blue-50 p-4 w-full flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
     );

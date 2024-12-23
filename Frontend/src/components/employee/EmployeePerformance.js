@@ -213,11 +213,11 @@ const E_PerformancePage = () => {
 
         <button
           onClick={() => toggleSection('employee')}
-          className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600 "
+          className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-600 "
         >
           <div className="flex items-center space-x-3">
-            <Target className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-blue-900">Goals for {nextYear}-{nextYear2}</h3>
+            <Target className="h-6 w-6 text-orange-600" />
+            <h3 className="text-xl font-bold text-orange-600">Goals for {nextYear}-{nextYear2}</h3>
           </div>
           {expandedSection === 'employee' ? (
             <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -249,14 +249,14 @@ const E_PerformancePage = () => {
 
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center space-x-2">
-                          <BarChart className="w-4 h-4 text-blue-700" />
-                          <span className="text-sm font-medium text-blue-700">
+                          <BarChart className="w-4 h-4 text-orange-700" />
+                          <span className="text-sm font-medium text-orange-700">
                             Weight: {goal.weightage}%
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-blue-700" />
-                          <span className="text-sm font-medium text-blue-700">
+                          <Calendar className="w-4 h-4 text-orange-700" />
+                          <span className="text-sm font-medium text-orange-700">
                             Due: {new Date(goal.deadline).toLocaleDateString()}
                           </span>
                         </div>

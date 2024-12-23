@@ -20,7 +20,7 @@ const M_Dashboard = () => {
   
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
- 
+
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
     if (employeeId) {
