@@ -50,20 +50,14 @@ const M_ViewPage = () => {
     appraisalDetails()
   }, [])
 
-  // const goals = [
-  //   { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-  //   { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-  //   { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  // ];
+ 
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
 
-      {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
       <div className="mt-14">
 
-        {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>

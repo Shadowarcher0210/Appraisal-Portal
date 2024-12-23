@@ -224,11 +224,11 @@ const MyPerformanceHR = () => {
 
   <button
     onClick={() => toggleSection('employee')}
-    className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 "
+    className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 "
   >
     <div className="flex items-center space-x-3">
-      <Target className="h-6 w-6 text-blue-600" />
-      <h3 className="text-lg font-semibold text-blue-700">Goals for {nextYear}-{nextYear2}</h3>
+      <Target className="h-6 w-6 text-orange-600" />
+      <h3 className="text-xl font-bold text-orange-600">Goals for {nextYear}-{nextYear2}</h3>
     </div>
     {expandedSection === 'employee' ? (
       <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -260,14 +260,14 @@ const MyPerformanceHR = () => {
 
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center space-x-2">
-                          <BarChart className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-600">
+                          <BarChart className="w-4 h-4 text-orange-600" />
+                          <span className="text-sm font-medium text-orange-600">
                             Weight: {goal.weightage}%
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm text-blue-600">
+                          <Calendar className="w-4 h-4 text-orange-600" />
+                          <span className="text-sm text-orange-600">
                             Due: {new Date(goal.deadline).toLocaleDateString()}
                           </span>
                         </div>

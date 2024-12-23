@@ -51,15 +51,7 @@ const CEvaluation1 = () => {
     }));
     console.log("manager weight", managerWeightages)
 
-    // const assignedWeights = employeeGoals.reduce((sum, goal) => {
-    //   const weight = managerWeightages[goal._id];
-    //   return sum + (weight !== null && !isNaN(weight) ? weight : 0);
-    // }, 0);
-
-    // const totalPossibleWeight = employeeGoals.reduce(
-    //   (sum, goal) => sum + goal.weightage,
-    //   0
-    // );
+   
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
@@ -265,7 +257,7 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
+      <div className="min-h-screen bg-blue-50 p-4 w-full flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
     );

@@ -236,7 +236,7 @@ const EvaluationView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full ">
+    <div className="min-h-screen bg-blue-50 p-4 w-full ">
       <div className="mt-14">
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
       <div className="flex justify-between items-center">
@@ -244,7 +244,7 @@ const EvaluationView = () => {
             {formData ? (
 
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
 
