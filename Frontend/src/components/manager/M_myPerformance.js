@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart, Award, Users } from "lucide-react";
 import axios from 'axios';
-
+import categoryIcons from '../CategoryIcons';
 const M_MyPerformanceHR = () => {
   const [date, setDate] = useState(new Date());
   const [appraisals, setAppraisals] = useState(null);
@@ -21,18 +21,8 @@ const M_MyPerformanceHR = () => {
   const nextYear = currentYear + 1;
   const nextYear2 = currentYear + 2;
 
-  const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
-  const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
   const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
   const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-
-  const categoryIcons = {
-    'Development': <Target className="w-5 h-5" />,
-    'Leadership': <Users className="w-5 h-5" />,
-    'Technical': <BarChart className="w-5 h-5" />,
-    'Soft Skills': <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,
-  };
 
   useEffect(() => {
     fetchAppraisalDetails();
@@ -68,13 +58,6 @@ const M_MyPerformanceHR = () => {
     }
   };
 
-  const wishing = () => {
-    const hour = date.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
   const formatDate = (date) => {
     if (typeof date === 'string') {
       return new Date(date).toLocaleDateString('en-CA');
@@ -85,14 +68,6 @@ const M_MyPerformanceHR = () => {
       month: 'short', 
       day: 'numeric' 
     });
-  };
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).toUpperCase();
   };
 
   const handleViewClick = (appraisal) => {
@@ -145,8 +120,7 @@ const M_MyPerformanceHR = () => {
             </div>
           </div>
         </div>
-        
-                </div>
+      </div>
 
         <div className="bg-white rounded-lg shadow-lg mb-6">
           <div className="p-6 space-y-6">
@@ -156,7 +130,6 @@ const M_MyPerformanceHR = () => {
                 Self Appraisal Overview
               </h2>
             </div>
-
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -254,11 +227,9 @@ const M_MyPerformanceHR = () => {
                           </span>
                         </div>
                       </div>
-
                       <h4 className="text-md text-gray-700 mb-3">
                         {goal.description}
                       </h4>
-
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center space-x-2">
                           <BarChart className="w-4 h-4 text-orange-600" />
@@ -281,7 +252,6 @@ const M_MyPerformanceHR = () => {
                   )}
                 </div>
               )}
-            
           </div>
         </div>
       </div>

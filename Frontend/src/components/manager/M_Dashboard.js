@@ -7,8 +7,6 @@ import TeamMembersSidebar from './TeamMembers';
 import axios from 'axios';
 import StatusTracker from '../employee/StatusTracker';
 
-
-
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -244,12 +242,11 @@ const M_Dashboard = () => {
           </div>
 
         <div className="">
-  <TeamMembersSidebar employees={employees} />
-</div>
-
+          <TeamMembersSidebar employees={employees} />
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+     </div>
+     <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

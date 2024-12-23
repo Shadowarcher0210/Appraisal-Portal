@@ -375,7 +375,6 @@ const EvaluationView2 = () => {
   return (
     <div className="min-h-screen bg-blue-50 p-4 w-full ">
       <div className="mt-14">
-        {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
@@ -398,7 +397,6 @@ const EvaluationView2 = () => {
       <div className="mb-6">
         {userData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
-            {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                 <User className="text-blue-600" size={24} />
@@ -410,8 +408,6 @@ const EvaluationView2 = () => {
                 </p>
               </div>
             </div>
-
-            {/* Designation Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                 <Briefcase className="text-purple-600" size={24} />
@@ -424,7 +420,6 @@ const EvaluationView2 = () => {
               </div>
             </div>
 
-            {/* Manager Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-green-100 rounded-lg shrink-0">
                 <User className="text-green-600" size={24} />
@@ -437,7 +432,6 @@ const EvaluationView2 = () => {
               </div>
             </div>
 
-            {/* Evaluation Status Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                 <TrendingUp className="text-orange-600" size={24} />
@@ -455,9 +449,7 @@ const EvaluationView2 = () => {
         )}
       </div>
 
-      {/* Main Content - Vertical Layout */}
       <div className="space-y-4 mx-2 rounded-lg ">
-        {/* Self Appraisal Section */}
 
         <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-4">
         <div className="flex items-center mb-4 border-b ">
@@ -536,7 +528,7 @@ const EvaluationView2 = () => {
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-500 text-blue-500 rounded-lg"
               onClick={handleBack}
             >
               Back
@@ -555,7 +547,7 @@ const EvaluationView2 = () => {
             <button
             className={`px-6 py-2 rounded-lg transition-colors ${
               isFormComplete()
-                ? 'bg-blue-800 hover:bg-blue-700 text-white'
+                ? 'bg-blue-600 hover:bg-blue-500 text-white'
                 : 'bg-gray-400 text-white cursor-not-allowed'
             }`}
             onClick={handleContinue}

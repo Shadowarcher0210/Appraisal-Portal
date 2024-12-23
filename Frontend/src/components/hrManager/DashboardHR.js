@@ -17,11 +17,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
-  const appraisalDueDate = new Date(`${currentYear}-03-15`);
-  const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
-  
-  const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
