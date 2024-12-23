@@ -3,7 +3,7 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp,  Award} from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
-import { questionsAndAnswersEmployee } from '../employee/EmpAppraisalQuestions';
+import { questionsAndAnswersEmployee } from '../utils/EmpAppraisalQuestions';
 
 const CEvaluation = () => {
   const [formData, setFormData] = useState(null);
