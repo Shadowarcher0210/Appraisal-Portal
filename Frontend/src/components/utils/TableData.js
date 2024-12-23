@@ -6,13 +6,19 @@ export const getAttainmentStyle = (attainment) => {
     return "bg-yellow-100 text-yellow-800";
   };
   
-  export const createTableData = (selfAssessment, goalsOverall, additionalAreasOverall, overallWeightage) => {
+  export const createTableData = (selfAssessment, managerRating, goalsOverall, additionalAreasOverall, overallWeightage) => {
     return [
       {
         id: 1,
         category: "Employee Self Appraisal",
         weightage: "10%",
         attainment: selfAssessment || "N/A",
+      },
+      {
+        id: 2,
+        category: "Manager Assessment",
+        weightage: "30%",
+        attainment: managerRating || "N/A",
       },
       {
         id: 3,
@@ -35,7 +41,6 @@ export const getAttainmentStyle = (attainment) => {
     ];
   };
   
-  // Initial table data state
   export const initialTableData = [
     {
       id: 1,
@@ -43,6 +48,12 @@ export const getAttainmentStyle = (attainment) => {
       weightage: "10%",
       attainment: "",
     },
+    {
+        id: 2,
+        category: "Manager Assessment",
+        weightage: "30%",
+        attainment: "",
+      },
     {
       id: 3,
       category: "Employee Goals",

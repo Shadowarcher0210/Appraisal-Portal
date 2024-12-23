@@ -95,9 +95,10 @@ const EvaluationSummary = () => {
         if (overallEvaluationResponse.data) {
           const evaluationData = overallEvaluationResponse.data;
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
-          const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
+          const managerRating = parseFloat(evaluationData.managerRating || 0);;
+          const goalsOverAll = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall  + goalWeight;
+          const overallWeightage = selfAssessment + managerRating + goalsOverAll + additionalAreasOverall  ;
           
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
@@ -114,6 +115,7 @@ const EvaluationSummary = () => {
          
           const updatedTableData = createTableData (
               evaluationData.selfAssesment,
+              evaluationData.managerRating,
               evaluationData.goalsOverAll,
               evaluationData.additionalAreasOverall,
               overallWeightage.toFixed(2)
@@ -343,15 +345,15 @@ const EvaluationSummary = () => {
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
       
 
- <div className="flex justify-between items-center">
-    <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
-    <div className="flex items-center gap-2">
-      <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
-        {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
-        {new Date(timePeriod[1]).toISOString().slice(0, 10)}
-      </span>
-    </div>
-  </div>
+        <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
+                {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
+                {new Date(timePeriod[1]).toISOString().slice(0, 10)}
+              </span>
+            </div>
+          </div>
 
 
 
@@ -428,26 +430,26 @@ const EvaluationSummary = () => {
                 </select>
       
                 <div className="flex gap-6">
-  <div className="w-1/2">
-    <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Areas of Growth</h2>
-    <textarea
-      value={areasOfGrowth}
-      onChange={handleareasOfGrowth}
-      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
-      placeholder="Enter Areas of Growth"
-    />
-  </div>
+                <div className="w-1/2">
+                  <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Areas of Growth</h2>
+                  <textarea
+                    value={areasOfGrowth}
+                    onChange={handleareasOfGrowth}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+                    placeholder="Enter Areas of Growth"
+                  />
+                </div>
 
-  <div className="w-1/2">
-    <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Employee Performance Summary</h2>
-    <textarea
-      value={summary}
-      onChange={handlesummary}
-      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
-      placeholder="Enter Performance Summary"
-    />
-  </div>
-</div>
+                <div className="w-1/2">
+                  <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Employee Performance Summary</h2>
+                  <textarea
+                    value={summary}
+                    onChange={handlesummary}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+                    placeholder="Enter Performance Summary"
+                  />
+                </div>
+              </div>
 
               </div>
             </div>
