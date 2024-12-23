@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { User, Briefcase, TrendingUp } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { initialTableData, createTableData, getAttainmentStyle } from '../utils/TableData';
 
 const EvaluationSummary = () => {
   const [userData, setUserData] = useState(null)
@@ -32,33 +33,7 @@ const EvaluationSummary = () => {
     { value: 'unsatisfactory', label: 'Unsatisfactory ' }
   ];
 
-  const [tableData, setTableData] = useState([
-    {
-      id: 1,
-      category: "Employee Self Appraisal",
-      weightage: "10%",
-      attainment: "",
-    },
-    {
-      id: 3,
-      category: "Employee Goals",
-      weightage: "35%",
-      attainment: "",
-    },
-    {
-      id: 4,
-      category: "Additional Areas of Assessment",
-      weightage: "25%",
-      attainment: "",
-    },
-
-    {
-      id: 5,
-      category: "Overall Weightage",
-      weightage: "100%",
-      attainment: "",
-    },
-  ]);
+  const [tableData, setTableData] = useState([initialTableData]);
 
   useEffect(() => {
     const fetchFilename = async () => {
@@ -123,6 +98,7 @@ const EvaluationSummary = () => {
           const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
           const overallWeightage = selfAssessment + additionalAreasOverall  + goalWeight;
+          
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
           }
@@ -135,36 +111,13 @@ const EvaluationSummary = () => {
           }
   
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
-
-          const updatedTableData = [
-            {
-              id: 1,
-              category: "Employee Self Appraisal",
-              weightage: "10%",
-              attainment: evaluationData.selfAssesment || "N/A",
-            },
-            
-            {
-              id: 3,
-              category: "Employee Goals",
-              weightage: "35%",
-              attainment: evaluationData.goalsOverAll || "N/A",
-            },
-            {
-              id: 4,
-              category: "Additional Areas of Assessment",
-              weightage: "25%",
-              attainment: evaluationData.additionalAreasOverall || "N/A",
-            },
-
-            {
-              id: 5,
-              category: "Overall Weightage",
-              weightage: "100%",
-              attainment: overallWeightage.toFixed(2),
-            },
-          ];
-
+         
+          const updatedTableData = createTableData (
+              evaluationData.selfAssesment,
+              evaluationData.goalsOverAll,
+              evaluationData.additionalAreasOverall,
+              overallWeightage.toFixed(2)
+          )
           setTableData(updatedTableData);
           console.log("Updated table data", updatedTableData);
         } else {
@@ -540,16 +493,7 @@ const EvaluationSummary = () => {
                       <span
                         className={`
                         px-3 py-1 rounded-lg text-sm font-semibold
-                        ${row.attainment === "N/A"
-                            ? "bg-gray-100 text-gray-600"
-                            : parseFloat(row.attainment) >= 80
-                              ? "bg-green-100 text-green-800"
-                              : parseFloat(row.attainment) >= 50
-                                ? "bg-red-100 text-red-800 "
-                                : "bg-yellow-100 text-yellow-800"
-                          }
-                      `}
-                      >
+                      ${getAttainmentStyle(row.attainment)}`} >
                         {row.attainment}
                       </span>
                     </td>

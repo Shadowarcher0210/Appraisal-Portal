@@ -197,11 +197,11 @@ const M_MyPerformanceHR = () => {
 
   <button
     onClick={() => toggleSection('employee')}
-    className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 "
+    className="w-full justify-between transition-colors duration-200 flex items-center space-x-2 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600 "
   >
     <div className="flex items-center space-x-3">
-      <Target className="h-6 w-6 text-orange-600" />
-      <h2 className="text-xl font-bold text-orange-600">
+      <Target className="h-6 w-6 text-blue-600" />
+      <h2 className="text-xl font-bold text-blue-900">
       Goals for {nextYear}-{nextYear2}</h2>
     </div>
     {expandedSection === 'employee' ? (
