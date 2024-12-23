@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
+import { User, Briefcase, TrendingUp,  Award} from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
 import { questionsAndAnswersEmployee } from '../employee/EmpAppraisalQuestions';
 
 const CEvaluation = () => {
-  const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -37,7 +35,6 @@ const CEvaluation = () => {
   };
 
   const handleBack = () => {
-    setIsModalVisible(false);
     if(empType==='Manager') navigate('/manager-performance');
     else if(empType==='HR') navigate('/hr-performance')
     else  navigate('/employee-performance') 
@@ -72,7 +69,8 @@ const CEvaluation = () => {
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation:
               response.data[0]?.pageData[index]?.managerEvaluation || 0
-          }))
+          })),
+          managerScore:response.data[0]?.managerScore ||0
         };
         setFormData([initialFormData]);
         setLoading(false);
@@ -85,20 +83,6 @@ const CEvaluation = () => {
 
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
-
-  // const handleManagerEvaluationChange = (e, index) => {
-  //   if (!formData || !formData[0]) return;
-
-  //   const updatedFormData = [...formData];
-  //   const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
-
-  //   if (!updatedFormData[0].pageData[index].managerEvaluation) {
-  //     updatedFormData[0].pageData[index].managerEvaluation = {};
-  //   }
-
-  //   updatedFormData[0].pageData[index].managerEvaluation = value;
-  //   setFormData(updatedFormData);
-  // };
 
   if (loading) {
     return (
@@ -124,25 +108,13 @@ const CEvaluation = () => {
     );
   }
 
-  const calculateOverallScore = () => {
-    if (!formData || !formData[0] || !formData[0].pageData) return 0;
-  
-    const totalQuestions = formData[0].pageData.length;
-    const totalPercentage = totalQuestions * 100;
-  
-    const totalManagerEvaluation = formData[0].pageData.reduce((sum, item) => {
-      return sum + (item.managerEvaluation || 0); 
-    }, 0);
-  
-    const overallScore = (totalManagerEvaluation / totalPercentage) * 10; 
-    return overallScore.toFixed(2); 
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
       <div className="mt-14">
-      <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
-      <div className="flex justify-between items-center">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
+          <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Self Appraisal</h1>
             {formData ? (
 
@@ -192,7 +164,7 @@ const CEvaluation = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-1">Self Appraisal Evaluation</p>
-                <p className="font-medium text-gray-900">{calculateOverallScore()}</p>
+                <p className="font-medium text-gray-900">{formData[0].managerScore}</p>
               </div>
             </div>
           </div>) : (<div />)}
@@ -200,9 +172,9 @@ const CEvaluation = () => {
       <div className="space-y-4 mx-2 rounded-lg ">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           <div className="flex items-center mb-4 border-b ">
-            <Award className="text-cyan-700 mr-2"/>
+            <Award className="text-cyan-700 mr-2" />
             <h2 className="text-xl font-semibold text-cyan-800 my-2 mt-3 pb-2 flex items-center gap-2">
-            Self Appraisal & Competencies
+              Self Appraisal & Competencies
             </h2>
           </div>
               <div className="overflow-x-auto">
@@ -261,6 +233,8 @@ const CEvaluation = () => {
                         <td className="p-2 text-sm text-left text-gray-700 w-48">
                           <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
                             {weights} %</span>
+                          <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                            {weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
@@ -293,27 +267,8 @@ const CEvaluation = () => {
             >
               Next
             </button>
-          </div>  
-        </div>
-
-        {isModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-86 transform transition-all">
-              <div className="p-6">
-                <p className="mt-3 text-gray-600 text-center">
-                  Thank you for submitting
-                </p>
-                <div className="mt-6 flex justify-center space-x-4">
-                  <button
-                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    onClick={() => handleBack()}  >
-                    Back
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart } from "lucide-react";
+import {  User,  Activity} from "lucide-react";
 import axios from 'axios';
 
 const PerformanceHR = () => {
@@ -10,7 +10,6 @@ const PerformanceHR = () => {
   const [academicYears, setAcademicYears] = useState([]);
   const [appraisals, setAppraisals] = useState([]);
   const [uniqueManagers, setUniqueManagers] = useState([]);
-  const [date, setDate] = useState(new Date());
   const navigate = useNavigate();
 
   const currentYear = new Date().getFullYear();
@@ -39,9 +38,6 @@ const PerformanceHR = () => {
 
     fetchAllAppraisalDetails(yearString);
     fetchEmployees();
-
-    const timer = setInterval(() => setDate(new Date()), 1000);
-    return () => clearInterval(timer);
   }, []);
 
   const fetchEmployees = async () => {
@@ -178,20 +174,9 @@ const PerformanceHR = () => {
     });
   };
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).toUpperCase();
-  };
 
-  const wishing = () => {
-    const hour = date.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
-  };
+
+
 
   const getStatusStyle = (status) => {
     const styles = {
