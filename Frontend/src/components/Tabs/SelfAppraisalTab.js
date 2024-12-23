@@ -3,25 +3,9 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useNavigate } from "react-router-dom";
 import {generalQuestions, competencyQuestions} from '../employee/EmpAppraisalQuestions';
+import { getAttainmentColor, getAttainmentText, createPageData } from '../PageDataUtils';
 
-const SelfAppraisalTab = ({
-  handlePreviousForm,
-}) => {
-  const getAttainmentColor = (weight) => {
-    if (weight >= 80) return 'bg-orange-100 text-orange-800';
-    if (weight >= 60) return 'bg-blue-100 text-blue-800';
-    if (weight >= 40) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
-  };
-  const getAttainmentText = (weight) => {
-    if (weight == 100) return '100%';
-    if (weight >= 80) return '80%';
-    if (weight >= 60) return '60%';
-    if (weight >= 40) return '40%';
-    if (weight >= 20) return '20%';
-    return '0 %';
-  };
-  
+const SelfAppraisalTab = ({handlePreviousForm,}) => {
   const [formData, setFormData] = useState(null);
   const [appraisalDetails, setAppraisalDetails] = useState(null);
   const employeeId = localStorage.getItem('employeeId');
@@ -40,7 +24,7 @@ const SelfAppraisalTab = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    const appraisalDetails = async () => {
+    const userDetails = async () => {
       if (employeeId) {
         try {
           const response = await axios.get(`http://localhost:3003/all/details/${employeeId}`);
@@ -54,7 +38,7 @@ const SelfAppraisalTab = ({
         console.log('User ID not found in local storage.');
       }
     };
-    appraisalDetails()
+    userDetails()
   }, [])
 
     
@@ -71,7 +55,6 @@ const SelfAppraisalTab = ({
          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
 
-        // Initialize the form data with the structure you need
         const initialFormData = {
           empName: response.data[0]?.empName || '',
           designation: response.data[0]?.designation || '',
@@ -87,7 +70,6 @@ const SelfAppraisalTab = ({
           
         };
         console.log("res check for eval", initialFormData);
-
         setAppraisalDetails([initialFormData]);
         if (initialFormData?.pageData) {
           const initialWeights = {};
@@ -103,10 +85,8 @@ const SelfAppraisalTab = ({
         }
       } catch (error) {
         console.error('Error fetching appraisal details:', error);
-    
       }
     };
-
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
 
@@ -144,135 +124,11 @@ const SelfAppraisalTab = ({
   const isFormComplete = () => {
     return Object.values(weights).every(weight => weight > 0);
   };
-  
- const getAnswerFromWeight = (weight) => {
-  switch (weight) {
-    case 20:
-      return "Strongly Disagree";
-    case 40:
-      return "Somewhat Disagree";
-    case 60:
-      return "Agree";
-    case 80:
-      return "Somewhat Agree";
-    case 100:
-      return "Strongly Agree";
-    default:
-      return "No Response";
-  }
-};
-
-const pageData = [
-  {
-    questionId: 1,
-    question: "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
-    answer: getAnswerFromWeight(weights[0]),
-    notes: notes[0],
-    weights: weights[0]
-  },
-
-  {
-    questionId: 2,
-    question: "Team-work:I work effectively and efficiently with team.",
-
-    answer: getAnswerFromWeight(weights[1]),
-    notes: notes[1],
-    weights: weights[1]
-  },
-  {
-    questionId: 3,
-    question: "Job-Specific Skills: I demonstrate the aptitude and competence to carry out my job responsibilities.",
-    answer: getAnswerFromWeight(weights[2]),
-    notes: notes[2],
-    weights: weights[2]
-  },
-
-  // Competency Questions
-  {
-    questionId: 4,
-    question: "Adaptability: I am flexible and receptive regarding new ideas and approaches.",
-    answer: getAnswerFromWeight(weights[3]),
-    notes: notes[3],
-    weights: weights[3]
-  },
-  {
-    questionId: 5,
-    question: "Leadership: I like to take responsibility in managing the team.",
-
-    answer: getAnswerFromWeight(weights[4]),
-    notes: notes[4],
-    weights: weights[4]
-  },
-  {
-    questionId: 6,
-    question: "Collaboration: I cultivate positive relationships. I am willing to learn from others.",
-    answer: getAnswerFromWeight(weights[5]),
-    notes: notes[5],
-    weights: weights[5]
-  },
-  {
-    questionId: 7,
-    question: "Communication: I convey my thoughts clearly and respectfully.",
-    answer: getAnswerFromWeight(weights[6]),
-    notes: notes[6],
-    weights: weights[6]
-  },
-  {
-    questionId: 8,
-    question: "Time Management: I complete my tasks on time.",
-    answer: getAnswerFromWeight(weights[7]),
-    notes: notes[7],
-    weights: weights[7]
-  },
-  {
-    questionId: 9,
-    question: "Results: I identify goals that are aligned with the organization’s strategic direction and achieve results accordingly.",
-    answer: getAnswerFromWeight(weights[8]),
-    notes: notes[8],
-    weights: weights[8]
-  },
-  {
-    questionId: 10,
-    question: "Creativity: I look for solutions outside the work.",
-    answer: getAnswerFromWeight(weights[9]),
-    notes: notes[9],
-    weights: weights[9]
-  },
-  {
-    questionId: 11,
-    question: "Initiative: I anticipate needs, solve problems, and take action, all without explicit instructions.",
-    answer: getAnswerFromWeight(weights[10]),
-    notes: notes[10],
-    weights: weights[10]
-  },
-  {
-    questionId: 12,
-    question: "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
-    answer: getAnswerFromWeight(weights[11]),
-    notes: notes[11],
-    weights: weights[11]
-  },
-  {
-    questionId: 13,
-    question: "Software Development: I am committed to improving my knowledge and skills.",
-    answer: getAnswerFromWeight(weights[12]),
-    notes: notes[12],
-    weights: weights[12]
-  },
-  {
-    questionId: 14,
-    question: "Growth: I am proactive in identifying areas for self-development.",
-    answer: getAnswerFromWeight(weights[13]),
-    notes: notes[13],
-    weights: weights[13]
-  },
-];
-
 
 const handleSave = async () => {
   try {
     const employeeId = localStorage.getItem('employeeId');
-
+    const pageData = createPageData(weights, notes);
     const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`, {
       method: 'PUT',
       headers: {
@@ -293,7 +149,7 @@ const handleSave = async () => {
     }
   }
   catch {
-   
+    console.error('Error saving form:', error);
   }
 }
 const handleConfirmSubmit = async () => {
@@ -305,6 +161,7 @@ const handleConfirmSubmit = async () => {
   }
   try {
     const employeeId = localStorage.getItem('employeeId');
+    const pageData = createPageData(weights, notes);
     const response = await fetch(`http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
       method: 'PUT',
       headers: {
@@ -315,24 +172,19 @@ const handleConfirmSubmit = async () => {
       status: "Submitted"
     })
     if (response.ok) {
-      console.log('response', response); 
-
+      const emailResponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      const emailData = await emailResponse.json();
+      console.log(emailData.message);
     } else {
       const errorData = await response.json();
       console.log(`Error: ${errorData.error}`);
     }
-    const emailresponse = await fetch(`http://localhost:3003/confirmationEmail/email`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email
-      }),
-    });
-    const emailData = await emailresponse.json();
-    console.log(emailData.message);
-
   } catch (error) {
     console.error('Error updating status:', error);
   }

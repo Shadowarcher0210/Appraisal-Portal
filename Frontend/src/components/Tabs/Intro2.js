@@ -6,7 +6,6 @@ const Introduction = ({
 }) => {
   return (
     <div className=" flex flex-col ">
-      {/* Header section with gradient background */}
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-8 rounded-lg mb-3 shadow-lg mt-10 ">
         <h1 className="text-3xl font-bold mb-4">Welcome to Employee Appraisal</h1>
         <p className="text-white text-lg">
@@ -17,7 +16,6 @@ const Introduction = ({
       <div className="mb-16">
         <div className="">
           <div className="space-y-6">
-            {/* Steps Section */}
             <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-6 rounded-lg">
               <h2 className="text-xl font-semibold text-blue-700 mb-4 flex items-center">
                 <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

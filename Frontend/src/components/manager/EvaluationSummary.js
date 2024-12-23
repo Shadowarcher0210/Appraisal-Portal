@@ -90,9 +90,6 @@ const EvaluationSummary = () => {
     setPerformanceRating(e.target.value);
   };
 
-  // const handleSummaryChange = (e) => {
-  //   setPerformanceSummary(e.target.value);
-  // };
 
   const handleareasOfGrowth = (e) => {
     setareasOfGrowth(e.target.value);

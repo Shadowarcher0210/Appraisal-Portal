@@ -1,8 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart, Award, Users } from "lucide-react";
+import { Calendar, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart} from "lucide-react";
 import axios from 'axios';
+import categoryIcons from '../CategoryIcons';
 
 const MyPerformanceHR = () => {
   const [date, setDate] = useState(new Date());
@@ -26,13 +27,6 @@ const MyPerformanceHR = () => {
   const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
   const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
 
-  const categoryIcons = {
-    'Development': <Target className="w-5 h-5" />,
-    'Leadership': <Users className="w-5 h-5" />,
-    'Technical': <BarChart className="w-5 h-5" />,
-    'Soft Skills': <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,
-  };
 
   useEffect(() => {
     fetchAppraisalDetails();

@@ -15,27 +15,7 @@ const CEvaluation = () => {
   const { employeeId } = useParams();
   const location = useLocation();
   const { timePeriod } = location.state || {}
-
-  // Static questions and answers
-  // const questionsAndAnswers = [
-  //   { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-  //   { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-  //   { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-  //   { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-  //   { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-  //   { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-  //   { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-  //   { question: 'Time Management', answer: 'I complete my tasks on time. ' },
-  //   { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
-  //   { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-  //   { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-  //   { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
-  //   { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-  //   { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-  // ];
-  const toggleHelpPopup = () => {
-    setShowHelpPopup(!showHelpPopup);
-  };
+  const empType = localStorage.getItem('empType')
 
   useEffect(() => {
     fetchuserDetails();
@@ -58,47 +38,13 @@ const CEvaluation = () => {
 
   const handleBack = () => {
     setIsModalVisible(false);
-    // navigate("/manager-performance");
-    const empType = localStorage.getItem('empType')
     if(empType==='Manager') navigate('/manager-performance');
     else if(empType==='HR') navigate('/hr-performance')
-      else  navigate('/employee-performance') 
+    else  navigate('/employee-performance') 
   };
 
   const handleContinue =  async () => {
-    // if (!formData || !formData[0] || !formData[0].pageData) return;
-  
-    // try {
-    //   const overallScore = calculateOverallScore();
-    //   const submissionData = {
-    //     pageData: formData[0].pageData.map(item => ({
-    //       questionId: item.questionId,
-    //       answer: item.answer || '',
-    //       notes: item.notes || '',
-    //       weights: item.weights || '',
-    //       managerEvaluation: item.managerEvaluation|| 0
-          
-    //     })),
-    //     overallScore: parseFloat(overallScore),
-    //   };
-      
-  
-    // //   await axios.put(
-    // //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-    // //     submissionData,
-    // //     { headers: { "Content-Type": "application/json" } }
-    // //   );
-    //   console.log("PUT request successful.");
-  
-     
-    // } catch (error) {
-    //   console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-    //   setError("Error submitting evaluation");
-    // }
-  
-  
     navigate(`/CE1/${employeeId}`,{state:{timePeriod}}); 
-   
   }
 
   useEffect(() => {
@@ -113,8 +59,6 @@ const CEvaluation = () => {
         const response = await axios.get(
           ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
-
-        // Initialize the form data with the structure you need
         const initialFormData = {
           empName: response.data[0]?.empName || '',
           designation: response.data[0]?.designation || '',
@@ -130,7 +74,6 @@ const CEvaluation = () => {
               response.data[0]?.pageData[index]?.managerEvaluation || 0
           }))
         };
-
         setFormData([initialFormData]);
         setLoading(false);
       } catch (error) {
@@ -143,56 +86,19 @@ const CEvaluation = () => {
     fetchAppraisalDetails();
   }, [employeeId, timePeriod]);
 
-  const handleManagerEvaluationChange = (e, index) => {
-    if (!formData || !formData[0]) return;
+  // const handleManagerEvaluationChange = (e, index) => {
+  //   if (!formData || !formData[0]) return;
 
-    const updatedFormData = [...formData];
-    const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
+  //   const updatedFormData = [...formData];
+  //   const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10);
 
-    if (!updatedFormData[0].pageData[index].managerEvaluation) {
-      updatedFormData[0].pageData[index].managerEvaluation = {};
-    }
-
-    updatedFormData[0].pageData[index].managerEvaluation = value;
-    setFormData(updatedFormData);
-  };
-
-
-
-  // const handleSaveExit = async () => {
-  //   try {
-     
-  //     const submissionData = {
-  //       pageData: formData[0].pageData.map(item => ({
-  //         questionId: item.questionId,
-  //         answer: item.answer || '',
-  //         notes: item.notes || '',
-  //         weights: item.weights || '',
-  //         managerEvaluation: item.managerEvaluation|| 0
-          
-  //       }))
-  //     };
-      
-  
-  //   //   await axios.put(
-  //   //     `http://localhost:3003/form/saveDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}?isExit=true`,
-  //   //     submissionData,
-  //   //     { headers: { "Content-Type": "application/json" } }
-  //   //   );
-  //     console.log("PUT request successful.");
-  
-     
-  //   } catch (error) {
-  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-  //     setError("Error submitting evaluation");
+  //   if (!updatedFormData[0].pageData[index].managerEvaluation) {
+  //     updatedFormData[0].pageData[index].managerEvaluation = {};
   //   }
-  
-  
-  //   navigate('/manager-performance'); 
-   
-    
-  // };
 
+  //   updatedFormData[0].pageData[index].managerEvaluation = value;
+  //   setFormData(updatedFormData);
+  // };
 
   if (loading) {
     return (
@@ -244,19 +150,15 @@ const CEvaluation = () => {
                 <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
-
               </div>
             ) : (<div />)}
           </div>
         </div>
       </div>
 
-
       <div className="mb-6">
         {formData ? (
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
-            {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                 <User className="text-blue-600" size={24} />
@@ -266,8 +168,6 @@ const CEvaluation = () => {
                 <p className="font-medium text-gray-900">{formData[0].empName}</p>
               </div>
             </div>
-
-            {/* Designation Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                 <Briefcase className="text-purple-600" size={24} />
@@ -277,8 +177,6 @@ const CEvaluation = () => {
                 <p className="font-medium text-gray-900">{formData[0].designation}</p>
               </div>
             </div>
-
-            {/* Manager Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-green-100 rounded-lg shrink-0">
                 <User className="text-green-600" size={24} />
@@ -288,8 +186,6 @@ const CEvaluation = () => {
                 <p className="font-medium text-gray-900">{formData[0].managerName}</p>
               </div>
             </div>
-
-            {/* Evaluation Status Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                 <TrendingUp className="text-orange-600" size={24} />
@@ -301,11 +197,7 @@ const CEvaluation = () => {
             </div>
           </div>) : (<div />)}
       </div>
-
-      {/* Main Content - Vertical Layout */}
       <div className="space-y-4 mx-2 rounded-lg ">
-        {/* Self Appraisal Section */}
-
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           <div className="flex items-center mb-4 border-b ">
             <Award className="text-cyan-700 mr-2"/>
@@ -313,25 +205,24 @@ const CEvaluation = () => {
             Self Appraisal & Competencies
             </h2>
           </div>
-        
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-            <thead className="bg-gray-50">
-            <tr className="bg-gray-50">
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Areas of Self Assessment</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Requirement</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Response</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Notes</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Attainment</th>
-            <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
-            Manager Evaluation</th>
-                  
-                </tr>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                <thead className="bg-gray-50">
+                <tr className="bg-gray-50">
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Areas of Self Assessment</th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Requirement</th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Response</th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Notes</th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Attainment</th>
+                <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                Manager Evaluation
+                </th>
+               </tr>
               </thead>
               <tbody>
                 {questionsAndAnswersEmployee.map((item, index) => {
@@ -340,20 +231,18 @@ const CEvaluation = () => {
                   const weights = formData ? formData[0].pageData[index]?.weights : null;
 
                   return (
-                    <tr 
-                    key={index} 
-                    className="hover:bg-gray-50 transition-colors duration-200 group border-b"
-                  >                      <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
-              <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
-                        <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded w-72">{item.answer}</span>
-                      </td>
-                      {previousAnswer ? (
-                        <td className="p-2 text-sm text-gray-700 w-52">
-                          <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
-                            <img src={tick} size={14} className="text-gray-400" />
-                            <span className="bg-blue-50 text-cyan-700 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
+                 <tr key={index} className="hover:bg-gray-50 transition-colors duration-200 group border-b" >    
+                  <td className="p-2 text-sm font-medium text-gray-500 ">{item.question}</td>
+                    <td className="p-2 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+                       <span className="bg-blue-50 text-cyan-700 px-2 py-1 rounded w-72">{item.answer}</span>
+                    </td>
+                    {previousAnswer ? (
+                      <td className="p-2 text-sm text-gray-700 w-52">
+                        <div className="flex items-center gap-2 mb-1 bg-gray-100 p-1 rounded">
+                          <img src={tick} size={14} className="text-gray-400" />
+                           <span className="bg-blue-50 text-cyan-700 px-2.5 py-1.5 rounded-lg text-sm font-semibold">
                             {previousAnswer}</span>
-                          </div>
+                         </div>
                         </td>
                       ) : (
                         <td className="p-2 text-sm text-gray-700">
@@ -370,8 +259,8 @@ const CEvaluation = () => {
                       )}
                       {weights ? (
                         <td className="p-2 text-sm text-left text-gray-700 w-48">
-                                       <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
-                                       {weights} %</span>
+                          <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                            {weights} %</span>
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>
@@ -379,19 +268,15 @@ const CEvaluation = () => {
                       )}
                       {/* {status === 'Completed' && ( */}
                       <td className="p-2 text-sm text-gray-600 text-left">
-                       
                          {formData[0].pageData[index].managerEvaluation || ''}
-                          
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
-        
             </table>
           </div>
         </div>
-
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>
             <button
@@ -420,10 +305,9 @@ const CEvaluation = () => {
                 </p>
                 <div className="mt-6 flex justify-center space-x-4">
                   <button
-                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                    onClick={() => handleBack()}
-                  >
-                    back
+                    className="px-4 py-2 w-1/2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    onClick={() => handleBack()}  >
+                    Back
                   </button>
                 </div>
               </div>

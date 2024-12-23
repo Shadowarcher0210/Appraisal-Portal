@@ -86,10 +86,6 @@ const CEvaluationSummary = () => {
     }
   }, [employeeId]);
 
-
- 
-
-
   useEffect(() => {
     const fetchAllEvaluations = async () => {
       if (!employeeId || !timePeriod) {
@@ -264,7 +260,6 @@ const CEvaluationSummary = () => {
             },
           }
         );
-
         if (response.status === 200) {
           setDocumentName(file.name)
           console.log('File uploaded successfully');
@@ -280,8 +275,7 @@ const CEvaluationSummary = () => {
       <div className="mt-14">
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
       <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
-
+         <h1 className="text-2xl font-bold text-white">Overall Feedback</h1>
             <div className="flex items-center gap-2">
               <span className="text-sm bg-white text-cyan-800 px-3 py-2 font-medium rounded">
                 {new Date(timePeriod[0]).toISOString().slice(0, 10)} to{" "}
@@ -304,7 +298,6 @@ const CEvaluationSummary = () => {
                   <p className="font-medium text-gray-900">{userData.empName}</p>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                 <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                   <Briefcase className="text-purple-600" size={24} />
@@ -316,7 +309,6 @@ const CEvaluationSummary = () => {
                   </p>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                 <div className="p-3 bg-green-100 rounded-lg shrink-0">
                   <User className="text-green-600" size={24} />
@@ -328,7 +320,6 @@ const CEvaluationSummary = () => {
                   </p>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                 <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                   <TrendingUp className="text-orange-600" size={24} />
@@ -343,8 +334,6 @@ const CEvaluationSummary = () => {
             </div>
         ) : (<div /> )}
 
-   
-
     <div className="p-2 mt-4">
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 ">
           <div className="flex items-center mb-4 border-b ">
@@ -353,7 +342,6 @@ const CEvaluationSummary = () => {
           Performance Review
           </h2>
           </div>
-
         <div className="p-3">
           <div className="mb-6">
             <h3 className="text-md font-medium text-gray-600 mb-4">Performance Rating</h3>
@@ -361,36 +349,31 @@ const CEvaluationSummary = () => {
               {performanceRating}
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Areas of Growth */}
-      <div>
-        <h3 className="text-md font-medium text-gray-600 mb-4">
-          Areas of Growth
-        </h3>
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div className="space-y-4 text-gray-700 ">
-            {areasOfGrowth}
+            <div>
+              <h3 className="text-md font-medium text-gray-600 mb-4">
+                Areas of Growth
+              </h3>
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="space-y-4 text-gray-700 ">
+                  {areasOfGrowth}
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-md font-medium text-gray-600 mb-4">
+                Employee Performance Summary
+              </h3>
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="space-y-4 text-gray-700">
+                  {summary}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Employee Performance Summary */}
-      <div>
-        <h3 className="text-md font-medium text-gray-600 mb-4">
-          Employee Performance Summary
-        </h3>
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-          <div className="space-y-4 text-gray-700">
-            {summary}
-          </div>
-        </div>
-      </div>
-        </div>
-      </div>
-
     </div>
-  </div>
       <div className=" mx-2 mt-2 rounded-lg">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 ">
         <div className="flex items-center mb-4 border-b ">
@@ -399,7 +382,6 @@ const CEvaluationSummary = () => {
             Performance Evaluation Breakdown
           </h2>
           </div>
-        
           <div className="overflow-x-auto">
             <table className="w-full ">
               <thead className="bg-gray-50">
@@ -453,7 +435,6 @@ const CEvaluationSummary = () => {
       
       {empType === "Employee" && (
       <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-5 mt-4 mb-6 transform transition-all duration-300 hover:shadow-xl">
-
         <div className="flex items-center mb-4 border-b pb-4">
           <div className="bg-green-100 p-3 rounded-full mr-4">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -520,9 +501,6 @@ const CEvaluationSummary = () => {
 
      {empType === "HR" && (
       <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-4 mt-4 mb-10  transform transition-all duration-300 hover:shadow-xl">
-            {/* <h2 className="text-lg font-bold text-blue-800 mb-4">Performance Appraisal Letter</h2>
-            <p className="text-gray-600 text-sm mb-4">
-            </p> */}
               <div className="flex items-center mb-4 border-b pb-4">
               <div className="bg-green-100 p-3 rounded-full mr-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
