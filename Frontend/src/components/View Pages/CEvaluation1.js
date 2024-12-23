@@ -40,10 +40,6 @@ const CEvaluation1 = () => {
     }));
     console.log("manager weight", managerWeightages)
 
-<<<<<<< HEAD
-   
-=======
->>>>>>> ec3fd3a82a4cf42d76c408b756ace941fba6f8b6
 
     const allWeightsAssigned = employeeGoals.every((goal) => {
       const weight = managerWeightages[goal._id];
