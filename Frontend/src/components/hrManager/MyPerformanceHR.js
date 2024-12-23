@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, User, ChevronRight, Activity, Target, ChevronDown, ChevronUp, BarChart} from "lucide-react";
 import axios from 'axios';
-import categoryIcons from '../CategoryIcons';
+import categoryIcons from '../utils/CategoryIcons';
 
 const MyPerformanceHR = () => {
   const [date, setDate] = useState(new Date());

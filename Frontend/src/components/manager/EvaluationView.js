@@ -3,7 +3,7 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
-import { questionsAndAnswersEmployee} from '../employee/EmpAppraisalQuestions';
+import { questionsAndAnswersEmployee} from '../utils/EmpAppraisalQuestions';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);

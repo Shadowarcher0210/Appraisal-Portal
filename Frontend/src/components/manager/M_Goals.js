@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {ChevronDown, ChevronUp,Target, Plus, User, Send, Calendar, Award, BarChart, Edit2, Activity,} from "lucide-react";
-import categoryIcons from "../CategoryIcons";
+import categoryIcons from "../utils/CategoryIcons";
 
 const M_Goals = () => {
   const [categories, setCategories] = useState([]);

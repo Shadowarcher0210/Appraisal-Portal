@@ -1,5 +1,5 @@
 import React from 'react';
-import { instructionsList , impInstructions} from '../employee/EmpAppraisalQuestions';
+import { instructionsList , impInstructions} from '../utils/EmpAppraisalQuestions';
 const Introduction = ({ 
   handlePreviousForm, 
   handleContinue 

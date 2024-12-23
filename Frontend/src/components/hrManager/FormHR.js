@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   instructionsList,
   impInstructions,
-} from "../manager/MangerAppraisalQuestions";
+} from "../utils/MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import SelfAppraisal from "../Tabs/SelfAppraisalTab";
 

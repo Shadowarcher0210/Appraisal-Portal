@@ -7,8 +7,8 @@ import {
   Medal,
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { questionsAndAnswersEmployee } from "../employee/EmpAppraisalQuestions";
-import {AdditionalAreas} from "./AdditionalAreas"
+import { questionsAndAnswersEmployee } from "../utils/EmpAppraisalQuestions";
+import {AdditionalAreas} from "../utils/AdditionalAreas"
 
 const CEvaluation2 = () => {
   const [email, setEmail] = useState("");

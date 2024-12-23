@@ -3,7 +3,7 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation } from 'react-router-dom';
-import { questionsAndAnswersEmployee } from '../employee/EmpAppraisalQuestions';
+import { questionsAndAnswersEmployee } from '../utils/EmpAppraisalQuestions';
 
 const M_ViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
@@ -157,15 +157,6 @@ const M_ViewPage = () => {
                         <span className="text-gray-600">Nothing to show</span>
                       </td>
                       )}
-                           {/* {weights ? (
-                        <td className="p-2 text-sm text-gray-700 w-36 ">
-                          <span className="text-gray-600">{weights}</span>
-                        </td>
-                      ) : (
-                      <td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">Nothing to show</span>
-                      </td>
-                      )} */}
                     </tr>
                   );
                 })}

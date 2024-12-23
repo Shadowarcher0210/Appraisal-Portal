@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 import { User, Briefcase, TrendingUp } from 'lucide-react';
 import { useLocation, useNavigate } from "react-router-dom";
-import {generalQuestions, competencyQuestions} from '../employee/EmpAppraisalQuestions';
-import { getAttainmentColor, getAttainmentText, createPageData } from '../PageDataUtils';
+import {generalQuestions, competencyQuestions} from '../utils/EmpAppraisalQuestions';
+import { getAttainmentColor, getAttainmentText, createPageData } from '../utils/PageDataUtils';
 
 const SelfAppraisalTab = ({handlePreviousForm,}) => {
   const [formData, setFormData] = useState(null);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {User, Briefcase,TrendingUp,BarChart,Calendar} from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import categoryIcons from "../CategoryIcons";
+import categoryIcons from "../utils/CategoryIcons";
 
 const CEvaluation1 = () => {
   const [email, setEmail] = useState("");

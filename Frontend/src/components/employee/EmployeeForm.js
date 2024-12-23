@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { instructionsList, impInstructions } from "./EmpAppraisalQuestions";
+import { instructionsList, impInstructions } from "../utils/EmpAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import SelfAppraisalTab from "../Tabs/SelfAppraisalTab";
 

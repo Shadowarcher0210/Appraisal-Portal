@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   instructionsList,
   impInstructions,
-} from "./MangerAppraisalQuestions";
+} from "../utils/MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import SelfAppraisalTab from "../Tabs/SelfAppraisalTab";
-import{ createPageData as pageData} from "../PageDataUtils";
+import{ createPageData as pageData} from "../utils/PageDataUtils";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
