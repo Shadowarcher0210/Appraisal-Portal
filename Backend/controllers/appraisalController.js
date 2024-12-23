@@ -219,7 +219,7 @@ const getAppraisalAnswers = async (req, res) => {
                 "timePeriod.0": { $gte: start },
                 "timePeriod.1": { $lte: end },
             },
-            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1, status: 1, selfScore: 1 });
+            { pageData: 1, timePeriod: 1, empName: 1, designation: 1, department: 1, band: 1, managerName: 1, status: 1, selfScore: 1, managerScore:1 });
 
 
         console.log('Retrieved Appraisals Answers:', appraisalAnswers);
@@ -228,19 +228,8 @@ const getAppraisalAnswers = async (req, res) => {
         if (appraisalAnswers.length === 0) {
             return res.status(404).json({ message: 'No appraisals found for this employee.' });
         }
-        const responseData = appraisalAnswers.map(appraisal => ({
-            employeeId,
-            empName: appraisal.empName,
-            designation: appraisal.designation,
-            department: appraisal.department,
-            band: appraisal.band,
-            timePeriod: appraisal.timePeriod,
-            managerName: appraisal.managerName,
-            status: appraisal.status,
-            selfScore: appraisal.selfScore,
-            pageData: appraisal.pageData
-        }));
-        res.status(200).json(responseData);
+       
+        res.status(200).json(appraisalAnswers);
     } catch (error) {
         console.error('Error fetching appraisals:', error);
         res.status(500).send('Error fetching appraisal data');
