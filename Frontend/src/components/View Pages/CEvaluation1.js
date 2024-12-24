@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {User, Briefcase,TrendingUp,BarChart,Calendar} from "lucide-react";
-import { User, Briefcase, TrendingUp, Target, Award, Users, BarChart, Calendar } from "lucide-react";
+import { User, Briefcase, TrendingUp, BarChart, Calendar } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import categoryIcons from "../utils/CategoryIcons";
 
@@ -14,15 +13,6 @@ const CEvaluation1 = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const [employeeGoals, setEmployeeGoals] = useState([]);
-
-
-  const categoryIcons = {
-    "Development": <Target className="w-5 h-5" />,
-    "Leadership": <Users className="w-5 h-5" />,
-    "Technical": <BarChart className="w-5 h-5" />,
-    "Soft Skills": <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,
-  };
   useEffect(() => {
     fetchUserDetails();
   }, []);
