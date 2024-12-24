@@ -73,9 +73,9 @@ const CEvaluationSummary = () => {
           const evaluationData = overallEvaluationResponse.data;
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
           const managerRating = parseFloat(evaluationData.managerRating || 0);
-          const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
+          const goalsOverAll = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          const overallWeightage = selfAssessment + managerRating + goalsOverAll + additionalAreasOverall  ;
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
           }
@@ -90,7 +90,8 @@ const CEvaluationSummary = () => {
 
           const updatedTableData = createTableData (
             evaluationData.selfAssesment,
-            evaluationData.goalsOverAll,
+            evaluationData.managerRating,
+            evaluationData.goalsOverAll.toFixed(2),
             evaluationData.additionalAreasOverall,
             overallWeightage.toFixed(2)
           )

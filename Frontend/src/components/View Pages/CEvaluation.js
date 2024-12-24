@@ -233,8 +233,7 @@ const CEvaluation = () => {
                         <td className="p-2 text-sm text-left text-gray-700 w-48">
                           <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
                             {weights} %</span>
-                          <span className="bg-blue-50 text-cyan-700 px-2.5 py-1 rounded-full text-sm font-semibold">
-                            {weights} %</span>
+                         
                         </td>
                       ) : (<td className="p-2 text-sm text-gray-700">
                         <span className="text-gray-600">-</span>

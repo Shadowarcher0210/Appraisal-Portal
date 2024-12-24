@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { User, Briefcase, TrendingUp } from "lucide-react";
+import { User, Briefcase, TrendingUp, BadgeCheck, CircleChevronDown } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { initialTableData, createTableData, getAttainmentStyle } from '../utils/TableData';
 
@@ -116,7 +116,7 @@ const EvaluationSummary = () => {
           const updatedTableData = createTableData (
               evaluationData.selfAssesment,
               evaluationData.managerRating,
-              evaluationData.goalsOverAll,
+              evaluationData.goalsOverAll.toFixed(2),
               evaluationData.additionalAreasOverall,
               overallWeightage.toFixed(2)
           )
@@ -412,11 +412,17 @@ const EvaluationSummary = () => {
             </div>
             <div className="mt-6 mx-2">
               <div className="bg-white w-full rounded-lg border border-gray-200 shadow-sm p-4">
-                <h2 className="text-xl font-semibold text-cyan-800 mb-4">Performance Rating</h2>
+              <div className="flex items-center mb-4 border-b ">
+          <BadgeCheck className="text-cyan-700 mr-2"/>
+          <h2 className="text-xl font-semibold text-cyan-800 my-2 mt-3 pb-2 flex items-center gap-2">
+          Performance Review
+          </h2>
+          </div>
+                <h2 className="text-md font-medium text-gray-600 mb-4">Evaluation Rating</h2>
                 <select
                   value={performanceRating}
                   onChange={handlePerformanceChange}
-                  className="w-2/6 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className="w-2/6 p-3 border border-gray-300 rounded-lg "
                 >
                   <option value="">Select Performance Rating</option>
                   {performanceOptions.map((option) => (
@@ -431,21 +437,21 @@ const EvaluationSummary = () => {
       
                 <div className="flex gap-6">
                 <div className="w-1/2">
-                  <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Areas of Growth</h2>
+                  <h2 className="text-md font-medium text-gray-600 my-4">Areas of Growth</h2>
                   <textarea
                     value={areasOfGrowth}
                     onChange={handleareasOfGrowth}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+                    className="w-full p-3 border border-gray-300 rounded-lg min-h-[100px] resize-none"
                     placeholder="Enter Areas of Growth"
                   />
                 </div>
 
                 <div className="w-1/2">
-                  <h2 className="text-xl font-semibold text-cyan-800 mt-6 mb-4">Employee Performance Summary</h2>
+                  <h2 className="text-md font-medium text-gray-600 my-4">Employee Performance Summary</h2>
                   <textarea
                     value={summary}
                     onChange={handlesummary}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 min-h-[100px] resize-none"
+                    className="w-full p-3 border border-gray-300 rounded-lg min-h-[100px] resize-none"
                     placeholder="Enter Performance Summary"
                   />
                 </div>
@@ -461,9 +467,12 @@ const EvaluationSummary = () => {
 
       <div className="space-y-4 mx-2 rounded-lg">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 ">
-          <h2 className="text-xl font-semibold text-cyan-800 mb-6 border-b pb-2 flex items-center gap-2">
+        <div className="flex items-center mb-4 border-b ">
+        <CircleChevronDown className="text-cyan-800 mr-2 "/>
+          <h2 className="text-xl font-semibold text-cyan-800 my-2 mt-3 pb-2 flex items-center gap-2">
             Performance Evaluation Breakdown
           </h2>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full ">
               <thead className="bg-gray-50">
