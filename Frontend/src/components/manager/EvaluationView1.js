@@ -72,7 +72,6 @@ const EvaluationView1 = () => {
     setIsValid(isValidWeights);
   };
 
-  // Add effect to validate on mount and when goals/weights change
   useEffect(() => {
     validateAllWeights();
   }, [employeeGoals, managerWeightages]);

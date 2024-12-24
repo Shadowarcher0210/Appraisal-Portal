@@ -66,6 +66,7 @@ const EmpViewPage = () => {
           managerName: response.data[0]?.managerName || '',
           timePeriod: response.data[0]?.timePeriod || timePeriod,
           status: response.data[0]?.status || '',
+          selfScore: response.data[0]?.selfScore,
           pageData: questionsAndAnswersEmployee.map((qa, index) => ({
             questionId: (index + 1).toString(),
             answer: response.data[0]?.pageData[index]?.answer || '',
@@ -73,6 +74,7 @@ const EmpViewPage = () => {
             weights: response.data[0]?.pageData[index]?.weights || '',
             managerEvaluation: response.data[0]?.pageData[index]?.managerEvaluation
           })),
+
         };
         console.log("res ch", response.data)
         console.log("res check for eval", initialFormData);
@@ -135,9 +137,9 @@ getAdditionalDetails();
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full ">
+    <div className="min-h-screen bg-blue-50 p-4 w-full ">
       <div className="mb-2">
-        <div className="bg-blue-600 border border-gray-200 rounded-lg shadow-sm p-4 mb-1 mt-14 mx-2">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg  shadow-lg mb-1 mt-14 mx-2">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Self Appraisal View</h1>
             {formData ? (

@@ -108,9 +108,9 @@ const CEvaluationSummary = () => {
           const evaluationData = overallEvaluationResponse.data;
           const selfAssessment = parseFloat(evaluationData.selfAssesment || 0);
           const managerRating = parseFloat(evaluationData.managerRating || 0);
-          const goalWeight = parseFloat(evaluationData.goalsOverAll || 0);
+          const goalsOverAll = parseFloat(evaluationData.goalsOverAll || 0);
           const additionalAreasOverall = parseFloat(evaluationData.additionalAreasOverall || 0);
-          const overallWeightage = selfAssessment + additionalAreasOverall + managerRating + goalWeight;
+          const overallWeightage = selfAssessment + managerRating + goalsOverAll + additionalAreasOverall  ;
           if (evaluationData.performanceRating) {
             setPerformanceRating(evaluationData.performanceRating);
           }
@@ -123,40 +123,13 @@ const CEvaluationSummary = () => {
   
           setOverallWeightage(overallWeightage.toFixed(2) || 'N/A');
 
-          const updatedTableData = [
-            {
-              id: 1,
-              category: "Employee Self Appraisal",
-              weightage: "10%",
-              attainment: evaluationData.selfAssesment || "N/A",
-            },
-            {
-              id: 2,
-              category: "Manager Assessment",
-              weightage: "30%",
-              attainment: evaluationData.managerRating || "N/A",
-            },
-            {
-              id: 3,
-              category: "Employee Goals",
-              weightage: "35%",
-              attainment: evaluationData.goalsOverAll || "N/A",
-            },
-            {
-              id: 4,
-              category: "Additional Areas of Assessment",
-              weightage: "25%",
-              attainment: evaluationData.additionalAreasOverall || "N/A",
-            },
-
-            {
-              id: 5,
-              category: "Overall Weightage",
-              weightage: "100%",
-              attainment: overallWeightage.toFixed(2),
-            },
-          ];
-
+          const updatedTableData = createTableData (
+            evaluationData.selfAssesment,
+            evaluationData.managerRating,
+            evaluationData.goalsOverAll.toFixed(2),
+            evaluationData.additionalAreasOverall,
+            overallWeightage.toFixed(2)
+          )
           setTableData(updatedTableData);
           console.log("Updated table data", updatedTableData);
         } else {
