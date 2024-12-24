@@ -806,7 +806,7 @@ const getUserDetailsFromAppraisal = async (req, res) => {
                 employeeId: employeeId,
                 "timePeriod.0": { $gte: start },
                 "timePeriod.1": { $lte: end },
-            },{empName:1,managerName:1,designation:1,status:1,_id:0})
+            },{empName:1, employeeId :1 , timePeriod:1,managerName:1,designation:1,status:1,_id:0})
             res.status(200).json(user)
         }
     } catch (error) {

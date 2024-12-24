@@ -4,49 +4,21 @@ import {
   User,
   Briefcase,
   TrendingUp,
-  Award,
   Medal,
 } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { questionsAndAnswersEmployee } from "../employee/EmpAppraisalQuestions";
 
 const CEvaluation2 = () => {
-  const [showHelpPopup, setShowHelpPopup] = useState(false);
-  const [email, setEmail] = useState("");
-  const [formData, setFormData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [additionalAreaData, setadditionalAreaData] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [additionalAreas, setadditionalAreas] = useState(null);
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
   const { employeeId } = useParams();
   const location = useLocation();
   const { timePeriod } = location.state || {};
-  const [attainments, setAttainments] = useState(Array(5).fill(''));
-  const [overallScore, setOverallScore] = useState(0);
-  const [comments, setComments] = useState(Array(5).fill(''));
-  // const questionsAndAnswers = [
-  //   { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-  //   { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-  //   { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-  //   { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-  //   { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-  //   { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-  //   { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-  //   { question: 'Time Management', answer: 'I complete my tasks on time. ' },
-  //   { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
-  //   { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-  //   { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-  //   { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
-  //   { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-  //   { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-  // ];
-
 
   useEffect(() => {
     const fetchAdditionalAreas = async () => {
       if (!employeeId || !timePeriod) {
-        setError("Employee ID or time period not found");
         return;
       }
   
@@ -54,18 +26,11 @@ const CEvaluation2 = () => {
         const response = await axios.get(
           `http://localhost:3003/appraisal/getAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
         );
-  
-        const areas = response.data.data.areas || [];
-        const fetchedAttainments = areas.map((area) => area.attainments || "");
-        setAttainments(fetchedAttainments);
-
-        const fetchedcomments = areas.map((area) => area.comments || "");
-        setComments(fetchedcomments);
-        console.log("Fetched attainments:", fetchedAttainments);
-        console.log("Fetched comments:", fetchedcomments);
+  setadditionalAreas(response.data)
+  console.log(response.data)
+     
       } catch (error) {
         console.error("Error fetching appraisal details:", error);
-        setError("Error fetching appraisal details");
       }
     };
   
@@ -202,112 +167,30 @@ const CEvaluation2 = () => {
 
     },
   ];
-  const handleAttainmentChange = (index, event) => {
-    const newAttainments = [...attainments];
-    newAttainments[index] = event.target.value;
-    setAttainments(newAttainments);
-  };
 
-  const handleCommentChange = (index, event) => {
-    const newComments = [...comments];
-    newComments[index] = event.target.value;
-    setComments(newComments);
-  };
-
-  useEffect(() => {
-    const fetchAppraisalDetails = async () => {
-      if (!employeeId || !timePeriod) {
-        setError('Employee ID or time period not found');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          ` http://localhost:3003/form/displayAnswers/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
-        );
-
-        const initialFormData = {
-          empName: response.data[0]?.empName || '',
-          designation: response.data[0]?.designation || '',
-          managerName: response.data[0]?.managerName || '',
-          timePeriod: response.data[0]?.timePeriod || timePeriod,
-          status: response.data[0]?.status || '',
-          pageData: questionsAndAnswersEmployee.map((qa, index) => ({
-            questionId: (index + 1).toString(),
-            answer: response.data[0]?.pageData[index]?.answer || '',
-            notes: response.data[0]?.pageData[index]?.notes || '',
-            weights: response.data[0]?.pageData[index]?.weights || '',
-            managerEvaluation:
-              response.data[0]?.pageData[index]?.managerEvaluation || 0
-          }))
-        };
-
-        setFormData([initialFormData]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching appraisal details:', error);
-        setError('Error fetching appraisal details');
-        setLoading(false);
-      }
-    };
-
-    fetchAppraisalDetails();
-  }, [employeeId, timePeriod]);
 
 
   useEffect(() => {
-    fetchuserDetails();
+    fetchUserDetails();
   }, []);
 
 
-  const fetchuserDetails = async () => {
+  const fetchUserDetails = async () => {
     if (employeeId) {
       try {
         const response = await axios.get(
-          `http://localhost:3003/all/details/${employeeId}`
-        );
-
-        setEmail(response.data.user.email);
+          `http://localhost:3003/form/userDetailsAppraisal/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`
+        )
+        setUserData(response.data)
       } catch (error) {
+
         console.error("Error fetching user details:", error);
       }
     } else {
       console.log("User ID not found in local storage.");
     }
   };
-
   const handleContinue = async () => {
-    // try {
-    //   const payload = AdditionalAreas.map((area, index) => ({
-    //     quality: area.quality,
-    //     successMetric: area.successMetric,
-    //     weightage: area.weightage,
-    //     attainments: attainments[index],
-    //     comments: comments[index]
-    //   }));
-    //   const overallScore = calculateOverallScore();
-    // //   const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-    // //     method: 'PUT',
-    // //     headers: {
-    // //       "content-Type": "application/json",
-
-    // //     },
-    // //     body: JSON.stringify({ payload, overallScore }),
-
-    // //   })
-    // //   if (response.ok) {
-    // //     console.log('response', response);
-    // //     const data = await response.json();
-    // //     console.log("data", data);
-        
-    // //   } else {
-    // //     const errorData = await response.json();
-    // //     console.log(`Error: ${errorData.error}`);
-    // //   }
-    // } catch (error) {
-    //   console.error('Error updating status:', error);
-    // }
     navigate(`/CES/${employeeId}`, { state: { timePeriod } });
   };
 
@@ -316,69 +199,10 @@ const CEvaluation2 = () => {
   const handleBack = () => {
     navigate(`/CE1/${employeeId}`, { state: { timePeriod } });
   };
-  
-  // const handleSaveExit = async () => {
-
-  //   try {
-  
-  //     const payload = AdditionalAreas.map((area, index) => ({
-  //       quality: area.quality,
-  //       successMetric: area.successMetric,
-  //       weightage: area.weightage,
-  //       attainments: attainments[index],
-  //       comments: comments[index]
-  //     }));
-  //   //   const response = await fetch(`http://localhost:3003/appraisal/saveAdditionalDetails/${employeeId}/${timePeriod[0]}/${timePeriod[1]}`, {
-  //   //     method: 'PUT',
-  //   //     headers: {
-  //   //       "content-Type": "application/json",
-
-  //   //     },
-  //   //     body: JSON.stringify({ payload }),
-
-  //   //   })
-  //   //   if (response.ok) {
-  //   //     console.log('response', response);
-  //   //     const data = await response.json();
-  //   //     console.log("data", data);
-  //   //     navigate("/employee-dashboard");
-  //   //   } else {
-  //   //     const errorData = await response.json();
-  //   //     console.log(`Error: ${errorData.error}`);
-  //   //   }
-  //     console.log("PUT request successful.");
-
-
-
-  //   } catch (error) {
-  //     console.error("Error submitting evaluation:", error.response ? error.response.data : error.message);
-  //     setError("Error submitting evaluation");
-  //   }
-  // };
  
-  const calculateOverallScore = () => {
-    if (!attainments || attainments.length === 0) return 0;
+
   
-    const totalQuestions = attainments.length;
-    const totalPercentage = totalQuestions * 100;
-  
-    const totalManagerEvaluation = attainments.reduce((sum, attainment) => {
-      return sum + (parseFloat(attainment) || 0);
-    }, 0);
-  
-    const score = (totalManagerEvaluation / totalPercentage) * 25;
-    return parseFloat(score.toFixed(2)); 
-  };
-  
-  useEffect(() => {
-    if (attainments.length < AdditionalAreas.length) {
-      setAttainments((prev) => [
-        ...prev,
-        ...Array(AdditionalAreas.length - prev.length).fill(""),
-      ]);
-    }
-  }, [attainments]);
-  
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
@@ -387,14 +211,14 @@ const CEvaluation2 = () => {
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
-            {formData ? (
+            {userData ? (
               <div className="flex items-center gap-2">
                 <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
-                  {new Date(formData[0].timePeriod[0])
+                  {new Date(userData[0].timePeriod[0])
                     .toISOString()
                     .slice(0, 10)}{" "}
                   to{" "}
-                  {new Date(formData[0].timePeriod[1])
+                  {new Date(userData[0].timePeriod[1])
                     .toISOString()
                     .slice(0, 10)}
                 </span>
@@ -407,7 +231,7 @@ const CEvaluation2 = () => {
       </div>
 
       <div className="mb-6">
-        {formData ? (
+        {userData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
             {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
@@ -417,7 +241,7 @@ const CEvaluation2 = () => {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Employee Name</p>
                 <p className="font-medium text-gray-900">
-                  {formData[0].empName}
+                  {userData[0].empName}
                 </p>
               </div>
             </div>
@@ -430,7 +254,7 @@ const CEvaluation2 = () => {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Designation</p>
                 <p className="font-medium text-gray-900">
-                  {formData[0].designation}
+                  {userData[0].designation}
                 </p>
               </div>
             </div>
@@ -443,7 +267,7 @@ const CEvaluation2 = () => {
               <div>
                 <p className="text-sm text-gray-400 mb-1">Manager Name</p>
                 <p className="font-medium text-gray-900">
-                  {formData[0].managerName}
+                  {userData[0].managerName}
                 </p>
               </div>
             </div>
@@ -457,7 +281,7 @@ const CEvaluation2 = () => {
                 <p className="text-sm text-gray-400 mb-1">
                   Manager's Evaluation
                 </p>
-                <p className="font-medium text-gray-900">{calculateOverallScore()}</p>
+                <p className="font-medium text-gray-900">{}</p>
               </div>
             </div>
           </div>
@@ -500,16 +324,8 @@ const CEvaluation2 = () => {
         </tr>
       </thead>
       <tbody className="my-6">
-        {AdditionalAreas.map((item, index) => {
-          const previousAnswer = formData
-            ? formData[0].pageData[index]?.successMetric
-            : null;
-          const notes = formData
-            ? formData[0].pageData[index]?.notes
-            : null;
-          const weights = formData
-            ? formData[0].pageData[index]?.weights
-            : null;
+        {additionalAreas.map((item, index) => {
+         
 
           return (
             <tr 
