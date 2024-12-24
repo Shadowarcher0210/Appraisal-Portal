@@ -193,9 +193,6 @@ const CEvaluation2 = () => {
   const handleContinue = async () => {
     navigate(`/CES/${employeeId}`, { state: { timePeriod } });
   };
-
-
-
   const handleBack = () => {
     navigate(`/CE1/${employeeId}`, { state: { timePeriod } });
   };
@@ -205,9 +202,8 @@ const CEvaluation2 = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full ">
+    <div className="min-h-screen bg-blue-50 p-4 w-full ">
       <div className="mt-14">
-        {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Employee Additional Areas</h1>
@@ -233,7 +229,6 @@ const CEvaluation2 = () => {
       <div className="mb-6">
         {userData ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
-            {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                 <User className="text-blue-600" size={24} />
@@ -245,8 +240,6 @@ const CEvaluation2 = () => {
                 </p>
               </div>
             </div>
-
-            {/* Designation Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                 <Briefcase className="text-purple-600" size={24} />
@@ -258,8 +251,6 @@ const CEvaluation2 = () => {
                 </p>
               </div>
             </div>
-
-            {/* Manager Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-green-100 rounded-lg shrink-0">
                 <User className="text-green-600" size={24} />
@@ -271,8 +262,6 @@ const CEvaluation2 = () => {
                 </p>
               </div>
             </div>
-
-            {/* Evaluation Status Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                 <TrendingUp className="text-orange-600" size={24} />
@@ -289,11 +278,7 @@ const CEvaluation2 = () => {
           <div />
         )}
       </div>
-
-      {/* Main Content - Vertical Layout */}
       <div className="space-y-4 mx-2 rounded-lg ">
-        {/* Self Appraisal Section */}
-
         <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-4">
        
         <div className="flex items-center mb-4 border-b ">
@@ -327,39 +312,39 @@ const CEvaluation2 = () => {
         {additionalAreas.map((item, index) => {
          
 
-          return (
-            <tr 
-              key={index} 
-              className="hover:bg-gray-50 transition-colors duration-200 group border-b "
-            >
-              <td className="p-4 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
-                {item.quality}
-              </td>
-              <td className="p-2">
-                <span className="bg-blue-50 text-cyan-800 px-2.5 py-2 rounded-md text-sm font-semibold">
-                  {item.successMetric}
-                </span>
-              </td>
-              <td className="p-2 text-center">
-                <span className="bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-sm font-semibold">
-                  {item.weightage}%
-                </span>
-              </td>
-              <td className="p-2 text-center ">
-                {attainments[index]}
-                 
-              </td>
-              <td className="p-2">
-                {comments[index]}
-                  
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-</div>
+                return (
+                  <tr 
+                    key={index} 
+                    className="hover:bg-gray-50 transition-colors duration-200 group border-b "
+                  >
+                    <td className="p-4 text-sm font-medium text-gray-700 group-hover:text-cyan-800">
+                      {item.quality}
+                    </td>
+                    <td className="p-2">
+                      <span className="bg-blue-50 text-cyan-800 px-2.5 py-2 rounded-md text-sm font-semibold">
+                        {item.successMetric}
+                      </span>
+                    </td>
+                    <td className="p-2 text-center">
+                      <span className="bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-sm font-semibold">
+                        {item.weightage}%
+                      </span>
+                    </td>
+                    <td className="p-2 text-center ">
+                      {attainments[index]}
+                      
+                    </td>
+                    <td className="p-2">
+                      {comments[index]}
+                        
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
         <div className="mt-20 sticky flex justify-end">
           <div className='mr-auto'>

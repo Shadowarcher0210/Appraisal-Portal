@@ -2,6 +2,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import {ChevronDown, ChevronUp,Target, Plus, User, Send, Calendar, Award, BarChart, Edit2, Activity,} from "lucide-react";
+import categoryIcons from "../utils/CategoryIcons";
 
 const M_Goals = () => {
   const [categories, setCategories] = useState([]);
@@ -32,14 +33,6 @@ const M_Goals = () => {
 
   const [employees, setEmployees] = useState([]);
   const [expandedEmployees, setExpandedEmployees] = useState({});
-
-  const categoryIcons = {
-    "Development": <Target className="w-5 h-5" />,
-    "Leadership": <User className="w-5 h-5" />,
-    "Technical": <BarChart className="w-5 h-5" />,
-    "Soft Skills": <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,
-  };
 
   const toggleEmployee = (employeeId) => {
     setExpandedEmployees((prev) => ({

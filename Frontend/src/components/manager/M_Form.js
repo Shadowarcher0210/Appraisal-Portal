@@ -3,9 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   instructionsList,
   impInstructions,
-} from "./MangerAppraisalQuestions";
+} from "../utils/MangerAppraisalQuestions";
 import Intro2 from "../Tabs/Intro2";
 import SelfAppraisalTab from "../Tabs/SelfAppraisalTab";
+import{ createPageData as pageData} from "../utils/PageDataUtils";
 
 const TABS = ["Introduction", "Self Appraisal"];
 
@@ -18,9 +19,6 @@ const M_Form = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
-
-
-
   const location = useLocation();
   const { timePeriod } = location.state || {};
   const token = localStorage.getItem('token')  
@@ -30,7 +28,6 @@ const M_Form = () => {
       setSelfAppraisalPage(1);
     } else if (activeTab < TABS.length - 1) {
       setSelfAppraisalPage(0);
-      // setCompletedSteps(Math.max(completedSteps, activeTab + 1));
       setActiveTab(activeTab + 1);
     }
   };
@@ -45,131 +42,6 @@ const M_Form = () => {
       navigate("/manager-dashboard");
     }
   };
-
-  const getAnswerFromWeight = (weight) => {
-    switch (weight) {
-      case 20:
-        return "Strongly Disagree";
-      case 40:
-        return "Somewhat Disagree";
-      case 60:
-        return "Agree";
-      case 80:
-        return "Somewhat Agree";
-      case 100:
-        return "Strongly Agree";
-      default:
-        return "No Response";
-    }
-  };
-
-  const pageData = [
-    {
-      questionId: 1,
-      question: "Job-Specific Knowledge: I possess and apply the expertise, experience, and background to achieve solid results.",
-      answer: getAnswerFromWeight(weights[0]),
-      notes: notes[0],
-      weights: weights[0]
-    },
-
-    {
-      questionId: 2,
-      question: "Team-work:I work effectively and efficiently with team.",
-
-      answer: getAnswerFromWeight(weights[1]),
-      notes: notes[1],
-      weights: weights[1]
-    },
-    {
-      questionId: 3,
-      question: "Job-Specific Skills: I demonstrate the aptitude and competence to carry out my job responsibilities.",
-      answer: getAnswerFromWeight(weights[2]),
-      notes: notes[2],
-      weights: weights[2]
-    },
-
-    // Competency Questions
-    {
-      questionId: 4,
-      question: "Adaptability: I am flexible and receptive regarding new ideas and approaches.",
-      answer: getAnswerFromWeight(weights[3]),
-      notes: notes[3],
-      weights: weights[3]
-    },
-    {
-      questionId: 5,
-      question: "Leadership: I like to take responsibility in managing the team.",
-
-      answer: getAnswerFromWeight(weights[4]),
-      notes: notes[4],
-      weights: weights[4]
-    },
-    {
-      questionId: 6,
-      question: "Collaboration: I cultivate positive relationships. I am willing to learn from others.",
-      answer: getAnswerFromWeight(weights[5]),
-      notes: notes[5],
-      weights: weights[5]
-    },
-    {
-      questionId: 7,
-      question: "Communication: I convey my thoughts clearly and respectfully.",
-      answer: getAnswerFromWeight(weights[6]),
-      notes: notes[6],
-      weights: weights[6]
-    },
-    {
-      questionId: 8,
-      question: "Time Management: I complete my tasks on time.",
-      answer: getAnswerFromWeight(weights[7]),
-      notes: notes[7],
-      weights: weights[7]
-    },
-    {
-      questionId: 9,
-      question: "Results: I identify goals that are aligned with the organization’s strategic direction and achieve results accordingly.",
-      answer: getAnswerFromWeight(weights[8]),
-      notes: notes[8],
-      weights: weights[8]
-    },
-    {
-      questionId: 10,
-      question: "Creativity: I look for solutions outside the work.",
-      answer: getAnswerFromWeight(weights[9]),
-      notes: notes[9],
-      weights: weights[9]
-    },
-    {
-      questionId: 11,
-      question: "Initiative: I anticipate needs, solve problems, and take action, all without explicit instructions.",
-      answer: getAnswerFromWeight(weights[10]),
-      notes: notes[10],
-      weights: weights[10]
-    },
-    {
-      questionId: 12,
-      question: "Client Interaction: I take the initiative to help shape events that will lead to the organization’s success and showcase it to clients.",
-      answer: getAnswerFromWeight(weights[11]),
-      notes: notes[11],
-      weights: weights[11]
-    },
-    {
-      questionId: 13,
-      question: "Software Development: I am committed to improving my knowledge and skills.",
-      answer: getAnswerFromWeight(weights[12]),
-      notes: notes[12],
-      weights: weights[12]
-    },
-    {
-      questionId: 14,
-      question: "Growth: I am proactive in identifying areas for self-development.",
-      answer: getAnswerFromWeight(weights[13]),
-      notes: notes[13],
-      weights: weights[13]
-    },
-   
-  ];
-
 
   const handleConfirmSubmit = async () => {
     setIsModalOpen(false);
@@ -231,7 +103,6 @@ const M_Form = () => {
   return (
     <div className="flex h-auto max-w-full  mt-4">
       <div className="border p-4 w-full rounded shadow-lg ">
-
         {activeTab === 0 && (
           <Intro2
             handlePreviousForm={handlePreviousForm}
@@ -246,8 +117,6 @@ const M_Form = () => {
             handlePreviousForm={handlePreviousForm}
           />
         )}
-
-
       </div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 backdrop-blur-sm">
@@ -256,7 +125,6 @@ const M_Form = () => {
               <h2 className="text-xl font-semibold text-gray-900 text-center">
                 Submit Appraisal
               </h2>
-
               <p className="mt-3 text-gray-600 text-center">
                 Are you sure you want to submit your appraisal?
               </p>
@@ -267,7 +135,6 @@ const M_Form = () => {
                 >
                   Yes
                 </button>
-
                 <button
                   className="px-4 py-2 w-1/2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                   onClick={closeModal}

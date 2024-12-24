@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {User, Briefcase,TrendingUp,Target,Award,Users,BarChart,Calendar} from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import categoryIcons from "../utils/CategoryIcons";
 
 const EvaluationView1 = () => {
   const [userData , setUserData] = useState(null);
@@ -16,14 +17,6 @@ const EvaluationView1 = () => {
   const [managerEval, setManagerEval] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [isValid, setIsValid] = useState(false);
-
-  const categoryIcons = {
-    "Development": <Target className="w-5 h-5" />,
-    "Leadership": <Users className="w-5 h-5" />,
-    "Technical": <BarChart className="w-5 h-5" />,
-    "Soft Skills": <Award className="w-5 h-5" />,
-    "Others": <Target className="w-5 h-5" />,  
-  };
 
   const [totalWeight, setTotalWeight] = useState(0);
   const [isWeightCalculationReady, setIsWeightCalculationReady] =
@@ -245,7 +238,6 @@ const handleSaveExit= async ()=>{
         setSuccessMessage("Manager weightages updated successfully!");
       }
     }
-    // navigate("/manager-performance", { state: { timePeriod } });
     const empType = localStorage.getItem('empType')
         if(empType==='Manager')  navigate('/manager-performance') 
           else if(empType==='HR') navigate('/hr-performance') 
@@ -327,7 +319,7 @@ const handleSaveExit= async ()=>{
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full">
+    <div className="min-h-screen bg-blue-50 p-4 w-full">
         <div className="mt-14">
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
                 <div className="flex justify-between items-center">
@@ -342,17 +334,13 @@ const handleSaveExit= async ()=>{
                                 {new Date (timePeriod[1]).toISOString().split("T")[0]}
                             </span>
                         </div>
-                  
-                    
                 </div>
             </div>
         </div>
 
-        {/* Employee Details Section */}
         <div className="mb-6">
             {userData  ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
-                    {/* Employee Name */}
                     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                         <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                             <User className="text-blue-600" size={24} />
@@ -365,7 +353,6 @@ const handleSaveExit= async ()=>{
                         </div>
                     </div>
 
-                    {/* Designation */}
                     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                         <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                             <Briefcase className="text-purple-600" size={24} />
@@ -378,7 +365,6 @@ const handleSaveExit= async ()=>{
                         </div>
                     </div>
 
-                    {/* Manager Name */}
                     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                         <div className="p-3 bg-green-100 rounded-lg shrink-0">
                             <User className="text-green-600" size={24} />
@@ -391,7 +377,6 @@ const handleSaveExit= async ()=>{
                         </div>
                     </div>
 
-                    {/* Manager's Evaluation */}
                     <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
                         <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                             <TrendingUp className="text-orange-600" size={24} />
@@ -408,8 +393,6 @@ const handleSaveExit= async ()=>{
         </div>
 
 
-
-        {/* Goals Section */}
         {employeeGoals.length > 0 ? (
             <div className="space-y-4 mx-2 ">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -418,7 +401,6 @@ const handleSaveExit= async ()=>{
                             key={goal._id}
                             className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-purple-100 hover:scale-[1.02]"
                         >
-                            {/* Goal Details */}
                             <div className="flex items-center justify-between mb-5">
                                 <div className="flex items-center space-x-2">
                                     <div className="p-2 bg-blue-50 rounded-lg">
@@ -480,33 +462,28 @@ const handleSaveExit= async ()=>{
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         ))}
                 </div>
-                
-
-            </div>
-            
+            </div>       
         ) : (
             <div className="text-center text-gray-500 mt-8">
                 <p>No goals available for this employee.</p>
             </div>
         )}
 
-        {/* Action Buttons */}
         <div className="sticky mt-16 flex justify-end">
             <div className="mr-auto">
-                <button
-              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-800 text-blue-800 rounded-lg"
+              <button
+              className="px-6 py-2 bg-white hover:bg-slate-100 border border-blue-600 text-blue-600 rounded-lg"
               onClick={handleBack}
                 >
                     Back
                 </button>
             </div>
             <div className="mr-2">
-                <button
+              <button
               className="px-6 py-2 text-white bg-orange-500 hover:bg-orange-600 rounded-lg"
               onClick={handleSaveExit}
                 >
@@ -517,7 +494,7 @@ const handleSaveExit= async ()=>{
             <button
             className={`px-6 py-2 text-white rounded-lg ${
               isValid 
-                ? "bg-blue-800 hover:bg-blue-900 cursor-pointer" 
+                ? "bg-blue-600 hover:bg-blue-500 cursor-pointer" 
                 : "bg-gray-400 cursor-not-allowed"
             }`}
             onClick={handleContinue}
@@ -525,11 +502,10 @@ const handleSaveExit= async ()=>{
           >
             Next
           </button>
-            </div>
-        </div>
+         </div>
+       </div>
     </div>
-);
-
+  );
 };
 
 export default EvaluationView1;

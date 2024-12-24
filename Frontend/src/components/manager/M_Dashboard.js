@@ -7,8 +7,6 @@ import TeamMembersSidebar from './TeamMembers';
 import axios from 'axios';
 import StatusTracker from '../employee/StatusTracker';
 
-
-
 const M_Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -22,13 +20,6 @@ const M_Dashboard = () => {
   
   const appraisalStartDate = new Date(`${currentYear}-04-01`).toLocaleDateString('en-CA');
   const appraisalEndDate = new Date(`${currentYear + 1}-03-31`).toLocaleDateString('en-CA');
-  // const appraisalDueDate = new Date(`${currentYear}-03-15`);
-  // const appraisalVisibleStart = new Date(`${currentYear}-03-01`);
-
-  // const goalSettingStartDate = new Date(`${currentYear}-10-01`).toLocaleDateString('en-CA');
-  // const goalSettingEndDate = new Date(`${currentYear}-10-07`).toLocaleDateString('en-CA');
-  // const goalSettingDueDate = new Date(`${currentYear + 1}-03-15`);
-  // const goalSettingVisibleStart = new Date(`${currentYear + 1}-03-01`);
 
   const fetchAppraisalDetails = async () => {
     const employeeId = localStorage.getItem('employeeId');
@@ -251,12 +242,11 @@ const M_Dashboard = () => {
           </div>
 
         <div className="">
-  <TeamMembersSidebar employees={employees} />
-</div>
-
+          <TeamMembersSidebar employees={employees} />
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+     </div>
+     <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

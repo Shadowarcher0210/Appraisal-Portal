@@ -100,21 +100,6 @@ const M_Performance = () => {
     });
   };
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).toUpperCase();
-  };
-
-  const wishing = () => {
-    const hour = date.getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
   const getStatusStyle = (status) => {
     const styles = {
       "Submitted": "bg-blue-100 text-blue-700",
@@ -133,15 +118,15 @@ const M_Performance = () => {
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between">
           <div className="mb-2">
-    <label className="text-4xl font-bold text-yellow-200 block">
-    Appraisal Insights for the team
-    </label>
-    <p className="text-white font-medium block mt-2">
-    Key metrics and trends to guide your Team progress.
-    </p>
-  </div>
+            <label className="text-4xl font-bold text-yellow-200 block">
+            Appraisal Insights for the team
+            </label>
+            <p className="text-white font-medium block mt-2">
+            Key metrics and trends to guide your Team progress.
+            </p>
           </div>
-        </div>
+         </div>
+       </div>
 
         <div className="bg-white rounded-lg shadow-lg mb-6">
           <div className="p-2">
@@ -155,53 +140,53 @@ const M_Performance = () => {
             </div>
 
          
-  <div className="relative mx-4 my-1">
-      <div className="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-2 shadow-sm">
-        <div className="flex items-start">
-          <span className="text-red-600 font-semibold mr-2">*Note:</span>
-          <p className="text-red-700">
-            If you need to make any changes for your employee's appraisal after submission, 
-            please reach out to your HR department for assistance.
-          </p>
-        </div>
-      </div>
-    </div>
-         
-    <div className="mt-6 px-4">
-          <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 transition-all duration-200">
-            <div className="px-4 py-2.5 bg-gray-50 border-r border-gray-200 rounded-l-lg">
-              <label 
-                htmlFor="time-period" 
-                className="text-sm font-medium text-gray-700"
-              >
-                Time Period
-              </label>
-            </div>
-            <div className="relative">
-              <select
-                id="time-period"
-                value={selectedYear || ''}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="appearance-none bg-transparent px-4 py-2.5 pr-8 text-sm text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 cursor-pointer"
-              >
-                {academicYears.map((year) => (
-                  <option 
-                    key={year} 
-                    value={year}
-                    className="text-gray-900 bg-white"
-                  >
-                    {year}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                  <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                </svg>
+            <div className="relative mx-4 my-1">
+              <div className="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-2 shadow-sm">
+                <div className="flex items-start">
+                  <span className="text-red-600 font-semibold mr-2">*Note:</span>
+                  <p className="text-red-700">
+                    If you need to make any changes for your employee's appraisal after submission, 
+                    please reach out to your HR department for assistance.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+         
+            <div className="mt-6 px-4">
+                <div className="inline-flex items-center bg-white border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 transition-all duration-200">
+                  <div className="px-4 py-2.5 bg-gray-50 border-r border-gray-200 rounded-l-lg">
+                    <label 
+                      htmlFor="time-period" 
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Time Period
+                    </label>
+                  </div>
+                  <div className="relative">
+                    <select
+                      id="time-period"
+                      value={selectedYear || ''}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                      className="appearance-none bg-transparent px-4 py-2.5 pr-8 text-sm text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 cursor-pointer"
+                    >
+                      {academicYears.map((year) => (
+                        <option 
+                          key={year} 
+                          value={year}
+                          className="text-gray-900 bg-white"
+                        >
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
             <div className="overflow-x-auto mt-6">
               <table className="w-full">
                 <thead>
@@ -237,18 +222,9 @@ const M_Performance = () => {
                         <td className="px-6 py-4 whitespace-nowrap font-medium text-sm">
                           <button
                             className={'bg-blue-500 text-white hover:bg-blue-600 rounded-lg px-2 py-1.5 w-20 '  }
-                       //     disabled={appraisal.status === "Under HR Review"}
                             onClick={() => handleViewClick(appraisal)}
                           >
-                            {/* {appraisal.status === "Completed" ? "View" : "Review" } */}
-                            {
-  ["Under HR Review", "Pending HR Review", "Completed"].includes(appraisal.status) 
-    ? "View" 
-    : ["Submitted", "Under Review"].includes(appraisal.status) 
-    ? "Review" 
-    : null
-}
-
+                            { ["Under HR Review", "Pending HR Review", "Completed"].includes(appraisal.status) ? "View" : ["Submitted", "Under Review"].includes(appraisal.status) ? "Review"  : null }
                           </button>
                         </td>
                       </tr>

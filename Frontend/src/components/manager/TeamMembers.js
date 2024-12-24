@@ -27,7 +27,6 @@ const TeamMembersDisplay = ({ employees }) => {
       .toUpperCase();
   };
 
-  // Get color pair based on name to ensure consistency
   const getColorPair = (name) => {
     const index = name.length % colorPairs.length;
     return colorPairs[index];
@@ -40,7 +39,6 @@ const TeamMembersDisplay = ({ employees }) => {
   return (
     <div className="bg-white shadow-lg rounded-lg">
       <div className="p-4">
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <User className="h-4 w-4 text-orange-600" />
@@ -51,7 +49,6 @@ const TeamMembersDisplay = ({ employees }) => {
           </span>
         </div>
 
-        {/* Search Bar */}
         <div className="relative mb-4">
           <input
             type="text"
@@ -63,7 +60,6 @@ const TeamMembersDisplay = ({ employees }) => {
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
         </div>
 
-        {/* Team Members List with custom scrollbar */}
         <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50">
           {filteredEmployees
             .sort((a, b) => a.empName.localeCompare(b.empName))

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {User, Briefcase,TrendingUp,BarChart,Calendar} from "lucide-react";
 import { User, Briefcase, TrendingUp, Target, Award, Users, BarChart, Calendar } from "lucide-react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
+import categoryIcons from "../utils/CategoryIcons";
 
 const CEvaluation1 = () => {
   const [userData, setUserData] = useState(null)
@@ -24,7 +26,6 @@ const CEvaluation1 = () => {
   useEffect(() => {
     fetchUserDetails();
   }, []);
-
 
   const fetchUserDetails = async () => {
     if (employeeId) {
@@ -73,7 +74,7 @@ const CEvaluation1 = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-4 w-full flex items-center justify-center">
+      <div className="min-h-screen bg-blue-50 p-4 w-full flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
     );

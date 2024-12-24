@@ -3,7 +3,7 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation } from 'react-router-dom';
-import { questionsAndAnswersEmployee } from '../employee/EmpAppraisalQuestions';
+import { questionsAndAnswersEmployee } from '../utils/EmpAppraisalQuestions';
 
 const M_ViewPage = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
@@ -12,26 +12,6 @@ const M_ViewPage = () => {
   const employeeId = localStorage.getItem('employeeId');
   const location = useLocation();
   const { timePeriod } = location.state || {}
-  // Static questions and answers
-  // const questionsAndAnswers = [
-  //   { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-  //   { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-  //   { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-  //   { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-  //   { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-  //   { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-  //   { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-  //   { question: 'Time Management', answer: 'I complete my tasks on time. ' },
-  //   { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
-  //   { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-  //   { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-  //   { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
-  //   { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-  //   { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-  // ];
-  const toggleHelpPopup = () => {
-    setShowHelpPopup(!showHelpPopup);
-  };
 
   useEffect(() => {
     const appraisalDetails = async () => {
@@ -50,20 +30,14 @@ const M_ViewPage = () => {
     appraisalDetails()
   }, [])
 
-  // const goals = [
-  //   { title: 'Cloud Certification', description: 'Obtain AWS Solutions Architect certification', deadline: 'Q2 2025' },
-  //   { title: 'Team Mentoring', description: 'Mentor 2 junior developers', deadline: 'Q3 2025' },
-  //   { title: 'Process Improvement', description: 'Lead automation initiative', deadline: 'Q4 2025' },
-  // ];
+ 
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 w-full ">
 
 
-      {/* <h1 className=" mt-8 text-2xl font-bold ">Appraisal Details</h1> */}
       <div className="mt-14">
 
-        {/* Header Section */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Appraisal Details</h1>
@@ -85,7 +59,6 @@ const M_ViewPage = () => {
         {formData ? (
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full mx-2 pr-4 ">
-            {/* Employee Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-blue-100 rounded-lg shrink-0">
                 <User className="text-blue-600" size={24} />
@@ -95,8 +68,6 @@ const M_ViewPage = () => {
                 <p className="font-medium text-gray-900">{formData[0].empName}</p>
               </div>
             </div>
-
-            {/* Designation Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-purple-100 rounded-lg shrink-0">
                 <Briefcase className="text-purple-600" size={24} />
@@ -106,8 +77,6 @@ const M_ViewPage = () => {
                 <p className="font-medium text-gray-900">{formData[0].designation}</p>
               </div>
             </div>
-
-            {/* Manager Name Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-green-100 rounded-lg shrink-0">
                 <User className="text-green-600" size={24} />
@@ -117,8 +86,6 @@ const M_ViewPage = () => {
                 <p className="font-medium text-gray-900">{formData[0].managerName}</p>
               </div>
             </div>
-
-            {/* Evaluation Status Card */}
             <div className="flex items-start gap-4 p-4 rounded-md shadow-md bg-white">
               <div className="p-3 bg-orange-100 rounded-lg shrink-0">
                 <TrendingUp className="text-orange-600" size={24} />
@@ -131,10 +98,7 @@ const M_ViewPage = () => {
           </div>) : (<div />)}
       </div>
 
-      {/* Main Content - Vertical Layout */}
       <div className="space-y-4 mx-2 rounded-lg shadow-sm">
-        {/* Self Appraisal Section */}
-
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
             <Award size={20} className="text-blue-600" />
@@ -194,15 +158,6 @@ const M_ViewPage = () => {
                         <span className="text-gray-600">Nothing to show</span>
                       </td>
                       )}
-                           {/* {weights ? (
-                        <td className="p-2 text-sm text-gray-700 w-36 ">
-                          <span className="text-gray-600">{weights}</span>
-                        </td>
-                      ) : (
-                      <td className="p-2 text-sm text-gray-700">
-                        <span className="text-gray-600">Nothing to show</span>
-                      </td>
-                      )} */}
                     </tr>
                   );
                 })}
@@ -210,8 +165,6 @@ const M_ViewPage = () => {
             </table>
           </div>
         </div>
-
-
         {/* Goals Section */}
         {/* <div className="bg-white border border-gray-200 mb-8 rounded-lg shadow-sm p-4 mt-3">
           {formData ? (

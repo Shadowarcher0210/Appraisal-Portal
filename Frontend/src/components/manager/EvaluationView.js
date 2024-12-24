@@ -3,7 +3,7 @@ import axios from 'axios'
 import { User, Briefcase, TrendingUp, Target, Award, ChevronRight } from 'lucide-react';
 import tick from '../../assets/tick.svg'
 import { useLocation, useParams, useNavigate, json } from 'react-router-dom';
-import { questionsAndAnswersEmployee} from '../employee/EmpAppraisalQuestions';
+import { questionsAndAnswersEmployee} from '../utils/EmpAppraisalQuestions';
 
 const EvaluationView = () => {
   const [showHelpPopup, setShowHelpPopup] = useState(false);
@@ -18,29 +18,9 @@ const EvaluationView = () => {
   const location = useLocation();
   const { timePeriod } = location.state || {}
 
-  // // Static questions and answers
-  // const questionsAndAnswers = [
-  //   { question: 'Job-Specific Knowledge', answer: 'I possess and apply the expertise, experience, and background to achieve solid results.' },
-  //   { question: 'Team Work', answer: 'I work effectively and efficiently with team.' },
-  //   { question: 'Job-Specific Skills', answer: 'I demonstrate the aptitude and competence to carry out my job responsibilities.' },
-  //   { question: 'Adaptability', answer: 'I am flexible and receptive regarding new ideas and approaches.' },
-  //   { question: 'Leadership', answer: 'I like to take responsibility in managing the team.' },
-  //   { question: 'Collaboration', answer: 'I cultivate positive relationships. I am willing to learn from others.' },
-  //   { question: 'Communication', answer: 'I convey my thoughts clearly and respectfully.' },
-  //   { question: 'Time Management', answer: 'I complete my tasks on time. ' },
-  //   { question: 'Results', answer: ' I identify goals that are aligned with the organizations strategic direction and achieve results accordingly.' },
-  //   { question: 'Creativity', answer: 'I look for solutions outside the work.' },
-  //   { question: 'Initiative', answer: 'I anticipate needs, solve problems, and take action, all without explicit instructions.' },
-  //   { question: 'Client Interaction', answer: 'I take the initiative to help shape events that will lead to the organizations success and showcase it to clients.' },
-  //   { question: 'Software Development', answer: 'I am committed to improving my knowledge and skills.' },
-  //   { question: 'Growth', answer: 'I am proactive in identifying areas for self-development.' },
-  // ];
   const toggleHelpPopup = () => {
     setShowHelpPopup(!showHelpPopup);
   };
-
-  
-  
 
   const handleBack = () => {
     setIsModalVisible(false);
@@ -236,7 +216,7 @@ const EvaluationView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 w-full ">
+    <div className="min-h-screen bg-blue-50 p-4 w-full ">
       <div className="mt-14">
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-white p-6 rounded-lg shadow-lg mt-4 mb-6">
       <div className="flex justify-between items-center">
@@ -244,7 +224,7 @@ const EvaluationView = () => {
             {formData ? (
 
               <div className="flex items-center gap-2">
-                <span className="text-sm bg-blue-50 text-cyan-800  px-3 py-2 font-medium rounded">
+                <span className="text-sm bg-white text-cyan-800  px-3 py-2 font-medium rounded">
                   {new Date(formData[0].timePeriod[0]).toISOString().slice(0, 10)} to {new Date(formData[0].timePeriod[1]).toISOString().slice(0, 10)}
                 </span>
 
@@ -328,7 +308,7 @@ const EvaluationView = () => {
                     Response</th>
                   <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Notes</th>
-                  <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                  <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Attainment</th>
                   <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">
                     Manager Evaluation</th>
@@ -379,15 +359,8 @@ const EvaluationView = () => {
                         <span className="text-gray-600">-</span>
                       </td>
                       )}
-                      {/* {status === 'Completed' && ( */}
-                      {/* <td className="p-2 text-sm text-gray-600 text-center">
-                        <input
-                          className="w-20 p-1 border border-gray-300 rounded  "
-                          value={formData[0].pageData[index].managerEvaluation || ''}
-                          onInput={(e) => handleManagerEvaluationChange(e, index)}  
-                        />
-                      </td> */}
-                      <td className="p-2 text-sm text-gray-600 text-center">
+              
+                      <td className="p-2 text-sm text-gray-600 text-left">
                         <select
                           className="w-20 p-1 border border-gray-300 rounded"
                           value={formData[0].pageData[index].managerEvaluation || ''}
@@ -416,7 +389,7 @@ const EvaluationView = () => {
 <div className="mt-20 sticky flex justify-end">
         <div className='mr-auto'>
           <button
-            className="px-6 py-2 bg-white border border-blue-800 text-blue-800 rounded-lg"
+            className="px-6 py-2 bg-white border border-blue-600 text-blue-600 rounded-lg"
             onClick={handleBack}
           >
             Back
@@ -434,7 +407,7 @@ const EvaluationView = () => {
           <button
             className={`px-6 py-2 text-white rounded-lg transition-colors ${
               isFormValid() 
-                ? 'bg-blue-800 hover:bg-blue-900' 
+                ? 'bg-blue-600 hover:bg-blue-500' 
                 : 'bg-gray-400 cursor-not-allowed'
             }`}
             onClick={handleContinue}
